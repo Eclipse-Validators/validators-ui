@@ -48,6 +48,20 @@ export default function MintPage() {
     }
   }
 
+  const handleNumberOfMintsChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (Number(e.target.value) < 1) {
+      toast.error("Number of mints must be greater than 0")
+      return
+    }
+    if (Number(e.target.value) > 3) {
+      toast.error("Number of mints must be less than 3 at a time!")
+      return
+    }
+    setNumberOfMints(Number(e.target.value))
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-foreground">
       <Toaster theme={theme as "light" | "dark"} />

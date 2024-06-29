@@ -86,19 +86,17 @@ export const mintWithControls = async ({
   console.log(editionsControlsData, editionsControlsObj)
 
   let txs: Transaction[] = []
-
+  const mintsGlobal: PublicKey[] = []
+  const membersGlobal: PublicKey[] = []
   while (remainingMints > 0) {
     const instructions: TransactionInstruction[] = []
-    /// creates an open editions launch
-
+    const mints: Keypair[] = []
+    const members: Keypair[] = []
     instructions.push(
       ComputeBudgetProgram.setComputeUnitLimit({
         units: 850_000,
       })
     )
-
-    const mints: Keypair[] = []
-    const members: Keypair[] = []
 
     for (
       let i = 0;
@@ -110,6 +108,8 @@ export const mintWithControls = async ({
 
       mints.push(mint)
       members.push(member)
+      mintsGlobal.push(mint.publicKey)
+      membersGlobal.push(member.publicKey)
 
       const tokenAccount = getAssociatedTokenAddressSync(
         mint.publicKey,
@@ -169,5 +169,10 @@ export const mintWithControls = async ({
 
   await Promise.all(promises)
 
-  return { editions, editionsControls: editionsControlsPda }
+  return {
+    editions,
+    editionsControls: editionsControlsPda,
+    mints: mintsGlobal,
+    members: membersGlobal,
+  }
 }
