@@ -60,8 +60,8 @@ export default function MintPage() {
     const handleNumberOfMintsChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        if (Number(e.target.value) >= 3) {
-            toast.error("Number of mints must be less than 3 at a time!")
+        if (Number(e.target.value) > 10) {
+            toast.error("Number of mints must be less than 10 at a time!")
             return
         }
         setNumberOfMints(Number(e.target.value))
@@ -95,6 +95,8 @@ export default function MintPage() {
                         </Button>
                     </CardContent>
                 </Card>
+            </div>
+            <div className="mt-12 flex flex-col gap-4">
                 {mintedAddresses.length > 0 && (
                     <Card className="bg-card/80 backdrop-blur-sm border-border">
                         <CardHeader>
