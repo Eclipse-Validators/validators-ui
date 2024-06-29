@@ -14,81 +14,81 @@ import { useEditionsControlProgram } from "@/components/providers/EditionsContro
 import { useEditionsProgram } from "@/components/providers/EditionsProgramContext"
 
 export default function MintPage() {
-  const { program: editionsControlsProgram } = useEditionsControlProgram()
-  const { program: editionsProgram } = useEditionsProgram()
-  const wallet = useAnchorWallet()
-  const { connection } = useConnection()
-  const [numberOfMints, setNumberOfMints] = useState(1)
-  const [isMinting, setIsMinting] = useState(false)
-  const { theme } = useTheme()
+    const { program: editionsControlsProgram } = useEditionsControlProgram()
+    const { program: editionsProgram } = useEditionsProgram()
+    const wallet = useAnchorWallet()
+    const { connection } = useConnection()
+    const [numberOfMints, setNumberOfMints] = useState(1)
+    const [isMinting, setIsMinting] = useState(false)
+    const { theme } = useTheme()
 
-  const handleMint = async () => {
-    if (!editionsControlsProgram || !editionsProgram || !wallet?.publicKey)
-      return
+    const handleMint = async () => {
+        if (!editionsControlsProgram || !editionsProgram || !wallet?.publicKey)
+            return
 
-    setIsMinting(true)
-    try {
-      await mintWithControls({
-        wallet: wallet as Wallet,
-        params: {
-          editionsId: "GmYSwRy2VHePvxpqE4giwKAms9y3639HMQG14pUcdk45",
-          phaseIndex: 0,
-          numberOfMints,
-        },
-        connection,
-        editionsProgram,
-        editionsControlsProgram,
-      })
-      toast.success("Minting successful!")
-    } catch (error) {
-      console.error("Minting failed:", error)
-      toast.error("Minting failed. Please check the console for details.")
-    } finally {
-      setIsMinting(false)
+        setIsMinting(true)
+        try {
+            await mintWithControls({
+                wallet: wallet as Wallet,
+                params: {
+                    editionsId: "GmYSwRy2VHePvxpqE4giwKAms9y3639HMQG14pUcdk45",
+                    phaseIndex: 0,
+                    numberOfMints,
+                },
+                connection,
+                editionsProgram,
+                editionsControlsProgram,
+            })
+            toast.success("Minting successful!")
+        } catch (error) {
+            console.error("Minting failed:", error)
+            toast.error("Minting failed. Please check the console for details.")
+        } finally {
+            setIsMinting(false)
+        }
     }
-  }
 
-  const handleNumberOfMintsChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (Number(e.target.value) < 1) {
-      toast.error("Number of mints must be greater than 0")
-      return
+    const handleNumberOfMintsChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        if (Number(e.target.value) < 1) {
+            toast.error("Number of mints must be greater than 0")
+            return
+        }
+        if (Number(e.target.value) > 3) {
+            toast.error("Number of mints must be less than 3 at a time!")
+            return
+        }
+        setNumberOfMints(Number(e.target.value))
     }
-    if (Number(e.target.value) > 3) {
-      toast.error("Number of mints must be less than 3 at a time!")
-      return
-    }
-    setNumberOfMints(Number(e.target.value))
-  }
 
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-foreground">
-      <Toaster theme={theme as "light" | "dark"} />
-      <div className="relative z-10 w-full max-w-md space-y-8">
-        <Card className="border-border bg-card/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Mint NFT</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              type="number"
-              placeholder="Number of Mints"
-              value={numberOfMints}
-              onChange={(e) => setNumberOfMints(Number(e.target.value))}
-              min={1}
-              className="border-input bg-input"
-            />
-            <Button
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={handleMint}
-              disabled={!wallet?.publicKey || isMinting}
-            >
-              {isMinting ? "Minting..." : "Mint NFT"}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
+    return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-foreground">
+            <Toaster theme={theme as "light" | "dark"} />
+            <div className="relative z-10 w-full max-w-md space-y-8">
+                <Card className="border-border bg-card/80 backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle className="text-xl font-semibold">Mint NFT</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Input
+                            type="number"
+                            placeholder="Number of Mints"
+                            value={numberOfMints}
+                            onChange={handleNumberOfMintsChange}
+                            min={1}
+                            className="border-input bg-input"
+                        />
+                        <Button
+                            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                            onClick={handleMint}
+                            disabled={!wallet?.publicKey || isMinting}
+                        >
+                            {isMinting ? "Minting..." : "Mint NFT"}
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    )
 }
