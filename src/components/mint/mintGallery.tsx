@@ -24,15 +24,6 @@ export default function MintGallery({ mintAddresses }: { mintAddresses: string[]
         const fetchMintData = async () => {
 
             const fetchedData: MintData[] = [];
-            const groupAddress = new PublicKey('GSToHcQLQbce7bRzvSx11gjkh2AoFAKGqqvBhdE2FVBE');
-            const groupMint = await getMint(
-                connection,
-                groupAddress,
-                'confirmed',
-                TOKEN_2022_PROGRAM_ID
-            );
-            const group = getGroupPointerState(groupMint);
-            console.log('group', group, group?.authority?.toBase58(), group?.groupAddress?.toBase58())
             for (const address of mintAddresses) {
                 try {
                     const mint = await getMint(
@@ -93,7 +84,7 @@ export default function MintGallery({ mintAddresses }: { mintAddresses: string[]
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {[...Array(4)].map((_, index) => (
-                    <Card key={index} className="bg-gray-800 overflow-hidden">
+                    <Card key={index} className="bg-background overflow-hidden">
                         <CardContent className="p-0">
                             <Skeleton className="w-full aspect-square" />
                             <div className="p-2">
@@ -110,7 +101,7 @@ export default function MintGallery({ mintAddresses }: { mintAddresses: string[]
     return (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {mintsData.map((mint, index) => (
-                <Card key={mint.address} className="bg-gray-800 overflow-hidden">
+                <Card key={mint.address} className="bg-background overflow-hidden">
                     <CardContent className="p-0">
                         {mint.metadata ? (
                             <div className="relative pb-[100%]">
@@ -121,7 +112,7 @@ export default function MintGallery({ mintAddresses }: { mintAddresses: string[]
                                 />
                             </div>
                         ) : (
-                            <div className="aspect-square bg-gray-700 flex items-center justify-center">
+                            <div className="aspect-square bg-card-foreground flex items-center justify-center">
                                 No image
                             </div>
                         )}
@@ -134,12 +125,12 @@ export default function MintGallery({ mintAddresses }: { mintAddresses: string[]
                                     href={getExplorerUrl(mint.address)}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-400 hover:text-white transition-colors"
+                                    className="text-foreground hover:text-secondary-foreground transition-colors"
                                 >
                                     <ExternalLink size={16} />
                                 </a>
                             </div>
-                            <p className="text-xs text-gray-400 truncate">{mint.address.slice(0, 6)}...</p>
+                            <p className="text-xs text-card-foreground truncate">{mint.address.slice(0, 6)}...</p>
                         </div>
                     </CardContent>
                 </Card>
