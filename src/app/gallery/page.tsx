@@ -13,7 +13,7 @@ export default function OwnedNFTsPage() {
     const deploymentId = new PublicKey(process.env.NEXT_PUBLIC_DEPLOYMENTID ?? '');
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen bg-background text-foreground">
             <main className="container mx-auto p-4">
                 {publicKey ? (
                     <GroupMembersProvider deploymentId={deploymentId}>

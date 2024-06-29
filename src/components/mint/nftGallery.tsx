@@ -30,9 +30,9 @@ function AttributesList({ attributes }: { attributes: Attribute[] }) {
     return (
         <div className="grid grid-cols-2 gap-2 mt-2">
             {attributes.map((attr, index) => (
-                <div key={index} className="bg-gray-700 rounded p-1 text-xs">
+                <div key={index} className="bg-muted rounded p-1 text-xs">
                     <div className="font-semibold mb-1">{attr.trait_type}</div>
-                    <div className="bg-gray-800 p-1 rounded">{attr.value}</div>
+                    <div className="bg-card p-1 rounded">{attr.value}</div>
                 </div>
             ))}
         </div>
@@ -47,7 +47,7 @@ function NFTCard({ nft, index }: { nft: NFTData; index: number }) {
     };
 
     return (
-        <Card className="bg-gray-800 overflow-hidden">
+        <Card className="bg-card overflow-hidden">
             <CardContent className="p-0">
                 {nft.metadata ? (
                     <div className="relative pb-[100%]">
@@ -58,7 +58,7 @@ function NFTCard({ nft, index }: { nft: NFTData; index: number }) {
                         />
                     </div>
                 ) : (
-                    <div className="aspect-square bg-gray-700 flex items-center justify-center">
+                    <div className="aspect-square bg-muted flex items-center justify-center">
                         No image
                     </div>
                 )}
@@ -71,16 +71,16 @@ function NFTCard({ nft, index }: { nft: NFTData; index: number }) {
                             href={getExplorerUrl(nft.address)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-white transition-colors"
+                            className="text-muted-foreground hover:text-white transition-colors"
                         >
                             <ExternalLink size={16} />
                         </a>
                     </div>
-                    <p className="text-xs text-gray-400 truncate">{nft.address.slice(0, 6)}...</p>
+                    <p className="text-xs text-muted-foreground truncate">{nft.address.slice(0, 6)}...</p>
 
                     {nft.metadata?.attributes && nft.metadata.attributes.length > 0 && (
                         <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-2">
-                            <CollapsibleTrigger className="flex items-center justify-between w-full text-sm text-gray-300 hover:text-white">
+                            <CollapsibleTrigger className="flex items-center justify-between w-full text-sm text-muted-foreground hover:text-muted-foreground">
                                 Attributes
                                 {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                             </CollapsibleTrigger>
@@ -230,7 +230,7 @@ export default function NFTGallery() {
                 <h1 className="text-2xl font-bold">Validators Gallery</h1>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {Array.from({ length: BATCH_SIZE }).map((_, index) => (
-                        <Card key={`skeleton-${index}`} className="bg-gray-800 overflow-hidden">
+                        <Card key={`skeleton-${index}`} className="bg-card overflow-hidden">
                             <CardContent className="p-0">
                                 <Skeleton className="w-full aspect-square" />
                                 <div className="p-2">
@@ -265,7 +265,7 @@ export default function NFTGallery() {
                 <TabsContent value="owned">
                     {ownedNftsData.length === 0 ? (
                         <div className="text-center py-10">
-                            <p className="text-gray-400 mb-4">No NFTs found in your wallet for this collection.</p>
+                            <p className="text-muted-foreground mb-4">No NFTs found in your wallet for this collection.</p>
                             <Link href="/mint" passHref>
                                 <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
                                     Go to Mint Page
@@ -279,7 +279,7 @@ export default function NFTGallery() {
                 <TabsContent value="all">
                     {loading && allNftsData.length === 0 ? (
                         <div className="text-center py-10">
-                            <p className="text-gray-400">Loading collection NFTs...</p>
+                            <p className="text-muted-foreground">Loading collection NFTs...</p>
                         </div>
                     ) : (
                         <NFTGrid nfts={allNftsData} visibleCount={allVisibleCount} loadMore={loadMoreAll} />
