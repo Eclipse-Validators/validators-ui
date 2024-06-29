@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { useEditionsControlProgram } from "@/components/providers/EditionsControlProgramContext"
 import { useEditionsProgram } from "@/components/providers/EditionsProgramContext"
 import { useWalletBalance } from "@/lib/hooks/useWalletBalance"
+import MintGallery from "@/components/mint/mintGallery"
 
 export default function MintPage() {
     const { program: editionsControlsProgram } = useEditionsControlProgram()
@@ -22,6 +23,7 @@ export default function MintPage() {
     const { connection } = useConnection()
     const [numberOfMints, setNumberOfMints] = useState(1)
     const [isMinting, setIsMinting] = useState(false)
+    const [mintedAddresses, setMintedAddresses] = useState<string[]>([]);
     const { theme } = useTheme()
 
     const handleMint = async () => {
@@ -33,17 +35,18 @@ export default function MintPage() {
         }
         setIsMinting(true)
         try {
-            await mintWithControls({
+            const results = await mintWithControls({
                 wallet: wallet as Wallet,
                 params: {
-                    editionsId: "GmYSwRy2VHePvxpqE4giwKAms9y3639HMQG14pUcdk45",
+                    editionsId: process.env.NEXT_PUBLIC_DEPLOYMENTID as string ?? 'HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP',
                     phaseIndex: 0,
                     numberOfMints,
                 },
                 connection,
                 editionsProgram,
                 editionsControlsProgram,
-            })
+            });
+            setMintedAddresses(prevAddresses => [...prevAddresses, ...results.mints.map(m => m.toBase58())]);
             toast.success("Minting successful!")
         } catch (error) {
             console.error("Minting failed:", error)
@@ -92,6 +95,16 @@ export default function MintPage() {
                         </Button>
                     </CardContent>
                 </Card>
+                {mintedAddresses.length > 0 && (
+                    <Card className="bg-card/80 backdrop-blur-sm border-border">
+                        <CardHeader>
+                            <CardTitle className="text-xl font-semibold">Your Minted NFTs</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <MintGallery mintAddresses={mintedAddresses} />
+                        </CardContent>
+                    </Card>
+                )}
             </div>
         </div>
     )
