@@ -8,6 +8,7 @@ import { useGroupMembers } from '@/components/providers/GroupMembersContext';
 import { PublicKey } from "@solana/web3.js";
 import { getTokenMetadata, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { useWalletTokens } from '@/lib/hooks/useWalletTokens';
+import Link from 'next/link';
 
 interface NFTData {
     address: string;
@@ -91,6 +92,20 @@ export default function OwnedNFTsGallery() {
     const getExplorerUrl = (address: string) => {
         return `${process.env.NEXT_PUBLIC_EXPLORER ?? 'https://explorer.dev.eclipsenetwork.xyz'}/address/${address}`;
     };
+
+    if (nftsData.length === 0) {
+        return (
+            <div className="space-y-4 text-center">
+                <h1 className="text-2xl font-bold">Your Owned Validators</h1>
+                <p className="text-gray-400">No Validators found!</p>
+                <Link href="/mint" passHref>
+                    <button className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-700 transition-colors">
+                        Go to Mint Page
+                    </button>
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">
