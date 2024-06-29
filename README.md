@@ -1,47 +1,25 @@
-# Next Entree
+# Validators UI 🚀
 
-Next.js 14+ starter template with app router, shadcn/ui, typesafe env, icons and configs setup.
+`hello world`
 
-## Usage
+## Running Locally 🧑‍🚀
 
-1. Setup a project using the template
+1. `yarn install`
+2. `cp .env.example .env.local`
+3. `yarn dev`
 
-```bash
-pnpm create next-app -e https://github.com/redpangilinan/next-entree
-```
+## Adding new components 🌝
 
-```bash
-npx create-next-app -e https://github.com/redpangilinan/next-entree
-```
+To install components from the UI library, you can use the following command:
 
 ```bash
-yarn create next-app -e https://github.com/redpangilinan/next-entree
+npx shadcn-ui@latest add <componentname>
 ```
+Replace `<componentname>` with the name of the component you wish to install.
 
-```bash
-bunx create-next-app -e https://github.com/redpangilinan/next-entree
-```
+For more detailed information on components and usage, visit the [Shadcn UI Components Documentation](https://ui.shadcn.com/docs/components).
 
-2. Copy `.env.example` to `.env.local`
-
-```bash
-cp .env.example .env.local
-```
-
-## Features
-
-This template uses [shadcn](https://github.com/shadcn)'s Next.js app structure from [shadcn/ui](https://ui.shadcn.com/).
-
-- Next.js 14+ `/app` router
-- TypeScript
-- Tailwind CSS
-- shadcn/ui (Radix UI + Tailwind)
-- Prettier (w/ auto sort imports and tailwind classes)
-- SEO optimized
-- Typesafe env, icons, and config
-- Ready to use - jump right into development
-
-## Scripts
+## Scripts ☄️
 
 If you are using a different package manager, be sure to update the package.json format scripts.
 
