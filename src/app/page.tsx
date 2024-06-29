@@ -20,7 +20,6 @@ export default function Home() {
         <div className="flex gap-2">
           <Link
             href={"/mint"}
-            target="_blank"
             className={cn(buttonVariants({ size: "default" }))}
           >
             Mint!
