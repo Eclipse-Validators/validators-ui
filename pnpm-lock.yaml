@@ -44,6 +44,9 @@ dependencies:
   '@solana/web3.js':
     specifier: ^1.93.4
     version: 1.93.4
+  '@solflare-wallet/metamask-wallet-standard':
+    specifier: ^1.0.11
+    version: 1.0.11(@solana/web3.js@1.93.4)
   '@t3-oss/env-nextjs':
     specifier: ^0.9.2
     version: 0.9.2(typescript@5.4.5)(zod@3.23.4)
@@ -5029,6 +5032,22 @@ packages:
       bs58: 5.0.0
       eventemitter3: 5.0.1
       uuid: 9.0.1
+    dev: false
+
+  /@solflare-wallet/metamask-wallet-standard@1.0.11(@solana/web3.js@1.93.4):
+    resolution: {integrity: sha512-bs5kdbOihJam5Dpw2RCaUfmwn93gaVCw8PXOLQOKy5c1DYiLyGe2lSoeNk+g0yxPsgihq5p0E7lInMTQlctUSA==}
+    peerDependencies:
+      '@solana/web3.js': '*'
+    dependencies:
+      '@solana/wallet-adapter-base': 0.9.23(@solana/web3.js@1.93.4)
+      '@solana/wallet-standard-chains': 1.1.0
+      '@solana/wallet-standard-features': 1.2.0
+      '@solana/web3.js': 1.93.4
+      '@solflare-wallet/metamask-sdk': 1.0.3(@solana/web3.js@1.93.4)
+      '@wallet-standard/base': 1.0.1
+      '@wallet-standard/features': 1.0.3
+      '@wallet-standard/wallet': 1.0.1
+      bs58: 5.0.0
     dev: false
 
   /@solflare-wallet/sdk@1.4.2(@solana/web3.js@1.93.4):

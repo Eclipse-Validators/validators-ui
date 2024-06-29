@@ -104,12 +104,14 @@ function NFTGrid({ nfts, visibleCount, loadMore }: { nfts: NFTData[], visibleCou
                 ))}
             </div>
             {visibleCount < nfts.length && (
-                <button
-                    onClick={loadMore}
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                >
-                    Load More
-                </button>
+                <div className="flex justify-center">
+                    <button
+                        onClick={loadMore}
+                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                    >
+                        Load More
+                    </button>
+                </div>
             )}
         </>
     );
@@ -278,8 +280,18 @@ export default function NFTGallery() {
                 </TabsContent>
                 <TabsContent value="all">
                     {loading && allNftsData.length === 0 ? (
-                        <div className="text-center py-10">
-                            <p className="text-muted-foreground">Loading collection NFTs...</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {Array.from({ length: BATCH_SIZE }).map((_, index) => (
+                                <Card key={`skeleton-${index}`} className="bg-card overflow-hidden">
+                                    <CardContent className="p-0">
+                                        <Skeleton className="w-full aspect-square" />
+                                        <div className="p-2">
+                                            <Skeleton className="w-full h-4 mb-2" />
+                                            <Skeleton className="w-2/3 h-3" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
                         </div>
                     ) : (
                         <NFTGrid nfts={allNftsData} visibleCount={allVisibleCount} loadMore={loadMoreAll} />
