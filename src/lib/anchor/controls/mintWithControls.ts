@@ -88,6 +88,7 @@ export const mintWithControls = async ({
   let txs: Transaction[] = []
   const mintsGlobal: PublicKey[] = []
   const membersGlobal: PublicKey[] = []
+  //TODO: Split transactions into multiple to avoid txn too large errors
   while (remainingMints > 0) {
     const instructions: TransactionInstruction[] = []
     const mints: Keypair[] = []
@@ -151,8 +152,6 @@ export const mintWithControls = async ({
     }
 
     remainingMints -= MAX_MINTS_PER_TRANSACTION
-
-    // transaction boilerplate - ignore for now
     const tx = new Transaction().add(...instructions)
     tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash
     tx.feePayer = wallet.publicKey
