@@ -174,7 +174,6 @@ export default function NFTGallery() {
             const combinedData = [...prevData, ...newOwnedNftsData];
             return Array.from(new Map(combinedData.map(item => [item.address, item])).values());
         });
-
         setLoading(false);
     }, [fetchNFTMetadata, hashlist, members, membersLoading, tokens, tokensLoading]);
 
@@ -182,12 +181,18 @@ export default function NFTGallery() {
         if (membersLoading) return;
 
         setLoading(true);
-        const newAllNftsData: NFTData[] = [];
+        const newAllNftsData: NFTData[] = [...ownedNftsData]; // Start with owned NFTs
 
         for (const member of members) {
             if (!fetchedTokens.current.has(member?.mint ?? '') && member.mint) {
-                const nftData = await fetchNFTMetadata(member.mint);
-                newAllNftsData.push(nftData);
+                // Check if this NFT is already in ownedNftsData
+                const existingNft = ownedNftsData.find(nft => nft.address === member.mint);
+                if (existingNft) {
+                    newAllNftsData.push(existingNft);
+                } else {
+                    const nftData = await fetchNFTMetadata(member.mint);
+                    newAllNftsData.push(nftData);
+                }
                 fetchedTokens.current.add(member.mint);
             }
         }
@@ -198,15 +203,15 @@ export default function NFTGallery() {
         });
 
         setLoading(false);
-    }, [fetchNFTMetadata, members, membersLoading]);
+    }, [fetchNFTMetadata, members, membersLoading, ownedNftsData]);
 
     useEffect(() => {
         if (activeTab === 'owned') {
             fetchOwnedNFTs();
-        } else if (activeTab === 'all' && allNftsData.length === 0) {
+        } else if (activeTab === 'all') {
             fetchAllNFTs();
         }
-    }, [activeTab, fetchOwnedNFTs, fetchAllNFTs, allNftsData.length]);
+    }, [activeTab, fetchOwnedNFTs, fetchAllNFTs]);
 
     const handleRefresh = () => {
         fetchedTokens.current.clear();
@@ -221,7 +226,15 @@ export default function NFTGallery() {
         } else {
             fetchAllNFTs();
         }
-    };
+    }
+
+    useEffect(() => {
+        if (activeTab === 'owned') {
+            fetchOwnedNFTs();
+        } else if (activeTab === 'all' && allNftsData.length === 0) {
+            fetchAllNFTs();
+        }
+    }, [activeTab, fetchOwnedNFTs, fetchAllNFTs, allNftsData.length]);
 
     const loadMoreOwned = () => setOwnedVisibleCount(prevCount => prevCount + BATCH_SIZE);
     const loadMoreAll = () => setAllVisibleCount(prevCount => prevCount + BATCH_SIZE);
