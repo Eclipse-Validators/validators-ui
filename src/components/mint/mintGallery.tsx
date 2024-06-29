@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
-import { getMint, getExtensionTypes, ExtensionType, TOKEN_2022_PROGRAM_ID, getTokenMetadata } from '@solana/spl-token';
+import { getMint, getExtensionTypes, ExtensionType, TOKEN_2022_PROGRAM_ID, getTokenMetadata, getGroupMemberPointerState, getGroupPointerState } from '@solana/spl-token';
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConnection } from '@solana/wallet-adapter-react';
 import { ExternalLink } from 'lucide-react';
+import { decodeMember2022 } from '@/lib/anchor/members';
 
 interface MintData {
     address: string;
@@ -23,7 +24,15 @@ export default function MintGallery({ mintAddresses }: { mintAddresses: string[]
         const fetchMintData = async () => {
 
             const fetchedData: MintData[] = [];
-
+            const groupAddress = new PublicKey('GSToHcQLQbce7bRzvSx11gjkh2AoFAKGqqvBhdE2FVBE');
+            const groupMint = await getMint(
+                connection,
+                groupAddress,
+                'confirmed',
+                TOKEN_2022_PROGRAM_ID
+            );
+            const group = getGroupPointerState(groupMint);
+            console.log('group', group, group?.authority?.toBase58(), group?.groupAddress?.toBase58())
             for (const address of mintAddresses) {
                 try {
                     const mint = await getMint(
@@ -32,9 +41,19 @@ export default function MintGallery({ mintAddresses }: { mintAddresses: string[]
                         'confirmed',
                         TOKEN_2022_PROGRAM_ID
                     );
+                    const accountInfo = await connection.getAccountInfo(new PublicKey(address));
+                    if (accountInfo) {
+                        const getGroupMember = decodeMember2022(accountInfo, new PublicKey(address));
+                        console.log('getGroupMember', getGroupMember, getGroupMember.item?.group?.toBase58())
+                    }
 
                     console.log('mint', mint)
-
+                    const groupMember = getGroupMemberPointerState(mint);
+                    const group = getGroupPointerState(mint);
+                    if (groupMember) {
+                        console.log('group', group, group?.authority?.toBase58(), group?.groupAddress?.toBase58())
+                        console.log('groupMember', groupMember, groupMember.authority?.toBase58(), groupMember.memberAddress?.toBase58())
+                    }
                     const tokenMetadata = await getTokenMetadata(connection, new PublicKey(address), 'confirmed', TOKEN_2022_PROGRAM_ID);
                     console.log('tokenMetadata', tokenMetadata);
 

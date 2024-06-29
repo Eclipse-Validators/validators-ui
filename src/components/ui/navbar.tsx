@@ -37,6 +37,12 @@ const Navbar = () => {
               >
                 Mint
               </Link>
+              <Link
+                href="/gallery"
+                className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              >
+                Gallery
+              </Link>
               {isDev && (
                 <Link href="/airdrop" className="text-foreground hover:bg-muted px-3 py-2 rounded-md text-sm font-medium">
                   Airdrop
@@ -75,6 +81,12 @@ const Navbar = () => {
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
             >
               Mint
+            </Link>
+            <Link
+              href="/gallery"
+              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+            >
+              Gallery
             </Link>
             {isDev && (
               <Link href="/airdrop" className="text-foreground hover:bg-muted block px-3 py-2 rounded-md text-base font-medium">

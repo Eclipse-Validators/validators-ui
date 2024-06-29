@@ -100,7 +100,7 @@ export default function MintPage() {
                 {mintedAddresses.length > 0 && (
                     <Card className="bg-card/80 backdrop-blur-sm border-border">
                         <CardHeader>
-                            <CardTitle className="text-xl font-semibold">Your Minted NFTs</CardTitle>
+                            <CardTitle className="text-xl font-semibold">Your recent mints</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <MintGallery mintAddresses={mintedAddresses} />
