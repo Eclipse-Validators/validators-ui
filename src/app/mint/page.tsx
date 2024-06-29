@@ -73,7 +73,7 @@ export default function MintPage() {
             <div className="relative z-10 w-full max-w-md space-y-8">
                 <Card className="border-border bg-card/80 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Mint NFT</CardTitle>
+                        <CardTitle className="text-xl font-semibold">Mint a Validator</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <p className="text-sm text-muted-foreground">Mint Price: 0.03 ETH</p>
