@@ -1,172 +1,173 @@
+import { Program } from "@coral-xyz/anchor"
 import {
-    Connection,
-    Keypair,
-    SystemProgram,
-    Transaction,
-    TransactionInstruction,
-    PublicKey,
-    ComputeBudgetProgram,
-    sendAndConfirmRawTransaction,
-} from "@solana/web3.js";
+  getAssociatedTokenAddressSync,
+  TOKEN_2022_PROGRAM_ID,
+} from "@solana/spl-token"
+import { AnchorWallet } from "@solana/wallet-adapter-react"
+import {
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  PublicKey,
+  sendAndConfirmRawTransaction,
+  SystemProgram,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js"
 
-import {
-    TOKEN_2022_PROGRAM_ID,
-    getAssociatedTokenAddressSync,
-} from "@solana/spl-token";
-import { getEditionsPda } from "../../anchor/editions/pdas/getEditionsPda";
-import { getHashlistPda } from "../../anchor/editions/pdas/getHashlistPda";
-import { decodeEditions } from "../editions/accounts";
-import { getEditionsControlsPda } from "./pdas/getEditionsControlsPda";
-import { decodeEditionsControls } from "./accounts";
-import { getMinterStatsPda } from "./pdas/getMinterStatsPda";
-import { getMinterStatsPhasePda } from "./pdas/getMinterStatsPhasePda";
-import { getHashlistMarkerPda } from "../editions/pdas/getHashlistMarkerPda";
-import { PROGRAM_ID_GROUP_EXTENSIONS } from "../constants";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
-import { Program } from "@coral-xyz/anchor";
-import { LibreplexEditionsControls } from "./libreplex_editions_controls";
-import { LibreplexEditions } from "../editions/libreplex_editions";
+import { getEditionsPda } from "../../anchor/editions/pdas/getEditionsPda"
+import { getHashlistPda } from "../../anchor/editions/pdas/getHashlistPda"
+import { PROGRAM_ID_GROUP_EXTENSIONS } from "../constants"
+import { decodeEditions } from "../editions/accounts"
+import { LibreplexEditions } from "../editions/libreplex_editions"
+import { getHashlistMarkerPda } from "../editions/pdas/getHashlistMarkerPda"
+import { decodeEditionsControls } from "./accounts"
+import { LibreplexEditionsControls } from "./libreplex_editions_controls"
+import { getEditionsControlsPda } from "./pdas/getEditionsControlsPda"
+import { getMinterStatsPda } from "./pdas/getMinterStatsPda"
+import { getMinterStatsPhasePda } from "./pdas/getMinterStatsPhasePda"
 
 export interface IMintWithControls {
-    phaseIndex: number;
-    editionsId: string;
-    numberOfMints: number;
+  phaseIndex: number
+  editionsId: string
+  numberOfMints: number
 }
 
-const MAX_MINTS_PER_TRANSACTION = 3;
+const MAX_MINTS_PER_TRANSACTION = 3
 export interface IExecutorParams<T> {
-    wallet: AnchorWallet,
-    params: T,
-    connection: Connection,
-    editionsProgram: Program<LibreplexEditions>,
-    editionsControlsProgram: Program<LibreplexEditionsControls>
+  wallet: AnchorWallet
+  params: T
+  connection: Connection
+  editionsProgram: Program<LibreplexEditions>
+  editionsControlsProgram: Program<LibreplexEditionsControls>
 }
 export const mintWithControls = async ({
-    wallet,
-    params,
-    connection,
-    editionsControlsProgram,
-    editionsProgram
+  wallet,
+  params,
+  connection,
+  editionsControlsProgram,
+  editionsProgram,
 }: IExecutorParams<IMintWithControls>) => {
-    const { phaseIndex, editionsId, numberOfMints } = params;
-    const editions = new PublicKey(editionsId);
+  const { phaseIndex, editionsId, numberOfMints } = params
+  const editions = new PublicKey(editionsId)
 
-    const editionsData = await connection.getAccountInfo(editions);
+  const editionsData = await connection.getAccountInfo(editions)
 
-    if (!editionsData) {
-        throw Error("Editions not found");
-    }
+  if (!editionsData) {
+    throw Error("Editions not found")
+  }
 
-    const editionsObj = decodeEditions(editionsProgram)(
-        editionsData.data,
-        editions
-    );
+  const editionsObj = decodeEditions(editionsProgram)(
+    editionsData.data,
+    editions
+  )
 
-    const editionsControlsPda = getEditionsControlsPda(editions);
+  const editionsControlsPda = getEditionsControlsPda(editions)
 
-    const editionsControlsData = await connection.getAccountInfo(
-        editionsControlsPda
-    );
+  const editionsControlsData =
+    await connection.getAccountInfo(editionsControlsPda)
 
-    const editionsControlsObj = decodeEditionsControls(editionsControlsProgram)(
-        editionsControlsData?.data,
-        editionsControlsPda
-    );
+  const editionsControlsObj = decodeEditionsControls(editionsControlsProgram)(
+    editionsControlsData?.data,
+    editionsControlsPda
+  )
 
-    const hashlist = getHashlistPda(editions)[0];
+  const hashlist = getHashlistPda(editions)[0]
 
-    const minterStats = getMinterStatsPda(editions, wallet.publicKey)[0];
+  const minterStats = getMinterStatsPda(editions, wallet.publicKey)[0]
 
-    const minterStatsPhase = getMinterStatsPhasePda(
-        editions,
+  const minterStatsPhase = getMinterStatsPhasePda(
+    editions,
+    wallet.publicKey,
+    phaseIndex
+  )[0]
+
+  let remainingMints = numberOfMints
+  console.log(editionsControlsData, editionsControlsObj)
+
+  let txs: Transaction[] = []
+
+  while (remainingMints > 0) {
+    const instructions: TransactionInstruction[] = []
+    /// creates an open editions launch
+
+    instructions.push(
+      ComputeBudgetProgram.setComputeUnitLimit({
+        units: 850_000,
+      })
+    )
+
+    const mints: Keypair[] = []
+    const members: Keypair[] = []
+
+    for (
+      let i = 0;
+      i < Math.min(MAX_MINTS_PER_TRANSACTION, remainingMints);
+      ++i
+    ) {
+      const mint = Keypair.generate()
+      const member = Keypair.generate()
+
+      mints.push(mint)
+      members.push(member)
+
+      const tokenAccount = getAssociatedTokenAddressSync(
+        mint.publicKey,
         wallet.publicKey,
-        phaseIndex
-    )[0];
+        false,
+        TOKEN_2022_PROGRAM_ID
+      )
 
-    let remainingMints = numberOfMints;
-    console.log(editionsControlsData, editionsControlsObj);
+      const hashlistMarker = getHashlistMarkerPda(editions, mint.publicKey)[0]
 
-    let txs: Transaction[] = [];
-
-    while (remainingMints > 0) {
-        const instructions: TransactionInstruction[] = [];
-        /// creates an open editions launch
-
-        instructions.push(
-            ComputeBudgetProgram.setComputeUnitLimit({
-                units: 850_000,
-            })
-        );
-
-        const mints: Keypair[] = [];
-        const members: Keypair[] = [];
-
-        for (let i = 0; i < Math.min(MAX_MINTS_PER_TRANSACTION, remainingMints); ++i) {
-            const mint = Keypair.generate();
-            const member = Keypair.generate();
-
-            mints.push(mint);
-            members.push(member);
-
-            const tokenAccount = getAssociatedTokenAddressSync(
-                mint.publicKey,
-                wallet.publicKey,
-                false,
-                TOKEN_2022_PROGRAM_ID
-            );
-
-            const hashlistMarker = getHashlistMarkerPda(editions, mint.publicKey)[0];
-
-            instructions.push(
-                await editionsControlsProgram.methods
-                    .mintWithControls({
-                        phaseIndex,
-                    })
-                    .accounts({
-                        editionsDeployment: editions,
-                        editionsControls: editionsControlsPda,
-                        hashlist,
-                        hashlistMarker,
-                        payer: wallet.publicKey,
-                        mint: mint.publicKey,
-                        member: member.publicKey,
-                        signer: wallet.publicKey,
-                        minter: wallet.publicKey,
-                        minterStats,
-                        minterStatsPhase,
-                        group: editionsObj?.item?.group,
-                        groupExtensionProgram: PROGRAM_ID_GROUP_EXTENSIONS,
-                        tokenAccount,
-                        treasury: editionsControlsObj?.item?.treasury,
-                        systemProgram: SystemProgram.programId,
-                        tokenProgram: TOKEN_2022_PROGRAM_ID,
-                        libreplexEditionsProgram: editionsProgram.programId,
-                    })
-                    .signers([mint, member])
-                    .instruction()
-            );
-        }
-
-        remainingMints -= MAX_MINTS_PER_TRANSACTION;
-
-        // transaction boilerplate - ignore for now
-        const tx = new Transaction().add(...instructions);
-        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-        tx.feePayer = wallet.publicKey;
-        tx.sign(...mints, ...members);
-        txs.push(tx);
+      instructions.push(
+        await editionsControlsProgram.methods
+          .mintWithControls({
+            phaseIndex,
+          })
+          .accounts({
+            editionsDeployment: editions,
+            editionsControls: editionsControlsPda,
+            hashlist,
+            hashlistMarker,
+            payer: wallet.publicKey,
+            mint: mint.publicKey,
+            member: member.publicKey,
+            signer: wallet.publicKey,
+            minter: wallet.publicKey,
+            minterStats,
+            minterStatsPhase,
+            group: editionsObj?.item?.group,
+            groupExtensionProgram: PROGRAM_ID_GROUP_EXTENSIONS,
+            tokenAccount,
+            treasury: editionsControlsObj?.item?.treasury,
+            systemProgram: SystemProgram.programId,
+            tokenProgram: TOKEN_2022_PROGRAM_ID,
+            libreplexEditionsProgram: editionsProgram.programId,
+          })
+          .signers([mint, member])
+          .instruction()
+      )
     }
 
-    const txns = await wallet.signAllTransactions(txs);
+    remainingMints -= MAX_MINTS_PER_TRANSACTION
 
-    const promises = txns.map((item) => {
-        console.log(item);
-        return sendAndConfirmRawTransaction(connection, item.serialize())
-    }
+    // transaction boilerplate - ignore for now
+    const tx = new Transaction().add(...instructions)
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash
+    tx.feePayer = wallet.publicKey
+    tx.sign(...mints, ...members)
+    txs.push(tx)
+  }
 
-    );
+  const txns = await wallet.signAllTransactions(txs)
 
-    await Promise.all(promises);
+  const promises = txns.map((item) => {
+    console.log(item)
+    return sendAndConfirmRawTransaction(connection, item.serialize())
+  })
 
-    return { editions, editionsControls: editionsControlsPda };
-};
+  await Promise.all(promises)
+
+  return { editions, editionsControls: editionsControlsPda }
+}

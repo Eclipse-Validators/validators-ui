@@ -5,12 +5,12 @@ import { Inter } from "next/font/google"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { ThemeProvider } from "@/components/theme-provider"
-import SolanaWalletProvider from "@/components/SolanaWalletProvider"
 import Navbar from "@/components/ui/navbar"
-import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext"
-import { EditionsControlProgramProvider } from "@/components/providers/EditionsControlProgramContext"
 import { Toaster } from "@/components/ui/sonner"
+import { EditionsControlProgramProvider } from "@/components/providers/EditionsControlProgramContext"
+import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext"
+import SolanaWalletProvider from "@/components/SolanaWalletProvider"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -85,7 +85,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           disableTransitionOnChange
         >
           <SolanaWalletProvider>
-            <div className="flex flex-col min-h-screen">
+            <div className="flex min-h-screen flex-col">
               <Navbar />
               <main className="flex-grow">
                 <EditionsProgramProvider>
