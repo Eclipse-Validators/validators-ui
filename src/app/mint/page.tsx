@@ -12,10 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useEditionsControlProgram } from "@/components/providers/EditionsControlProgramContext"
 import { useEditionsProgram } from "@/components/providers/EditionsProgramContext"
+import { useWalletBalance } from "@/lib/hooks/useWalletBalance"
 
 export default function MintPage() {
     const { program: editionsControlsProgram } = useEditionsControlProgram()
     const { program: editionsProgram } = useEditionsProgram()
+    const { balance, refreshBalance } = useWalletBalance();
     const wallet = useAnchorWallet()
     const { connection } = useConnection()
     const [numberOfMints, setNumberOfMints] = useState(1)
@@ -45,6 +47,7 @@ export default function MintPage() {
             toast.error("Minting failed. Please check the console for details.")
         } finally {
             setIsMinting(false)
+            await refreshBalance();
         }
     }
 
@@ -71,6 +74,8 @@ export default function MintPage() {
                         <CardTitle className="text-xl font-semibold">Mint NFT</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        <p className="text-sm text-muted-foreground">Mint Price: 0.03 ETH</p>
+                        <p className="text-sm text-muted-foreground">Balance: {balance.toFixed(2)}</p>
                         <Input
                             type="number"
                             placeholder="Number of Mints"

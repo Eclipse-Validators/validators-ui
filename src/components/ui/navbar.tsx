@@ -10,7 +10,7 @@ import { ModeToggle } from "../mode-toggle"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { publicKey } = useWallet()
+  const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === 'dev';
 
   return (
     <nav className="border-b border-border bg-background">
@@ -37,6 +37,11 @@ const Navbar = () => {
               >
                 Mint
               </Link>
+              {isDev && (
+                <Link href="/airdrop" className="text-foreground hover:bg-muted px-3 py-2 rounded-md text-sm font-medium">
+                  Airdrop
+                </Link>
+              )}
               <WalletMultiButton className="!bg-purple-600 hover:!bg-purple-700" />
               <ModeToggle />
             </div>
@@ -66,10 +71,10 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              href="/airdrop"
+              href="/Mint"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
             >
-              Airdrop
+              Mint
             </Link>
             <div className="mt-4">
               <WalletMultiButton className="w-full justify-center !bg-purple-600 hover:!bg-purple-700" />
@@ -77,6 +82,11 @@ const Navbar = () => {
             <div className="flex items-center justify-end space-x-2 p-4">
               <ModeToggle />
             </div>
+            {isDev && (
+              <Link href="/airdrop" className="text-foreground hover:bg-muted block px-3 py-2 rounded-md text-base font-medium">
+                Airdrop
+              </Link>
+            )}
           </div>
         </div>
       )}
