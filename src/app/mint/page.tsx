@@ -27,7 +27,10 @@ export default function MintPage() {
     const handleMint = async () => {
         if (!editionsControlsProgram || !editionsProgram || !wallet?.publicKey)
             return
-
+        if (numberOfMints < 1) {
+            toast.error("Number of mints must be greater than 0")
+            return
+        }
         setIsMinting(true)
         try {
             await mintWithControls({
@@ -54,11 +57,7 @@ export default function MintPage() {
     const handleNumberOfMintsChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        if (Number(e.target.value) < 1) {
-            toast.error("Number of mints must be greater than 0")
-            return
-        }
-        if (Number(e.target.value) > 3) {
+        if (Number(e.target.value) >= 3) {
             toast.error("Number of mints must be less than 3 at a time!")
             return
         }
@@ -81,7 +80,7 @@ export default function MintPage() {
                             placeholder="Number of Mints"
                             value={numberOfMints}
                             onChange={handleNumberOfMintsChange}
-                            min={1}
+                            min={0}
                             className="border-input bg-input"
                         />
                         <Button
