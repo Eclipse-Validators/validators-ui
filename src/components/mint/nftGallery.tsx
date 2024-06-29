@@ -248,7 +248,7 @@ export default function NFTGallery() {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">NFT Gallery</h1>
+                <h1 className="text-2xl font-bold">Validators Gallery</h1>
                 <button
                     onClick={handleRefresh}
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
@@ -259,8 +259,8 @@ export default function NFTGallery() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList>
-                    <TabsTrigger value="owned">Your NFTs</TabsTrigger>
-                    <TabsTrigger value="all">All Collection NFTs</TabsTrigger>
+                    <TabsTrigger value="owned">Your Validators</TabsTrigger>
+                    <TabsTrigger value="all">All Validators</TabsTrigger>
                 </TabsList>
                 <TabsContent value="owned">
                     {ownedNftsData.length === 0 ? (
