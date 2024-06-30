@@ -4,70 +4,70 @@
 
 @layer base {
   :root {
-    --background: 230 20% 95%;  /* Light grayish blue */
-    --foreground: 230 60% 10%;  /* Very dark blue */
+    --background: 230 20% 95%; /* Light grayish blue */
+    --foreground: 230 60% 10%; /* Very dark blue */
 
-    --card: 0 0% 100%;  /* White */
-    --card-foreground: 230 60% 10%;  /* Very dark blue */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 230 60% 10%; /* Very dark blue */
 
-    --popover: 0 0% 100%;  /* White */
-    --popover-foreground: 230 60% 10%;  /* Very dark blue */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 230 60% 10%; /* Very dark blue */
 
-    --primary: 230 100% 7%;  /* Deep blue (#000924) */
-    --primary-foreground: 0 0% 100%;  /* White */
+    --primary: 230 100% 7%; /* Deep blue (#000924) */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 120 100% 88%;  /* Light green (#C4FFC3) */
-    --secondary-foreground: 230 60% 10%;  /* Very dark blue */
+    --secondary: 120 100% 88%; /* Light green (#C4FFC3) */
+    --secondary-foreground: 230 60% 10%; /* Very dark blue */
 
-    --muted: 230 20% 85%;  /* Light grayish blue */
-    --muted-foreground: 230 40% 40%;  /* Grayish blue */
+    --muted: 230 20% 85%; /* Light grayish blue */
+    --muted-foreground: 230 40% 40%; /* Grayish blue */
 
-    --accent: 120 100% 88%;  /* Light green (#C4FFC3) */
-    --accent-foreground: 230 60% 10%;  /* Very dark blue */
+    --accent: 120 100% 88%; /* Light green (#C4FFC3) */
+    --accent-foreground: 230 60% 10%; /* Very dark blue */
 
-    --destructive: 0 100% 50%;  /* Bright red */
-    --destructive-foreground: 0 0% 100%;  /* White */
+    --destructive: 0 100% 50%; /* Bright red */
+    --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 230 20% 80%;  /* Light grayish blue */
-    --input: 230 20% 80%;  /* Light grayish blue */
-    --ring: 230 100% 7%;  /* Deep blue (#000924) */
+    --border: 230 20% 80%; /* Light grayish blue */
+    --input: 230 20% 80%; /* Light grayish blue */
+    --ring: 230 100% 7%; /* Deep blue (#000924) */
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 230 100% 7%;  /* Deep blue (#000924) */
-    --foreground: 0 0% 100%;  /* White */
+    --background: 230 100% 7%; /* Deep blue (#000924) */
+    --foreground: 0 0% 100%; /* White */
 
-    --card: 230 80% 15%;  /* Darker blue */
-    --card-foreground: 0 0% 100%;  /* White */
+    --card: 230 80% 15%; /* Darker blue */
+    --card-foreground: 0 0% 100%; /* White */
 
-    --popover: 230 80% 15%;  /* Darker blue */
-    --popover-foreground: 0 0% 100%;  /* White */
+    --popover: 230 80% 15%; /* Darker blue */
+    --popover-foreground: 0 0% 100%; /* White */
 
-    --primary: 0 0% 100%;  /* White */
-    --primary-foreground: 230 100% 7%;  /* Deep blue (#000924) */
+    --primary: 0 0% 100%; /* White */
+    --primary-foreground: 230 100% 7%; /* Deep blue (#000924) */
 
-    --secondary: 120 100% 88%;  /* Light green (#C4FFC3) */
-    --secondary-foreground: 230 100% 7%;  /* Deep blue (#000924) */
+    --secondary: 120 100% 88%; /* Light green (#C4FFC3) */
+    --secondary-foreground: 230 100% 7%; /* Deep blue (#000924) */
 
-    --muted: 230 40% 20%;  /* Dark grayish blue */
-    --muted-foreground: 230 20% 70%;  /* Light grayish blue */
+    --muted: 230 40% 20%; /* Dark grayish blue */
+    --muted-foreground: 230 20% 70%; /* Light grayish blue */
 
-    --accent: 120 100% 88%;  /* Light green (#C4FFC3) */
-    --accent-foreground: 230 100% 7%;  /* Deep blue (#000924) */
+    --accent: 120 100% 88%; /* Light green (#C4FFC3) */
+    --accent-foreground: 230 100% 7%; /* Deep blue (#000924) */
 
-    --destructive: 0 100% 50%;  /* Bright red */
-    --destructive-foreground: 0 0% 100%;  /* White */
+    --destructive: 0 100% 50%; /* Bright red */
+    --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 230 40% 20%;  /* Dark grayish blue */
-    --input: 230 40% 20%;  /* Dark grayish blue */
-    --ring: 120 100% 88%;  /* Light green (#C4FFC3) */
+    --border: 230 40% 20%; /* Dark grayish blue */
+    --input: 230 40% 20%; /* Dark grayish blue */
+    --ring: 120 100% 88%; /* Light green (#C4FFC3) */
   }
 }
 
 body {
-  background-image: url('/bannerblack.jpg');
+  background-image: url("/bannerblack.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -1,23 +1,29 @@
 "use client"
 
 import React, { useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { Menu, X } from "lucide-react"
-import Image from "next/image"
+
 import { ModeToggle } from "../mode-toggle"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === 'dev';
+  const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
 
   return (
     <nav className="border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Image src="/logo/validatorswordmark.png" alt="Validators Logo" width={150} height={50} />
+            <Image
+              src="/logo/validatorswordmark.png"
+              alt="Validators Logo"
+              width={150}
+              height={50}
+            />
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
@@ -40,7 +46,10 @@ const Navbar = () => {
                 Gallery
               </Link>
               {isDev && (
-                <Link href="/airdrop" className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                <Link
+                  href="/airdrop"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                >
                   Airdrop
                 </Link>
               )}
@@ -85,7 +94,10 @@ const Navbar = () => {
               Gallery
             </Link>
             {isDev && (
-              <Link href="/airdrop" className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted">
+              <Link
+                href="/airdrop"
+                className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              >
                 Airdrop
               </Link>
             )}

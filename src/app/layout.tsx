@@ -74,7 +74,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head />
       <body
         className={cn(
-          "min-h-screen antialiased main-bg bg-cover bg-center bg-no-repeat bg-fixed",
+          "main-bg min-h-screen bg-cover bg-fixed bg-center bg-no-repeat antialiased",
           inter.className
         )}
       >
