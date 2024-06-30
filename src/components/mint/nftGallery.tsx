@@ -29,12 +29,13 @@ function NFTGrid({ nfts, visibleCount, loadMore, loading }: { nfts: NFTData[], v
             </div>
             {visibleCount < nfts.length && (
                 <div className="flex justify-center">
-                    <button
+                    <Button
+                        variant="outline"
                         onClick={loadMore}
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        className="mt-4 px-4 py-2"
                     >
                         Load More
-                    </button>
+                    </Button>
                 </div>
             )}
         </>

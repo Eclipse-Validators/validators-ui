@@ -1,0 +1,31 @@
+.wallet-adapter-button {
+    background-color: hsl(120, 100%, 88%) !important; /* Your accent green */
+    color: hsl(230, 100%, 7%) !important; /* Deep blue for text */
+    transition: background-color 0.3s ease !important;
+  }
+  
+  .wallet-adapter-button:hover {
+    background-color: hsl(120, 100%, 78%) !important; /* Slightly darker on hover */
+  }
+  
+  .wallet-adapter-button:not([disabled]):hover {
+    background-color: hsl(120, 100%, 78%) !important;
+  }
+  
+  /* For the dropdown */
+  .wallet-adapter-dropdown-list {
+    background-color: hsl(230, 80%, 15%) !important; /* Dark blue background */
+  }
+  
+  .wallet-adapter-dropdown-list-item {
+    color: hsl(0, 0%, 100%) !important; /* White text */
+  }
+  
+  .wallet-adapter-dropdown-list-item:hover {
+    background-color: hsl(230, 60%, 30%) !important; /* Lighter blue on hover */
+  }
+
+  .wallet-adapter-modal-title {
+    background-color: hsl(120, 100%, 88%) !important;
+    color: hsl(230, 100%, 7%) !important;
+  }

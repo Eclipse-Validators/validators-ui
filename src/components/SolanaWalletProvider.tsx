@@ -14,6 +14,7 @@ import { clusterApiUrl } from "@solana/web3.js"
 
 // Import Solana wallet styles
 import "@solana/wallet-adapter-react-ui/styles.css"
+// import "../styles/custom-wallet-adapter.css"
 
 import { SnapWalletAdapter } from "@drift-labs/snap-wallet-adapter"
 
