@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { Menu, X } from "lucide-react"
-
+import Image from "next/image"
 import { ModeToggle } from "../mode-toggle"
 
 const Navbar = () => {
@@ -17,22 +17,18 @@ const Navbar = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
-              <span className="bg-gradient-to-r from-purple-500 to-cyan-500 bg-clip-text text-xl font-bold text-transparent">
-                Validators
-              </span>
-            </Link>
+            <Image src="/logo/validatorswordmark.png" alt="Validators Logo" width={150} height={50} />
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
               <Link
-                href="/"
+                href="https://validators.wtf"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 Home
               </Link>
               <Link
-                href="/mint"
+                href="/"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 Mint
@@ -77,7 +73,7 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              href="/mint"
+              href="/"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
             >
               Mint

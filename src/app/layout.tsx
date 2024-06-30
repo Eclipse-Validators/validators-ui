@@ -74,14 +74,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head />
       <body
         className={cn(
-          "min-h-screen bg-background antialiased",
+          "min-h-screen antialiased main-bg bg-cover bg-center bg-no-repeat bg-fixed",
           inter.className
         )}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <SolanaWalletProvider>

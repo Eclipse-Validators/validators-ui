@@ -9,10 +9,10 @@ export const siteConfig: SiteConfig = {
   keywords: ["eclipse", "nft", "solana", "eth", "shadcn/ui"],
   url: {
     base: env.NEXT_PUBLIC_APP_URL,
-    author: "https://rdev.pro",
+    author: "https://validators.wtf",
   },
   links: {
-    github: "https://validators.so",
+    github: "https://validators.wtf",
   },
-  ogImage: `${env.NEXT_PUBLIC_APP_URL}/og.jpg`,
+  ogImage: `${env.NEXT_PUBLIC_APP_URL}/logo/logoblue.png`,
 }
