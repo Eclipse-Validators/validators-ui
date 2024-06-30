@@ -59,7 +59,7 @@ export default function Home() {
       toast.error("Number of mints must be greater than 0");
       return;
     }
-    toast.info("Minting...");
+    toast.info(`Minting ${amount} validator${amount > 1 ? 's' : ''}...`);
     setIsMinting(true);
     try {
       const results = await mintWithControls({
