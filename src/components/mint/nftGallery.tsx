@@ -131,14 +131,25 @@ export default function NFTGallery() {
     }, [fetchNFTMetadata, members, membersLoading, ownedNftsData]);
 
     useEffect(() => {
-        if (activeTab === 'owned') {
-            fetchOwnedNFTs();
-        } else if (activeTab === 'all') {
-            fetchAllNFTs();
-        }
-    }, [activeTab, fetchOwnedNFTs, fetchAllNFTs]);
+        let isMounted = true;
 
-    const handleRefresh = () => {
+        const fetchData = async () => {
+            if (activeTab === 'owned') {
+                await fetchOwnedNFTs();
+            } else if (activeTab === 'all' && allNftsData.length === 0) {
+                await fetchAllNFTs();
+            }
+            if (isMounted) setLoading(false);
+        };
+
+        fetchData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [activeTab, fetchOwnedNFTs, fetchAllNFTs, allNftsData.length]);
+
+    const handleRefresh = useCallback(() => {
         fetchedTokens.current.clear();
         setOwnedNftsData([]);
         setAllNftsData([]);
@@ -151,23 +162,15 @@ export default function NFTGallery() {
         } else {
             fetchAllNFTs();
         }
-    }
+    }, [activeTab, fetchOwnedNFTs, fetchAllNFTs, refreshTokens, refreshMembers]);
 
-    useEffect(() => {
-        if (activeTab === 'owned') {
-            fetchOwnedNFTs();
-        } else if (activeTab === 'all' && allNftsData.length === 0) {
-            fetchAllNFTs();
-        }
-    }, [activeTab, fetchOwnedNFTs, fetchAllNFTs, allNftsData.length]);
-
-    const loadMoreOwned = () => setOwnedVisibleCount(prevCount => prevCount + BATCH_SIZE);
-    const loadMoreAll = () => setAllVisibleCount(prevCount => prevCount + BATCH_SIZE);
+    const loadMoreOwned = useCallback(() => setOwnedVisibleCount(prevCount => prevCount + BATCH_SIZE), []);
+    const loadMoreAll = useCallback(() => setAllVisibleCount(prevCount => prevCount + BATCH_SIZE), []);
 
     if (loading && ownedNftsData.length === 0 && allNftsData.length === 0) {
         return (
             <div className="space-y-4">
-                <h1 className="text-2xl font-bold">Validators Gallery</h1>
+                <h1 className="text-2xl font-bold ">Validators Gallery</h1>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {Array.from({ length: BATCH_SIZE }).map((_, index) => (
                         <Card key={`skeleton-${index}`} className="bg-card overflow-hidden">
