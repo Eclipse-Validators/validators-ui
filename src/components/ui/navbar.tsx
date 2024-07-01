@@ -76,7 +76,7 @@ const Navbar = () => {
         <div className="md:hidden">
           <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
             <Link
-              href="/"
+              href="https://validators.wtf"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
             >
               Home
