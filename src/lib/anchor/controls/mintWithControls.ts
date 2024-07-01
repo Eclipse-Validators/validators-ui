@@ -162,7 +162,6 @@ export const mintWithControls = async ({
     const txns = await wallet.signAllTransactions(txs)
 
     const promises = txns.map((item, i) => {
-        console.log('transaction', i, item, item.serialize().toString('base64'))
         return sendAndConfirmRawTransaction(connection, item.serialize())
     })
 
