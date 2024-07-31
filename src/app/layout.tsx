@@ -11,6 +11,7 @@ import { EditionsControlProgramProvider } from "@/components/providers/EditionsC
 import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext"
 import SolanaWalletProvider from "@/components/SolanaWalletProvider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Footer } from "@/components/footer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: "@_rdev7",
+    creator: "@Validators_",
   },
   icons: {
     icon: "/favicon.ico",
@@ -94,6 +95,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   </EditionsControlProgramProvider>
                 </EditionsProgramProvider>
               </main>
+              <Footer />
               <Toaster />
             </div>
           </SolanaWalletProvider>
