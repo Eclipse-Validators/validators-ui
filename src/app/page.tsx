@@ -6,6 +6,7 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useTheme } from "next-themes";
 import { toast, Toaster } from "sonner";
 import { PlusIcon, MinusIcon } from "lucide-react";
+import { useLogger } from 'next-axiom';
 
 import { mintWithControls } from "@/lib/anchor/controls/mintWithControls";
 import { useWalletBalance } from "@/lib/hooks/useWalletBalance";
@@ -28,6 +29,7 @@ function InfoBox({ label, value }: { label: string; value: string | number }) {
 }
 
 export default function Home() {
+  const log = useLogger();
   const { program: editionsControlsProgram } = useEditionsControlProgram();
   const { program: editionsProgram } = useEditionsProgram();
   const { balance, refreshBalance } = useWalletBalance();
@@ -79,6 +81,12 @@ export default function Home() {
       ]);
       toast.success(`Successfully minted ${amount} validator${amount > 1 ? 's' : ''}!`);
     } catch (error) {
+      log.error("Minting failed:", {
+        error: error,
+        message: (error as Error)?.message ?? "Unknown error",
+        wallet: wallet?.publicKey.toBase58(),
+        amount: amount,
+      });
       console.error("Minting failed:", error);
       toast.error("Minting failed. Please check the console for details.");
     } finally {
