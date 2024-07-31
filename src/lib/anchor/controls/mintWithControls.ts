@@ -50,8 +50,8 @@ export const mintWithControls = async ({
 }: IExecutorParams<IMintWithControls>) => {
     const { phaseIndex, editionsId, numberOfMints } = params
     const editions = new PublicKey(editionsId)
-
-    const editionsData = await connection.getAccountInfo(editions)
+    const eclipseConnection = new Connection(process.env.NEXT_PUBLIC_NETWORK ?? "https://mainnetbeta-rpc.eclipse.xyz")
+    const editionsData = await eclipseConnection.getAccountInfo(editions)
 
     if (!editionsData) {
         throw Error("Editions not found")
@@ -65,7 +65,7 @@ export const mintWithControls = async ({
     const editionsControlsPda = getEditionsControlsPda(editions)
 
     const editionsControlsData =
-        await connection.getAccountInfo(editionsControlsPda)
+        await eclipseConnection.getAccountInfo(editionsControlsPda)
 
     const editionsControlsObj = decodeEditionsControls(editionsControlsProgram)(
         editionsControlsData?.data,
@@ -153,7 +153,7 @@ export const mintWithControls = async ({
 
         remainingMints -= MAX_MINTS_PER_TRANSACTION
         const tx = new Transaction().add(...instructions)
-        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash
+        tx.recentBlockhash = (await eclipseConnection.getLatestBlockhash()).blockhash
         tx.feePayer = wallet.publicKey
         tx.sign(...mints, ...members)
         txs.push(tx)
@@ -162,7 +162,7 @@ export const mintWithControls = async ({
     const txns = await wallet.signAllTransactions(txs)
 
     const promises = txns.map((item, i) => {
-        return sendAndConfirmRawTransaction(connection, item.serialize())
+        return sendAndConfirmRawTransaction(eclipseConnection, item.serialize())
     })
 
     await Promise.all(promises)
