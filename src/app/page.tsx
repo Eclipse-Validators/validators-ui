@@ -18,6 +18,7 @@ import { useEditionsProgram } from "@/components/providers/EditionsProgramContex
 import MintGallery from "@/components/mint/mintGallery";
 import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda";
 import { PublicKey, SendTransactionError } from "@solana/web3.js";
+import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
 
 function InfoBox({ label, value }: { label: string; value: string | number }) {
   return (
@@ -65,12 +66,14 @@ export default function Home() {
       toast.error("Insufficient balance!", {
         description: `You need ${(0.02 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
         action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
+        closeButton: true,
         duration: 10000,
       });
       return;
     }
     toast.info(`Minting ${amount} validator${amount > 1 ? 's' : ''}...`);
     setIsMinting(true);
+    let errMessage = "";
     try {
       const results = await mintWithControls({
         wallet: wallet as Wallet,
@@ -90,6 +93,7 @@ export default function Home() {
       toast.success(`Successfully minted ${amount} validator${amount > 1 ? 's' : ''}!`);
     } catch (error) {
       if (error instanceof Error) {
+        errMessage = error.message;
         if (error.message.includes('rejected the request')) {
           toast.error("Cancelled transaction!");
           return;
@@ -115,7 +119,9 @@ export default function Home() {
 
       }
       console.error("Minting failed:", error);
-      toast.error("Minting failed. Please check the console for details.");
+      toast.error("Minting failed!", {
+        description: errMessage !== "" ? errMessage : "Please check the console for details.",
+      });
     } finally {
       setIsMinting(false);
       await refreshBalance();
