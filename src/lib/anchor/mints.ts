@@ -51,7 +51,7 @@ export const decodeMint2022 = (
 export const decodeMint = (buffer: Buffer, pubkey: PublicKey) => {
   try {
     // console.log({buffer});
-    const mint = MintLayout.decode(buffer)
+    const mint = MintLayout.decode(Uint8Array.from(buffer))
 
     return {
       item: mint ?? null, //metadata ?? null,

@@ -81,12 +81,18 @@ export default function Home() {
       ]);
       toast.success(`Successfully minted ${amount} validator${amount > 1 ? 's' : ''}!`);
     } catch (error) {
-      log.error("Minting failed:", {
-        error: error,
-        message: (error as Error)?.message ?? "Unknown error",
-        wallet: wallet?.publicKey.toBase58(),
-        amount: amount,
-      });
+      if (error instanceof Error) {
+        if (error.message.includes('rejected the request')) {
+          console.log('rejected the request');
+          return;
+        }
+        log.error("Minting failed:", {
+          error: error,
+          message: error.message,
+          wallet: wallet?.publicKey.toBase58(),
+          amount: amount,
+        });
+      }
       console.error("Minting failed:", error);
       toast.error("Minting failed. Please check the console for details.");
     } finally {
