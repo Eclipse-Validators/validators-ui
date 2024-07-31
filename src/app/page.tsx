@@ -17,7 +17,7 @@ import { useEditionsControlProgram } from "@/components/providers/EditionsContro
 import { useEditionsProgram } from "@/components/providers/EditionsProgramContext";
 import MintGallery from "@/components/mint/mintGallery";
 import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, SendTransactionError } from "@solana/web3.js";
 
 function InfoBox({ label, value }: { label: string; value: string | number }) {
   return (
@@ -83,15 +83,28 @@ export default function Home() {
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes('rejected the request')) {
-          console.log('rejected the request');
+          toast.error("Cancelled transaction!");
           return;
         }
-        log.error("Minting failed:", {
-          error: error,
-          message: error.message,
-          wallet: wallet?.publicKey.toBase58(),
-          amount: amount,
-        });
+        if (error instanceof SendTransactionError) {
+          const logs = error.getLogs(connection);
+          log.error("Minting failed:", {
+            error: error,
+            message: error.message,
+            logs: logs,
+            wallet: wallet?.publicKey.toBase58(),
+            amount: amount,
+          });
+        }
+        else {
+          log.error("Minting failed:", {
+            error: error,
+            message: error.message,
+            wallet: wallet?.publicKey.toBase58(),
+            amount: amount,
+          });
+        }
+
       }
       console.error("Minting failed:", error);
       toast.error("Minting failed. Please check the console for details.");
