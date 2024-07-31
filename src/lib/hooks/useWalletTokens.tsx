@@ -6,7 +6,7 @@ import { PublicKey } from "@solana/web3.js"
 interface TokenInfo {
   mint: string
   amount: number
-  tokenAccount: string
+  tokenAccount: string,
 }
 
 export function useWalletTokens() {
