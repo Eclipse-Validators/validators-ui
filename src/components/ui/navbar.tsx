@@ -34,6 +34,12 @@ const Navbar = () => {
                 Home
               </Link>
               <Link
+                href="https://bridge.validators.wtf"
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              >
+                Bridge
+              </Link>
+              <Link
                 href="/"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
@@ -80,6 +86,12 @@ const Navbar = () => {
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
             >
               Home
+            </Link>
+            <Link
+              href="https://bridge.validators.wtf"
+              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              Bridge
             </Link>
             <Link
               href="/"
