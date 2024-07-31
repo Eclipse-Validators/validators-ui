@@ -63,6 +63,7 @@ export default function Home() {
     }
     if (balance < 0.02 * amount) {
       toast.error("Insufficient balance!", {
+        description: `You need ${(0.02 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
         action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
         duration: 10000,
       });
