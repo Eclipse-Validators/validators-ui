@@ -61,6 +61,13 @@ export default function Home() {
       toast.error("Number of mints must be greater than 0");
       return;
     }
+    if (balance < 0.02 * amount) {
+      toast.error("Insufficient balance!", {
+        action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
+        duration: 10000,
+      });
+      return;
+    }
     toast.info(`Minting ${amount} validator${amount > 1 ? 's' : ''}...`);
     setIsMinting(true);
     try {
