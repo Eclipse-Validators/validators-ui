@@ -62,8 +62,18 @@ const TokenCard: React.FC<{
           />
         )}
         <div>
-          <p>Balance: {token.amount}</p>
-          <p>Symbol: {token.metadata?.symbol || "N/A"}</p>
+          {token.decimals > 0 ? <p>Balance: {token.amount}</p> : null}
+          {token.decimals === 0 ? (
+            <p>
+              <b>Address:</b>{" "}
+              <code>
+                {token.mint.slice(0, 4) + "..." + token.mint.slice(-4)}
+              </code>
+            </p>
+          ) : null}
+          <p>
+            <b>Symbol:</b> {token.metadata?.symbol || "N/A"}
+          </p>
           {token.decimals > 0 && (
             <Input
               type="number"
@@ -124,7 +134,7 @@ const TransferTokens: React.FC = () => {
   );
   const [destinationAddress, setDestinationAddress] = useState("");
   const [isValidAddress, setIsValidAddress] = useState(false);
-  const [activeTab, setActiveTab] = useState("token2022");
+  const [activeTab, setActiveTab] = useState("nfts");
   const [isTransferDisabled, setIsTransferDisabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -387,7 +397,7 @@ const TransferTokens: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-4 text-2xl font-bold">Transfer Tokens</h1>
+      <h1 className="mb-4 text-2xl font-bold">Transfer</h1>
       <div className="flex flex-col items-center space-y-4">
         <label htmlFor="destinationAddress" className="text-sm font-medium">
           Destination Address
@@ -423,7 +433,7 @@ const TransferTokens: React.FC = () => {
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="token2022">Token2022</TabsTrigger>
+          <TabsTrigger value="nfts">NFTs</TabsTrigger>
           <TabsTrigger value="spl">SPL Tokens</TabsTrigger>
         </TabsList>
         <div className="mt-4 relative">
@@ -440,7 +450,7 @@ const TransferTokens: React.FC = () => {
             {renderTokenCards(splTokens)}
           </div>
         </TabsContent>
-        <TabsContent value="token2022">
+        <TabsContent value="nfts">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {renderTokenCards(token2022Tokens)}
           </div>
