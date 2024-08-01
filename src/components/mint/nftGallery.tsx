@@ -1,18 +1,22 @@
 "use client"
 
-import React, { useState, useCallback } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "../ui/button"
-import { Icons } from "../icons"
-import { useGroupMembers } from "@/components/providers/GroupMembersContext"
+import React, { useCallback, useState } from "react"
+import { useWallet } from "@solana/wallet-adapter-react"
+
 import { useWalletTokens } from "@/lib/hooks/useWalletTokens"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useGroupMembers } from "@/components/providers/GroupMembersContext"
+
+import { Icons } from "../icons"
+import { Button } from "../ui/button"
+import { AllNFTGallery } from "./allGallery"
 import { NFTData } from "./nftCard"
 import { OwnedNFTGallery } from "./ownedGallery"
-import { AllNFTGallery } from "./allGallery"
 
 export default function NFTGallery() {
   const [activeTab, setActiveTab] = useState("owned")
   const { refreshMembers } = useGroupMembers()
+  const { publicKey } = useWallet()
   const { refreshTokens } = useWalletTokens()
   const [ownedNftsData, setOwnedNftsData] = useState<NFTData[]>([])
 
@@ -37,7 +41,14 @@ export default function NFTGallery() {
           <TabsTrigger value="all">All Validators</TabsTrigger>
         </TabsList>
         <TabsContent value="owned">
-          <OwnedNFTGallery setOwnedNftsData={setOwnedNftsData} ownedNftsData={ownedNftsData} />
+          {publicKey ? (
+            <OwnedNFTGallery
+              setOwnedNftsData={setOwnedNftsData}
+              ownedNftsData={ownedNftsData}
+            />
+          ) : (
+            "Connect wallet to view your nfts"
+          )}
         </TabsContent>
         <TabsContent value="all">
           <AllNFTGallery ownedNftsData={ownedNftsData} />
