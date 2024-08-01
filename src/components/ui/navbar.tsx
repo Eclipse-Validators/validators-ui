@@ -74,7 +74,7 @@ const Navbar = () => {
                     Transfer
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => handleDropdownItemClick("/viewer")}>
-                    Wallet Peeker
+                    Wallet Peek
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
