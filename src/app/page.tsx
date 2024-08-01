@@ -67,15 +67,15 @@ export default function Home() {
       toast.error("Number of mints must be greater than 0");
       return;
     }
-    if (balance < 0.0201 * amount) {
-      toast.error("Insufficient balance!", {
-        description: `You need ${(0.0201 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
-        action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
-        closeButton: true,
-        duration: 10000,
-      });
-      return;
-    }
+    // if (balance < 0.0201 * amount) {
+    //   toast.error("Insufficient balance!", {
+    //     description: `You need ${(0.0201 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
+    //     action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
+    //     closeButton: true,
+    //     duration: 10000,
+    //   });
+    //   return;
+    // }
     toast.info(`Minting ${amount} validator${amount > 1 ? 's' : ''}...`);
     setIsMinting(true);
     let errMessage = "";
@@ -104,7 +104,18 @@ export default function Home() {
           return;
         }
         if (error instanceof SendTransactionError) {
-          const logs = error.getLogs(connection);
+          const logs = error?.logs ?? await error.getLogs(connection) ?? [];
+          const insufficientLamportsLog = logs.find(log => log.includes("Transfer: insufficient lamports"));
+          if (insufficientLamportsLog) {
+            const match = insufficientLamportsLog.match(/Transfer: insufficient lamports (\d+), need (\d+)/);
+            if (match) {
+              const [, have, need] = match;
+              const haveSol = Number(have) / 1e9;
+              const needSol = Number(need) / 1e9;
+              const difference = needSol - haveSol;
+              errMessage = `Insufficient balance. You need ${difference.toFixed(9)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`;
+            }
+          }
           log.error("Minting failed:", {
             error: error,
             message: error.message,
