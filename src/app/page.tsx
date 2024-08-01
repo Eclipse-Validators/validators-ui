@@ -67,15 +67,15 @@ export default function Home() {
       toast.error("Number of mints must be greater than 0");
       return;
     }
-    // if (balance < 0.0201 * amount) {
-    //   toast.error("Insufficient balance!", {
-    //     description: `You need ${(0.0201 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
-    //     action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
-    //     closeButton: true,
-    //     duration: 10000,
-    //   });
-    //   return;
-    // }
+    if (balance < 0.0201 * amount) {
+      toast.error("Insufficient balance!", {
+        description: `You need ${(0.0201 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
+        action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
+        closeButton: true,
+        duration: 10000,
+      });
+      return;
+    }
     toast.info(`Minting ${amount} validator${amount > 1 ? 's' : ''}...`);
     setIsMinting(true);
     let errMessage = "";
