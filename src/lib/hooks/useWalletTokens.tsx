@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
+
 import { FetchedTokenInfo } from "../types"
 import { fetchTokenInfo } from "../utils"
 
@@ -27,7 +28,12 @@ export function useWalletTokens(fetchTokenMetadata: boolean = false) {
           publicKey,
           { programId: TOKEN_2022_PROGRAM_ID }
         )
-        const tokenInfo = await fetchTokenInfo(connection, tokenAccounts.value, TOKEN_2022_PROGRAM_ID, fetchTokenMetadata)
+        const tokenInfo = await fetchTokenInfo(
+          connection,
+          tokenAccounts.value,
+          TOKEN_2022_PROGRAM_ID,
+          fetchTokenMetadata
+        )
         setTokens(tokenInfo)
       } catch (err) {
         console.error("Error fetching wallet tokens:", err)

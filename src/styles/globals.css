@@ -83,12 +83,15 @@ body {
   }
 }
 
-
 .wallet-adapter-button-trigger {
   background-color: hsl(120, 100%, 88%) !important; /* Your accent green */
   color: hsl(230, 100%, 7%) !important; /* Deep blue for text */
 }
 
 .wallet-adapter-button-trigger:hover {
-  background-color: hsl(120, 100%, 78%) !important; /* Darker accent green on hover */
+  background-color: hsl(
+    120,
+    100%,
+    78%
+  ) !important; /* Darker accent green on hover */
 }

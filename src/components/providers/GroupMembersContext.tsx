@@ -74,9 +74,9 @@ export function GroupMembersProvider({
       const groupMembers = fetchedMembers.map((member) => ({
         member: member.member,
         mint: member.mint,
-        owner: member.owner
+        owner: member.owner,
       }))
-      console.log('groupMembers', groupMembers);
+      console.log("groupMembers", groupMembers)
       setMembers(groupMembers)
       const newHashlist = new Set(
         fetchedMembers

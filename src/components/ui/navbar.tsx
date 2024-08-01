@@ -6,15 +6,16 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { ChevronDown, Menu, X } from "lucide-react"
 
-import { ModeToggle } from "../mode-toggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+import { ModeToggle } from "../mode-toggle"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -65,15 +66,22 @@ const Navbar = () => {
               >
                 Gallery
               </Link>
-              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+              <DropdownMenu
+                open={isDropdownOpen}
+                onOpenChange={setIsDropdownOpen}
+              >
                 <DropdownMenuTrigger className="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
                   Utilities <ChevronDown className="ml-1 h-4 w-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onSelect={() => handleDropdownItemClick("/transfer")}>
+                  <DropdownMenuItem
+                    onSelect={() => handleDropdownItemClick("/transfer")}
+                  >
                     Transfer
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleDropdownItemClick("/viewer")}>
+                  <DropdownMenuItem
+                    onSelect={() => handleDropdownItemClick("/viewer")}
+                  >
                     Wallet Peek
                   </DropdownMenuItem>
                 </DropdownMenuContent>
