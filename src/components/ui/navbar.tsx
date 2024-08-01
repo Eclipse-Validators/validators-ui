@@ -67,7 +67,7 @@ const Navbar = () => {
               </Link>
               <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                 <DropdownMenuTrigger className="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
-                  More <ChevronDown className="ml-1 h-4 w-4" />
+                  Utilities <ChevronDown className="ml-1 h-4 w-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem onSelect={() => handleDropdownItemClick("/transfer")}>
