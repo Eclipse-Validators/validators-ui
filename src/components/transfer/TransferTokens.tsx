@@ -300,7 +300,7 @@ const TransferTokens: React.FC = () => {
               label: "View Transactions",
               onClick: () =>
                 window.open(
-                  `https://${process.env.NEXT_PUBLIC_EXPLORER!}/tx/${signatures[0]}`,
+                  `${process.env.NEXT_PUBLIC_EXPLORER!}/tx/${signatures[0]}`,
                   "_blank"
                 ),
             },
