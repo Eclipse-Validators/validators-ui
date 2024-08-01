@@ -37,6 +37,7 @@ export async function getGroupMembers(
     const membersDecoded = members.map((item) => ({
       member: item.pubkey.toBase58(),
       mint: decodeMember2022(item.account, item.pubkey)?.item?.mint.toBase58(),
+      owner: item.account.owner.toBase58()
     }))
 
     return membersDecoded

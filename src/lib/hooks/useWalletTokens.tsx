@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react"
 import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { PublicKey } from "@solana/web3.js"
+import { FetchedTokenInfo } from "../types"
+import { fetchTokenInfo } from "../utils"
 
-interface TokenInfo {
-  mint: string
-  amount: number
-  tokenAccount: string,
-}
-
-export function useWalletTokens() {
-  const [tokens, setTokens] = useState<TokenInfo[]>([])
+export function useWalletTokens(fetchTokenMetadata: boolean = false) {
+  const [tokens, setTokens] = useState<FetchedTokenInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { connection } = useConnection()
@@ -32,13 +27,7 @@ export function useWalletTokens() {
           publicKey,
           { programId: TOKEN_2022_PROGRAM_ID }
         )
-
-        const tokenInfo = tokenAccounts.value.map((account) => ({
-          mint: account.account.data.parsed.info.mint,
-          amount: account.account.data.parsed.info.tokenAmount.uiAmount,
-          tokenAccount: account.pubkey.toBase58(),
-        }))
-
+        const tokenInfo = await fetchTokenInfo(connection, tokenAccounts.value, TOKEN_2022_PROGRAM_ID, fetchTokenMetadata)
         setTokens(tokenInfo)
       } catch (err) {
         console.error("Error fetching wallet tokens:", err)
@@ -49,7 +38,7 @@ export function useWalletTokens() {
     }
 
     fetchTokens()
-  }, [connection, publicKey])
+  }, [connection, publicKey, fetchTokenMetadata])
 
   const refreshTokens = () => {
     setLoading(true)

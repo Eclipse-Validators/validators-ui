@@ -18,6 +18,7 @@ import { useEditionsProgram } from "./EditionsProgramContext"
 interface GroupMember {
   member: string
   mint?: string
+  owner?: string
 }
 
 interface GroupMembersContextType {
@@ -73,7 +74,9 @@ export function GroupMembersProvider({
       const groupMembers = fetchedMembers.map((member) => ({
         member: member.member,
         mint: member.mint,
+        owner: member.owner
       }))
+      console.log('groupMembers', groupMembers);
       setMembers(groupMembers)
       const newHashlist = new Set(
         fetchedMembers

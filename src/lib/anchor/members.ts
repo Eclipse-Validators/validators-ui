@@ -23,7 +23,6 @@ export const decodeMember2022 = (
         mint: new PublicKey(accountInfo.data.subarray(12, 12 + 32)),
         group: new PublicKey(accountInfo.data.subarray(44, 44 + 32)),
       },
-
       pubkey,
     }
   } catch (e) {

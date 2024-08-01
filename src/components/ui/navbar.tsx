@@ -3,15 +3,29 @@
 import React, { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ChevronDown } from "lucide-react"
 
 import { ModeToggle } from "../mode-toggle"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
+  const router = useRouter()
+
+  const handleDropdownItemClick = (href: string) => {
+    setIsDropdownOpen(false)
+    router.push(href)
+  }
 
   return (
     <nav className="border-b border-border bg-background">
@@ -51,6 +65,19 @@ const Navbar = () => {
               >
                 Gallery
               </Link>
+              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                <DropdownMenuTrigger className="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
+                  More <ChevronDown className="ml-1 h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onSelect={() => handleDropdownItemClick("/transfer")}>
+                    Transfer
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleDropdownItemClick("/viewer")}>
+                    Wallet Peeker
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               {isDev && (
                 <Link
                   href="/airdrop"
@@ -84,31 +111,50 @@ const Navbar = () => {
             <Link
               href="https://validators.wtf"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              onClick={() => setIsOpen(false)}
             >
               Home
             </Link>
             <Link
               href="https://bridge.validators.wtf"
-              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              onClick={() => setIsOpen(false)}
             >
               Bridge
             </Link>
             <Link
               href="/"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              onClick={() => setIsOpen(false)}
             >
               Mint
             </Link>
             <Link
               href="/gallery"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              onClick={() => setIsOpen(false)}
             >
               Gallery
+            </Link>
+            <Link
+              href="/transfer"
+              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              onClick={() => setIsOpen(false)}
+            >
+              Transfer
+            </Link>
+            <Link
+              href="/viewer"
+              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              onClick={() => setIsOpen(false)}
+            >
+              Wallet Peek
             </Link>
             {isDev && (
               <Link
                 href="/airdrop"
                 className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+                onClick={() => setIsOpen(false)}
               >
                 Airdrop
               </Link>
