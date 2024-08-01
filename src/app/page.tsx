@@ -205,9 +205,9 @@ export default function Home() {
                 className="w-1/2"
                 onClick={() => handleMint(numberOfMints)}
                 variant="default"
-                disabled={!wallet?.publicKey || isMinting}
+                disabled={!wallet?.publicKey || isMinting || remainingMints < numberOfMints || remainingMints === 0}
               >
-                {isMinting ? "Minting..." : `Mint ${numberOfMints}`}
+                {remainingMints === 0 ? "Sold Out!" : isMinting ? "Minting..." : `Mint ${numberOfMints}`}
               </Button>
             </div>
           </CardContent>
