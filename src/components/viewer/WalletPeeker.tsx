@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useState } from "react"
+import React, { KeyboardEvent, useEffect, useState } from "react"
 
 import { useAddressTokens2022 } from "@/lib/hooks/useAddressTokens2022"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,8 @@ export function WalletPeeker() {
 
   const handleSearch = () => {
     setSearchedAddress(address)
+    const queryParams = new URLSearchParams(window.location.search)
+    queryParams.set("wallet", address)
   }
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -20,6 +22,16 @@ export function WalletPeeker() {
       handleSearch()
     }
   }
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const wallet = queryParams.get("wallet")
+
+    if (wallet) {
+      setAddress(wallet)
+      setSearchedAddress(wallet)
+    }
+  }, [])
 
   return (
     <div className="space-y-4">
