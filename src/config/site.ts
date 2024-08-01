@@ -1,6 +1,6 @@
-import { SiteConfig } from "@/types"
+import { SiteConfig } from "@/types";
 
-import { env } from "@/env.mjs"
+import { env } from "@/env.mjs";
 
 export const siteConfig: SiteConfig = {
   name: "Validators - Eclipse",
@@ -15,4 +15,4 @@ export const siteConfig: SiteConfig = {
     github: "https://validators.wtf",
   },
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/logo/logoblue.png`,
-}
+};

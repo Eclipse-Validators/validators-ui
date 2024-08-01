@@ -1,26 +1,26 @@
-import { useState } from "react"
-import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
+import { useState } from "react";
+import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 
-import { Card, CardContent } from "../ui/card"
+import { Card, CardContent } from "../ui/card";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../ui/collapsible"
-import { Skeleton } from "../ui/skeleton"
+} from "../ui/collapsible";
+import { Skeleton } from "../ui/skeleton";
 
 export interface Attribute {
-  trait_type: string
-  value: string | number
+  trait_type: string;
+  value: string | number;
 }
 
 export interface NFTData {
-  address: string
+  address: string;
   metadata?: {
-    name: string
-    image: string
-    attributes?: Attribute[]
-  }
+    name: string;
+    image: string;
+    attributes?: Attribute[];
+  };
 }
 
 export function AttributesList({ attributes }: { attributes: Attribute[] }) {
@@ -33,7 +33,7 @@ export function AttributesList({ attributes }: { attributes: Attribute[] }) {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 export function NFTCard({
@@ -41,15 +41,15 @@ export function NFTCard({
   index,
   loading,
 }: {
-  nft: NFTData
-  index: number
-  loading: boolean
+  nft: NFTData;
+  index: number;
+  loading: boolean;
 }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const getExplorerUrl = (address: string) => {
-    return `${process.env.NEXT_PUBLIC_EXPLORER ?? "https://explorer.dev.eclipsenetwork.xyz"}/address/${address}`
-  }
+    return `${process.env.NEXT_PUBLIC_EXPLORER ?? "https://explorer.dev.eclipsenetwork.xyz"}/address/${address}`;
+  };
 
   if (loading) {
     return (
@@ -62,7 +62,7 @@ export function NFTCard({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -117,5 +117,5 @@ export function NFTCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

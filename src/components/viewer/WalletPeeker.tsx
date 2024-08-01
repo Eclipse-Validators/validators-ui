@@ -1,42 +1,45 @@
-import React, { KeyboardEvent, useEffect, useState } from "react"
+import React, { KeyboardEvent, useEffect, useState } from "react";
 
-import { useAddressTokens2022 } from "@/lib/hooks/useAddressTokens2022"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { NFTCard, NFTData } from "@/components/mint/nftCard"
+import { useAddressTokens2022 } from "@/lib/hooks/useAddressTokens2022";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { NFTCard, NFTData } from "@/components/mint/nftCard";
 
 export function WalletPeeker() {
-  const [address, setAddress] = useState("")
-  const [searchedAddress, setSearchedAddress] = useState<string | null>(null)
-  const { tokens, loading, error } = useAddressTokens2022(searchedAddress, true)
+  const [address, setAddress] = useState("");
+  const [searchedAddress, setSearchedAddress] = useState<string | null>(null);
+  const { tokens, loading, error } = useAddressTokens2022(
+    searchedAddress,
+    true
+  );
 
   const handleSearch = () => {
-    setSearchedAddress(address)
-    const queryParams = new URLSearchParams(window.location.search)
-    queryParams.set("wallet", address)
+    setSearchedAddress(address);
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set("wallet", address);
     window.history.pushState(
       {},
       "",
       `${window.location.pathname}?${queryParams.toString()}`
-    )
-  }
+    );
+  };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch()
+      handleSearch();
     }
-  }
+  };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search)
-    const wallet = queryParams.get("wallet")
+    const queryParams = new URLSearchParams(location.search);
+    const wallet = queryParams.get("wallet");
 
     if (wallet) {
-      setAddress(wallet)
-      setSearchedAddress(wallet)
+      setAddress(wallet);
+      setSearchedAddress(wallet);
     }
-  }, [])
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -112,5 +115,5 @@ export function WalletPeeker() {
         </Card>
       )}
     </div>
-  )
+  );
 }

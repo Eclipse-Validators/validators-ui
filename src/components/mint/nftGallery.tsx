@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import React, { useCallback, useState } from "react"
-import { useWallet } from "@solana/wallet-adapter-react"
+import React, { useCallback, useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 
-import { useWalletTokens } from "@/lib/hooks/useWalletTokens"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useGroupMembers } from "@/components/providers/GroupMembersContext"
+import { useWalletTokens } from "@/lib/hooks/useWalletTokens";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGroupMembers } from "@/components/providers/GroupMembersContext";
 
-import { Icons } from "../icons"
-import { Button } from "../ui/button"
-import { AllNFTGallery } from "./allGallery"
-import { NFTData } from "./nftCard"
-import { OwnedNFTGallery } from "./ownedGallery"
+import { Icons } from "../icons";
+import { Button } from "../ui/button";
+import { AllNFTGallery } from "./allGallery";
+import { NFTData } from "./nftCard";
+import { OwnedNFTGallery } from "./ownedGallery";
 
 export default function NFTGallery() {
-  const [activeTab, setActiveTab] = useState("owned")
-  const { refreshMembers } = useGroupMembers()
-  const { publicKey } = useWallet()
-  const { refreshTokens } = useWalletTokens()
-  const [ownedNftsData, setOwnedNftsData] = useState<NFTData[]>([])
+  const [activeTab, setActiveTab] = useState("owned");
+  const { refreshMembers } = useGroupMembers();
+  const { publicKey } = useWallet();
+  const { refreshTokens } = useWalletTokens();
+  const [ownedNftsData, setOwnedNftsData] = useState<NFTData[]>([]);
 
   const handleRefresh = useCallback(() => {
-    refreshTokens()
-    refreshMembers()
-    setOwnedNftsData([])
-  }, [refreshTokens, refreshMembers])
+    refreshTokens();
+    refreshMembers();
+    setOwnedNftsData([]);
+  }, [refreshTokens, refreshMembers]);
 
   return (
     <div className="space-y-4">
@@ -55,5 +55,5 @@ export default function NFTGallery() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

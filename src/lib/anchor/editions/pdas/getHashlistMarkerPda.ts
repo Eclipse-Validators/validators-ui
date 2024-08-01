@@ -1,6 +1,6 @@
-import { PublicKey } from "@solana/web3.js"
+import { PublicKey } from "@solana/web3.js";
 
-import { PROGRAM_ID_EDITIONS } from "../constants"
+import { PROGRAM_ID_EDITIONS } from "../constants";
 
 export const getHashlistMarkerPda = (
   editionsDeployment: PublicKey,
@@ -13,5 +13,5 @@ export const getHashlistMarkerPda = (
       mint.toBuffer(),
     ],
     new PublicKey(PROGRAM_ID_EDITIONS)
-  )
-}
+  );
+};

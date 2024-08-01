@@ -1,22 +1,22 @@
-import "@/styles/globals.css"
+import "@/styles/globals.css";
 
-import type { Metadata, Viewport } from "next"
-import { Inter } from "next/font/google"
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 
-import { siteConfig } from "@/config/site"
-import { cn } from "@/lib/utils"
-import Navbar from "@/components/ui/navbar"
-import { Toaster } from "@/components/ui/sonner"
-import { Footer } from "@/components/footer"
-import { EditionsControlProgramProvider } from "@/components/providers/EditionsControlProgramContext"
-import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext"
-import SolanaWalletProvider from "@/components/SolanaWalletProvider"
-import { ThemeProvider } from "@/components/theme-provider"
+import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
+import Navbar from "@/components/ui/navbar";
+import { Toaster } from "@/components/ui/sonner";
+import { Footer } from "@/components/footer";
+import { EditionsControlProgramProvider } from "@/components/providers/EditionsControlProgramContext";
+import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext";
+import SolanaWalletProvider from "@/components/SolanaWalletProvider";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 interface RootLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export const metadata: Metadata = {
@@ -60,14 +60,14 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-}
+};
 
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
-}
+};
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
@@ -102,5 +102,5 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

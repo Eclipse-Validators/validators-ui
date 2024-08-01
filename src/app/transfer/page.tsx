@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import TransferTokens from "@/components/transfer/TransferTokens"
+import TransferTokens from "@/components/transfer/TransferTokens";
 
 export default function TransferPage() {
   return (
@@ -9,5 +9,5 @@ export default function TransferPage() {
         <TransferTokens />
       </main>
     </div>
-  )
+  );
 }

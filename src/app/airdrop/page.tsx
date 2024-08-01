@@ -1,11 +1,11 @@
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
 
-import AirdropPage from "@/components/dev/airdropPage"
+import AirdropPage from "@/components/dev/airdropPage";
 
 export default function AirdropRoute() {
   if (process.env.NEXT_PUBLIC_ENVIRONMENT !== "dev") {
-    redirect("/")
+    redirect("/");
   }
 
-  return <AirdropPage />
+  return <AirdropPage />;
 }

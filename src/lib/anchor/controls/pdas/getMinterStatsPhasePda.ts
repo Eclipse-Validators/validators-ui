@@ -1,7 +1,7 @@
-import { PublicKey } from "@solana/web3.js"
-import { toBufferLE } from "bigint-buffer"
+import { PublicKey } from "@solana/web3.js";
+import { toBufferLE } from "bigint-buffer";
 
-import { PROGRAM_ID_CONTROLS } from "../constants"
+import { PROGRAM_ID_CONTROLS } from "../constants";
 
 export const getMinterStatsPhasePda = (
   deployment: PublicKey,
@@ -17,5 +17,5 @@ export const getMinterStatsPhasePda = (
       toBufferLE(BigInt(phaseIndex), 4),
     ],
     new PublicKey(PROGRAM_ID_CONTROLS)
-  )
-}
+  );
+};

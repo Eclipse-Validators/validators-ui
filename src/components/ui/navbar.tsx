@@ -1,32 +1,32 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useWallet } from "@solana/wallet-adapter-react"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
-import { ChevronDown, Menu, X } from "lucide-react"
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { ChevronDown, Menu, X } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-import { ModeToggle } from "../mode-toggle"
+import { ModeToggle } from "../mode-toggle";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
-  const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === "dev";
+  const router = useRouter();
 
   const handleDropdownItemClick = (href: string) => {
-    setIsDropdownOpen(false)
-    router.push(href)
-  }
+    setIsDropdownOpen(false);
+    router.push(href);
+  };
 
   return (
     <nav className="border-b border-border bg-background">
@@ -177,7 +177,7 @@ const Navbar = () => {
         </div>
       )}
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

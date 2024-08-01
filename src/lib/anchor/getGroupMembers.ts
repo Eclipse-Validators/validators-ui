@@ -1,11 +1,11 @@
-import { Program } from "@coral-xyz/anchor"
-import { Connection, PublicKey } from "@solana/web3.js"
-import bs58 from "bs58"
-import { sha256 } from "js-sha256"
+import { Program } from "@coral-xyz/anchor";
+import { Connection, PublicKey } from "@solana/web3.js";
+import bs58 from "bs58";
+import { sha256 } from "js-sha256";
 
-import { PROGRAM_ID_GROUP_EXTENSIONS } from "./constants"
-import { LibreplexEditions } from "./editions/libreplex_editions"
-import { decodeMember2022 } from "./members"
+import { PROGRAM_ID_GROUP_EXTENSIONS } from "./constants";
+import { LibreplexEditions } from "./editions/libreplex_editions";
+import { decodeMember2022 } from "./members";
 
 export async function getGroupMembers(
   connection: Connection,
@@ -32,17 +32,17 @@ export async function getGroupMembers(
           },
         ],
       }
-    )
+    );
 
     const membersDecoded = members.map((item) => ({
       member: item.pubkey.toBase58(),
       mint: decodeMember2022(item.account, item.pubkey)?.item?.mint.toBase58(),
       owner: item.account.owner.toBase58(),
-    }))
+    }));
 
-    return membersDecoded
+    return membersDecoded;
   } catch (err) {
-    console.error("Error fetching group members:", err)
-    return []
+    console.error("Error fetching group members:", err);
+    return [];
   }
 }

@@ -1,34 +1,34 @@
-"use client"
+"use client";
 
-import React, { useCallback, useEffect, useState } from "react"
-import Image from "next/image"
-import { Wallet } from "@coral-xyz/anchor"
-import { WalletSignTransactionError } from "@solana/wallet-adapter-base"
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react"
-import { PublicKey, SendTransactionError } from "@solana/web3.js"
-import { MinusIcon, PlusIcon } from "lucide-react"
-import { useLogger } from "next-axiom"
-import { useTheme } from "next-themes"
-import { toast, Toaster } from "sonner"
+import React, { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import { Wallet } from "@coral-xyz/anchor";
+import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey, SendTransactionError } from "@solana/web3.js";
+import { MinusIcon, PlusIcon } from "lucide-react";
+import { useLogger } from "next-axiom";
+import { useTheme } from "next-themes";
+import { toast, Toaster } from "sonner";
 
-import { mintWithControls } from "@/lib/anchor/controls/mintWithControls"
-import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda"
-import { useWalletBalance } from "@/lib/hooks/useWalletBalance"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import MintGallery from "@/components/mint/mintGallery"
-import { useEditionsControlProgram } from "@/components/providers/EditionsControlProgramContext"
-import { useEditionsProgram } from "@/components/providers/EditionsProgramContext"
+import { mintWithControls } from "@/lib/anchor/controls/mintWithControls";
+import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda";
+import { useWalletBalance } from "@/lib/hooks/useWalletBalance";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import MintGallery from "@/components/mint/mintGallery";
+import { useEditionsControlProgram } from "@/components/providers/EditionsControlProgramContext";
+import { useEditionsProgram } from "@/components/providers/EditionsProgramContext";
 
 function InfoBox({
   label,
   value,
   secondaryValue,
 }: {
-  label: string
-  value: string | number
-  secondaryValue?: string | number
+  label: string;
+  value: string | number;
+  secondaryValue?: string | number;
 }) {
   return (
     <div className="rounded bg-muted p-2 text-sm">
@@ -42,47 +42,47 @@ function InfoBox({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default function Home() {
-  const log = useLogger()
-  const { program: editionsControlsProgram } = useEditionsControlProgram()
-  const { program: editionsProgram } = useEditionsProgram()
-  const { balance, refreshBalance } = useWalletBalance()
-  const wallet = useAnchorWallet()
-  const { connection } = useConnection()
-  const [numberOfMints, setNumberOfMints] = useState(1)
-  const [isMinting, setIsMinting] = useState(false)
-  const [remainingMints, setRemainingMints] = useState(0)
-  const [mintedAddresses, setMintedAddresses] = useState<string[]>([])
-  const { theme } = useTheme()
+  const log = useLogger();
+  const { program: editionsControlsProgram } = useEditionsControlProgram();
+  const { program: editionsProgram } = useEditionsProgram();
+  const { balance, refreshBalance } = useWalletBalance();
+  const wallet = useAnchorWallet();
+  const { connection } = useConnection();
+  const [numberOfMints, setNumberOfMints] = useState(1);
+  const [isMinting, setIsMinting] = useState(false);
+  const [remainingMints, setRemainingMints] = useState(0);
+  const [mintedAddresses, setMintedAddresses] = useState<string[]>([]);
+  const { theme } = useTheme();
 
   const getRemainingMints = useCallback(async () => {
-    if (!editionsProgram) return
+    if (!editionsProgram) return;
     const deploymentId = new PublicKey(
       (process.env.NEXT_PUBLIC_DEPLOYMENTID as string) ??
         "HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP"
-    )
-    const hashlistPda = getHashlistPda(deploymentId)
+    );
+    const hashlistPda = getHashlistPda(deploymentId);
     const hashlistAccount = await editionsProgram?.account.hashlist.fetch(
       hashlistPda[0]
-    )
-    if (!hashlistAccount) return
-    const amount = hashlistAccount.issues.length
-    setRemainingMints(3333 - amount)
-  }, [editionsProgram])
+    );
+    if (!hashlistAccount) return;
+    const amount = hashlistAccount.issues.length;
+    setRemainingMints(3333 - amount);
+  }, [editionsProgram]);
 
   useEffect(() => {
-    getRemainingMints()
-  }, [getRemainingMints])
+    getRemainingMints();
+  }, [getRemainingMints]);
 
   const handleMint = async (amount: number) => {
     if (!editionsControlsProgram || !editionsProgram || !wallet?.publicKey)
-      return
+      return;
     if (amount < 1) {
-      toast.error("Number of mints must be greater than 0")
-      return
+      toast.error("Number of mints must be greater than 0");
+      return;
     }
     if (balance < 0.0201 * amount) {
       toast.error("Insufficient balance!", {
@@ -100,12 +100,12 @@ export default function Home() {
         ),
         closeButton: true,
         duration: 10000,
-      })
-      return
+      });
+      return;
     }
-    toast.info(`Minting ${amount} validator${amount > 1 ? "s" : ""}...`)
-    setIsMinting(true)
-    let errMessage = ""
+    toast.info(`Minting ${amount} validator${amount > 1 ? "s" : ""}...`);
+    setIsMinting(true);
+    let errMessage = "";
     try {
       const results = await mintWithControls({
         wallet: wallet as Wallet,
@@ -119,36 +119,36 @@ export default function Home() {
         connection,
         editionsProgram,
         editionsControlsProgram,
-      })
+      });
       setMintedAddresses((prevAddresses) => [
         ...prevAddresses,
         ...results.mints.map((m) => m.toBase58()),
-      ])
+      ]);
       toast.success(
         `Successfully minted ${amount} validator${amount > 1 ? "s" : ""}!`
-      )
+      );
     } catch (error) {
       if (error instanceof Error) {
-        errMessage = error.message
+        errMessage = error.message;
         if (error.message.includes("rejected the request")) {
-          toast.error("Cancelled transaction!")
-          return
+          toast.error("Cancelled transaction!");
+          return;
         }
         if (error instanceof SendTransactionError) {
-          const logs = error?.logs ?? (await error.getLogs(connection)) ?? []
+          const logs = error?.logs ?? (await error.getLogs(connection)) ?? [];
           const insufficientLamportsLog = logs.find((log) =>
             log.includes("Transfer: insufficient lamports")
-          )
+          );
           if (insufficientLamportsLog) {
             const match = insufficientLamportsLog.match(
               /Transfer: insufficient lamports (\d+), need (\d+)/
-            )
+            );
             if (match) {
-              const [, have, need] = match
-              const haveSol = Number(have) / 1e9
-              const needSol = Number(need) / 1e9
-              const difference = needSol - haveSol
-              errMessage = `Insufficient balance. You need ${difference.toFixed(9)} more ETH to mint ${amount} validator${amount > 1 ? "s" : ""}.`
+              const [, have, need] = match;
+              const haveSol = Number(have) / 1e9;
+              const needSol = Number(need) / 1e9;
+              const difference = needSol - haveSol;
+              errMessage = `Insufficient balance. You need ${difference.toFixed(9)} more ETH to mint ${amount} validator${amount > 1 ? "s" : ""}.`;
             }
           }
           log.error("Minting failed:", {
@@ -157,29 +157,29 @@ export default function Home() {
             logs: logs,
             wallet: wallet?.publicKey.toBase58(),
             amount: amount,
-          })
+          });
         } else {
           log.error("Minting failed:", {
             error: error,
             message: error.message,
             wallet: wallet?.publicKey.toBase58(),
             amount: amount,
-          })
+          });
         }
       }
-      console.error("Minting failed:", error)
+      console.error("Minting failed:", error);
       toast.error("Minting failed!", {
         description:
           errMessage !== ""
             ? errMessage
             : "Please check the console for details.",
-      })
+      });
     } finally {
-      setIsMinting(false)
-      await refreshBalance()
-      await getRemainingMints()
+      setIsMinting(false);
+      await refreshBalance();
+      await getRemainingMints();
     }
-  }
+  };
 
   return (
     <div className="main-bg mt-4 min-h-screen bg-cover bg-fixed bg-center bg-no-repeat p-4 text-foreground">
@@ -293,5 +293,5 @@ export default function Home() {
         )}
       </div>
     </div>
-  )
+  );
 }

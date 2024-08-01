@@ -1,43 +1,43 @@
-"use client"
+"use client";
 
-import React, { useCallback, useEffect, useState } from "react"
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react"
-import { LAMPORTS_PER_SOL } from "@solana/web3.js"
-import { useTheme } from "next-themes"
-import { toast, Toaster } from "sonner"
+import React, { useCallback, useEffect, useState } from "react";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { useTheme } from "next-themes";
+import { toast, Toaster } from "sonner";
 
-import { useWalletBalance } from "@/lib/hooks/useWalletBalance"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useWalletBalance } from "@/lib/hooks/useWalletBalance";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AirdropPage() {
-  const wallet = useAnchorWallet()
-  const { balance, refreshBalance } = useWalletBalance()
-  const { connection } = useConnection()
-  const [isAirdropping, setIsAirdropping] = useState(false)
-  const { theme } = useTheme()
+  const wallet = useAnchorWallet();
+  const { balance, refreshBalance } = useWalletBalance();
+  const { connection } = useConnection();
+  const [isAirdropping, setIsAirdropping] = useState(false);
+  const { theme } = useTheme();
 
   const handleAirdrop = async (amount: number) => {
     if (!wallet?.publicKey) {
-      toast.error("Please connect your wallet first")
-      return
+      toast.error("Please connect your wallet first");
+      return;
     }
-    setIsAirdropping(true)
+    setIsAirdropping(true);
     try {
       const signature = await connection.requestAirdrop(
         wallet.publicKey,
         amount * LAMPORTS_PER_SOL
-      )
-      await connection.confirmTransaction(signature)
-      toast.success(`Airdropped ${amount} ETH successfully!`)
-      await refreshBalance()
+      );
+      await connection.confirmTransaction(signature);
+      toast.success(`Airdropped ${amount} ETH successfully!`);
+      await refreshBalance();
     } catch (error) {
-      console.error("Airdrop failed:", error)
-      toast.error("Airdrop failed. Please check the console for details.")
+      console.error("Airdrop failed:", error);
+      toast.error("Airdrop failed. Please check the console for details.");
     } finally {
-      setIsAirdropping(false)
+      setIsAirdropping(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-foreground">
@@ -83,5 +83,5 @@ export default function AirdropPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

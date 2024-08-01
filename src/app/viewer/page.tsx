@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { WalletPeeker } from "@/components/viewer/WalletPeeker"
+import { WalletPeeker } from "@/components/viewer/WalletPeeker";
 
 export default function WalletPeekerPage() {
   return (
@@ -10,5 +10,5 @@ export default function WalletPeekerPage() {
         <WalletPeeker />
       </main>
     </div>
-  )
+  );
 }
