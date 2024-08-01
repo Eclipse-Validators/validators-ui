@@ -4,7 +4,7 @@ import { env } from "@/env.mjs";
 
 export const siteConfig: SiteConfig = {
   name: "Validators - Eclipse",
-  author: "donny",
+  author: "@Validators_",
   description: "Validators minting on Eclipse",
   keywords: ["eclipse", "nft", "solana", "eth", "shadcn/ui"],
   url: {
