@@ -15,6 +15,11 @@ export function WalletPeeker() {
     setSearchedAddress(address)
     const queryParams = new URLSearchParams(window.location.search)
     queryParams.set("wallet", address)
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.pathname}?${queryParams.toString()}`
+    )
   }
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
