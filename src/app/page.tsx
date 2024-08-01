@@ -20,11 +20,16 @@ import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda";
 import { PublicKey, SendTransactionError } from "@solana/web3.js";
 import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
 
-function InfoBox({ label, value }: { label: string; value: string | number }) {
+function InfoBox({ label, value, secondaryValue }: { label: string; value: string | number; secondaryValue?: string | number }) {
   return (
     <div className="rounded bg-muted p-2 text-sm">
       <div className="mb-1 font-semibold">{label}</div>
-      <div className="rounded bg-card p-2 text-center font-bold">{value}</div>
+      <div className="rounded bg-card p-2 text-center">
+        <div className="font-bold">{value}</div>
+      </div>
+      {secondaryValue && (
+        <div className="text-xs mt-1 text-center text-muted-foreground">{secondaryValue}</div>
+      )}
     </div>
   );
 }
@@ -62,9 +67,9 @@ export default function Home() {
       toast.error("Number of mints must be greater than 0");
       return;
     }
-    if (balance < 0.02 * amount) {
+    if (balance < 0.0201 * amount) {
       toast.error("Insufficient balance!", {
-        description: `You need ${(0.02 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
+        description: `You need ${(0.0201 * amount - balance).toFixed(4)} more ETH to mint ${amount} validator${amount > 1 ? 's' : ''}.`,
         action: <Button className="ml-8" variant="outline" onClick={() => window.open("https://bridge.validators.wtf", "_blank")}>Bridge ETH</Button>,
         closeButton: true,
         duration: 10000,
@@ -143,10 +148,9 @@ export default function Home() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <InfoBox label="Mint Price" value="0.02 ETH" />
+              <InfoBox label="Mint Price" value={`0.02 ETH`} secondaryValue={`~${(0.0001 * numberOfMints).toFixed(4)} ETH for gas fees`} />
               <InfoBox label="Wallet Balance" value={`${balance.toFixed(2)} ETH`} />
               <InfoBox label="Remaining" value={remainingMints} />
-              {/* Add more InfoBox components here as needed */}
             </div>
             <div className="flex items-center justify-center">
               <Image src="/logo/logotrans.png" alt="Validators Logo" width={150} height={50} />
