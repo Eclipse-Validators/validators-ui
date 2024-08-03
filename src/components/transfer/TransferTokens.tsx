@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useDeferredValue, useEffect, useState } from "react";
 import {
   createAssociatedTokenAccountInstruction,
   createCloseAccountInstruction,
@@ -13,7 +13,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { useLogger } from "next-axiom";
 import { toast } from "sonner";
-
+import { X } from "lucide-react";
 import { useSPLTokens } from "@/lib/hooks/useWalletSplTokens";
 import { useWalletTokens } from "@/lib/hooks/useWalletTokens";
 import { FetchedTokenInfo } from "@/lib/types";
@@ -126,6 +126,9 @@ const TransferTokens: React.FC = () => {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [activeTab, setActiveTab] = useState("token2022");
   const [isTransferDisabled, setIsTransferDisabled] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearch = useDeferredValue(searchQuery);
 
   useEffect(() => {
     const validateAddress = () => {
@@ -344,7 +347,27 @@ const TransferTokens: React.FC = () => {
           </Card>
         );
       }
-      return tokens.map((token) => (
+      const filteredTokens = tokens
+        .filter((token) =>
+          token.metadata?.name?.toLowerCase().includes(deferredSearch.toLowerCase())
+          || token.mint.toLowerCase().includes(deferredSearch.toLowerCase())
+          || token.metadata?.symbol?.toLowerCase().includes(deferredSearch.toLowerCase())
+        )
+        .sort((a, b) => {
+          const parseNumber = (name: string) => {
+            const match = name.match(/\d+/);
+            return match ? parseInt(match[0]) : 0;
+          };
+
+          if (a.metadata?.name && b.metadata?.name) {
+            const numA = parseNumber(a.metadata.name);
+            const numB = parseNumber(b.metadata.name);
+            return numA - numB || a.metadata.name.localeCompare(b.metadata.name);
+          } else {
+            return a.mint.localeCompare(b.mint);
+          }
+        });
+      return filteredTokens.map((token) => (
         <TokenCard
           key={token.tokenAccount}
           token={token}
@@ -357,7 +380,7 @@ const TransferTokens: React.FC = () => {
         />
       ));
     },
-    [selectedTokens, tokenAmounts, handleTokenSelection, handleAmountChange]
+    [selectedTokens, tokenAmounts, handleTokenSelection, handleAmountChange, deferredSearch]
   );
 
   if (errorSPL || error2022) return <div>Error: {errorSPL || error2022}</div>;
@@ -403,6 +426,15 @@ const TransferTokens: React.FC = () => {
           <TabsTrigger value="token2022">Token2022</TabsTrigger>
           <TabsTrigger value="spl">SPL Tokens</TabsTrigger>
         </TabsList>
+        <div className="mt-4 relative">
+          <Input
+            type="text"
+            placeholder="Search tokens..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full max-w-sm pr-8"
+          />
+        </div>
         <TabsContent value="spl">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {renderTokenCards(splTokens)}
