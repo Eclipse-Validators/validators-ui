@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { Send } from "lucide-react";
+import { Send, ShareIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { FetchedTokenInfo } from "@/lib/types";
@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { ViewImageDialog } from "../dialog/viewImageDialog";
 import { useGlobalConnection } from "../GlobalConnectionProvider";
 import { CopyableText } from "../ui/copyableText";
+import { CopyButton } from "../ui/copyButton";
 
 interface NFTFullViewProps {
   nft: FetchedTokenInfo;
@@ -108,15 +109,28 @@ const NFTCardFull: React.FC<NFTFullViewProps> = ({ nft }) => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>{nft.metadata?.name || "Unnamed NFT"}</span>
+            <div className="ml-auto mr-2 flex items-center space-x-2">
+              <CopyButton
+                textToCopy={`${process.env.NEXT_PUBLIC_APP_URL}/nft/${nft.mint}`}
+                buttonText=""
+                copyIcon={<ShareIcon className="h-4 w-4" />}
+                style={{
+                  variant: "outline",
+                  size: "icon",
+                }}
+              />
+            </div>
             {isOwner && (
               <Dialog
                 open={isTransferModalOpen}
                 onOpenChange={setIsTransferModalOpen}
               >
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Send className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="icon">
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>

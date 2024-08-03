@@ -11,6 +11,7 @@ import { useWalletTokens } from "@/lib/hooks/useWalletTokens";
 import { useGroupMembers } from "@/components/providers/GroupMembersContext";
 
 import { Button } from "../ui/button";
+import { CopyButton } from "../ui/copyButton";
 import { NFTData } from "./nftCard";
 import { NFTGrid } from "./nftGrid";
 
@@ -127,79 +128,20 @@ export function OwnedNFTGallery({
     setFetchingMore(false);
   }, [fetchNFTChunk, fetchingMore, setOwnedNftsData]);
 
-  const [showCopySuccessIcon, setShowCopySuccessIcon] =
-    useState<boolean>(false);
-
-  const copyToClipboard = () => {
-    const valueToCopy = publicKey?.toBase58();
-    if (!valueToCopy) {
-      return;
-    }
-    navigator.clipboard
-      .writeText(
-        `${process.env.NEXT_PUBLIC_APP_URL}/viewer/wallet?=${valueToCopy}`
-      )
-      .then(
-        () => {
-          setShowCopySuccessIcon(true);
-          toast.success("Copied gallery link to clipboard!");
-          setTimeout(() => {
-            setShowCopySuccessIcon(false);
-          }, 2_500);
-        },
-        () => {
-          toast.error(`Failed to copy...`);
-        }
-      );
-  };
-
   return (
     <>
       <div className="py-10">
         <div className="w-full max-w-[16rem]">
           <div className="relative">
-            <input
-              type="text"
-              className="text-white-500 block w-full rounded-lg border bg-muted p-2.5 text-sm "
-              value="Share Gallery Link"
-              disabled
+            <CopyButton
+              textToCopy={`${process.env.NEXT_PUBLIC_APP_URL}/viewer/wallet?=${publicKey?.toBase58()}`}
+              buttonText="Share Gallery Link"
+              style={{
+                variant: "default",
+                size: "default",
+                className: "bg-gray-700 text-white hover:text-gray-700",
+              }}
             />
-            <button
-              className="absolute end-2 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100"
-              onClick={copyToClipboard}
-            >
-              {!showCopySuccessIcon ? (
-                <span id="default-icon">
-                  <svg
-                    className="h-3.5 w-3.5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 18 20"
-                  >
-                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
-                  </svg>
-                </span>
-              ) : (
-                <span className="inline-flex items-center">
-                  <svg
-                    className="h-3.5 w-3.5 text-green-300"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 16 12"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="5"
-                      d="M1 5.917 5.724 10.5 15 1.5"
-                    />
-                  </svg>
-                </span>
-              )}
-            </button>
           </div>
         </div>
       </div>
