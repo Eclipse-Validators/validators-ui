@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { Send, ShareIcon } from "lucide-react";
+import { Eye, Send, ShareIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { FetchedTokenInfo } from "@/lib/types";
@@ -33,6 +34,7 @@ const NFTCardFull: React.FC<NFTFullViewProps> = ({ nft }) => {
     const [destinationAddress, setDestinationAddress] = useState("");
     const [isValidAddress, setIsValidAddress] = useState(false);
     const [isTransferring, setIsTransferring] = useState(false);
+    const router = useRouter();
     const [isOwner, setIsOwner] = useState(false);
     const connection = useGlobalConnection();
     const wallet = useWallet();
@@ -195,7 +197,19 @@ const NFTCardFull: React.FC<NFTFullViewProps> = ({ nft }) => {
                             </p>
                             <p>
                                 <strong>Owner:</strong>{" "}
-                                <CopyableText text={nft.owner} maxLength={20} />
+                                <div className="flex items-center">
+                                    <CopyableText text={nft.owner} maxLength={20} />
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="hover:bg-transparent hover:text-foreground"
+                                        onClick={() => {
+                                            router.push(`/viewer?wallet=${nft.owner}`);
+                                        }}
+                                    >
+                                        <Eye className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </p>
                             {nft.metadata?.attributes && (
                                 <div className="mt-4">
