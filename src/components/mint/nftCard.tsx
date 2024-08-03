@@ -7,8 +7,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-import { Skeleton } from "../ui/skeleton";
 import { CopyableText } from "../ui/copyableText";
+import { Skeleton } from "../ui/skeleton";
 
 export interface Attribute {
   trait_type: string;
@@ -84,12 +84,12 @@ export function NFTCard({
         )}
         <div className="p-2">
           <div className="flex items-center justify-between">
-            <h3 className="truncate text-sm font-semibold flex-grow">
+            <h3 className="flex-grow truncate text-sm font-semibold">
               {nft.metadata?.name || `NFT #${index + 1}`}
             </h3>
             <div className="flex items-center space-x-2">
               <a
-                href={'/nft/' + nft.address}
+                href={"/nft/" + nft.address}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground transition-colors hover:text-foreground"

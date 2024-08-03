@@ -8,11 +8,11 @@ import { cn } from "@/lib/utils";
 import Navbar from "@/components/ui/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/footer";
+import { GlobalConnectionProvider } from "@/components/GlobalConnectionProvider";
 import { EditionsControlProgramProvider } from "@/components/providers/EditionsControlProgramContext";
 import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext";
 import SolanaWalletProvider from "@/components/SolanaWalletProvider";
 import { ThemeProvider } from "@/components/theme-provider";
-import { GlobalConnectionProvider } from "@/components/GlobalConnectionProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 

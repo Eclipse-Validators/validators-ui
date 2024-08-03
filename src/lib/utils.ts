@@ -1,10 +1,25 @@
-import { createAssociatedTokenAccountInstruction, createCloseAccountInstruction, createTransferInstruction, getAssociatedTokenAddressSync, getTokenMetadata, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { AccountInfo, Connection, ParsedAccountData, PublicKey, Transaction } from "@solana/web3.js";
+import {
+  createAssociatedTokenAccountInstruction,
+  createCloseAccountInstruction,
+  createTransferInstruction,
+  getAssociatedTokenAddressSync,
+  getTokenMetadata,
+  TOKEN_2022_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
+import {
+  AccountInfo,
+  Connection,
+  ParsedAccountData,
+  PublicKey,
+  Transaction,
+} from "@solana/web3.js";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-import { FetchedTokenInfo } from "./types";
 import { Attribute } from "@/components/mint/nftCard";
+
+import { FetchedTokenInfo } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,12 +73,12 @@ export async function fetchTokenInfo(
         decimals: account.account.data.parsed.info.tokenAmount.decimals,
         metadata: tokenMetadata
           ? {
-            name: tokenMetadata?.name,
-            symbol: tokenMetadata?.symbol,
-            json: tokenMetadata?.uri,
-            image: imageUri,
-            attributes
-          }
+              name: tokenMetadata?.name,
+              symbol: tokenMetadata?.symbol,
+              json: tokenMetadata?.uri,
+              image: imageUri,
+              attributes,
+            }
           : null,
       };
     })
