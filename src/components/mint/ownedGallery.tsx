@@ -134,7 +134,7 @@ export function OwnedNFTGallery({
         <div className="w-full max-w-[16rem]">
           <div className="relative">
             <CopyButton
-              textToCopy={`${process.env.NEXT_PUBLIC_APP_URL}/viewer/wallet?=${publicKey?.toBase58()}`}
+              textToCopy={`${process.env.NEXT_PUBLIC_APP_URL}viewer/wallet?=${publicKey?.toBase58()}`}
               buttonText="Share Gallery Link"
               style={{
                 variant: "default",
