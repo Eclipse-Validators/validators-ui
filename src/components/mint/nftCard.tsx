@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { ChevronDown, ChevronUp, ExternalLink, EyeIcon } from "lucide-react";
 
 import { Card, CardContent } from "../ui/card";
 import {
@@ -8,6 +8,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Skeleton } from "../ui/skeleton";
+import { CopyableText } from "../ui/copyableText";
 
 export interface Attribute {
   trait_type: string;
@@ -83,20 +84,30 @@ export function NFTCard({
         )}
         <div className="p-2">
           <div className="flex items-center justify-between">
-            <h3 className="truncate text-sm font-semibold">
+            <h3 className="truncate text-sm font-semibold flex-grow">
               {nft.metadata?.name || `NFT #${index + 1}`}
             </h3>
-            <a
-              href={getExplorerUrl(nft.address)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ExternalLink size={16} />
-            </a>
+            <div className="flex items-center space-x-2">
+              <a
+                href={'/nft/' + nft.address}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <EyeIcon size={16} />
+              </a>
+              <a
+                href={getExplorerUrl(nft.address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ExternalLink size={16} />
+              </a>
+            </div>
           </div>
           <p className="truncate text-xs text-muted-foreground">
-            {nft.address.slice(0, 6)}...
+            <CopyableText text={nft.address} maxLength={6} />
           </p>
 
           {nft.metadata?.attributes && nft.metadata.attributes.length > 0 && (

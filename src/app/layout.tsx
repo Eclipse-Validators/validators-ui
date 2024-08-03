@@ -12,6 +12,7 @@ import { EditionsControlProgramProvider } from "@/components/providers/EditionsC
 import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext";
 import SolanaWalletProvider from "@/components/SolanaWalletProvider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GlobalConnectionProvider } from "@/components/GlobalConnectionProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -85,20 +86,22 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem={false}
           disableTransitionOnChange
         >
-          <SolanaWalletProvider>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-grow">
-                <EditionsProgramProvider>
-                  <EditionsControlProgramProvider>
-                    {children}
-                  </EditionsControlProgramProvider>
-                </EditionsProgramProvider>
-              </main>
-              <Footer />
-              <Toaster />
-            </div>
-          </SolanaWalletProvider>
+          <GlobalConnectionProvider>
+            <SolanaWalletProvider>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-grow">
+                  <EditionsProgramProvider>
+                    <EditionsControlProgramProvider>
+                      {children}
+                    </EditionsControlProgramProvider>
+                  </EditionsProgramProvider>
+                </main>
+                <Footer />
+                <Toaster />
+              </div>
+            </SolanaWalletProvider>
+          </GlobalConnectionProvider>
         </ThemeProvider>
       </body>
     </html>
