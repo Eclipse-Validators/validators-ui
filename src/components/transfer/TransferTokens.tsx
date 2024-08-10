@@ -29,6 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EthTransfer } from "./EthTransfer";
 
 const TokenCard: React.FC<{
   token: FetchedTokenInfo;
@@ -435,7 +436,7 @@ const TransferTokens: React.FC = () => {
             Please enter a Solana compatible address
           </p>
         )}
-        <Button
+        {activeTab !== "eth" && <Button
           className="w-96"
           variant="outline"
           onClick={handleTransfer}
@@ -448,7 +449,7 @@ const TransferTokens: React.FC = () => {
             : selectedTokens.length > 0
               ? `Transfer ${selectedTokens.length} tokens`
               : "Select tokens to transfer"}
-        </Button>
+        </Button>}
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
@@ -456,7 +457,7 @@ const TransferTokens: React.FC = () => {
           <TabsTrigger value="nfts">NFTs</TabsTrigger>
           <TabsTrigger value="spl">SPL Tokens</TabsTrigger>
         </TabsList>
-        <div className="relative mt-4">
+        {activeTab !== "eth" && <div className="relative mt-4">
           <Input
             type="text"
             placeholder="Search tokens..."
@@ -464,8 +465,10 @@ const TransferTokens: React.FC = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full max-w-sm pr-8"
           />
-        </div>
-        <TabsContent value="eth"></TabsContent>
+        </div>}
+        <TabsContent value="eth">
+          <EthTransfer destinationAddress={destinationAddress} isValidAddress={isValidAddress} />
+        </TabsContent>
         <TabsContent value="spl">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {renderTokenCards(splTokens)}
