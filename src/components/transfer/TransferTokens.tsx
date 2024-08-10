@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useCallback, useDeferredValue, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useState,
+} from "react";
 import {
   createAssociatedTokenAccountInstruction,
   createCloseAccountInstruction,
@@ -11,9 +16,10 @@ import {
 } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
+import { X } from "lucide-react";
 import { useLogger } from "next-axiom";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+
 import { useSPLTokens } from "@/lib/hooks/useWalletSplTokens";
 import { useWalletTokens } from "@/lib/hooks/useWalletTokens";
 import { FetchedTokenInfo } from "@/lib/types";
@@ -358,10 +364,15 @@ const TransferTokens: React.FC = () => {
         );
       }
       const filteredTokens = tokens
-        .filter((token) =>
-          token.metadata?.name?.toLowerCase().includes(deferredSearch.toLowerCase())
-          || token.mint.toLowerCase().includes(deferredSearch.toLowerCase())
-          || token.metadata?.symbol?.toLowerCase().includes(deferredSearch.toLowerCase())
+        .filter(
+          (token) =>
+            token.metadata?.name
+              ?.toLowerCase()
+              .includes(deferredSearch.toLowerCase()) ||
+            token.mint.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+            token.metadata?.symbol
+              ?.toLowerCase()
+              .includes(deferredSearch.toLowerCase())
         )
         .sort((a, b) => {
           const parseNumber = (name: string) => {
@@ -372,7 +383,9 @@ const TransferTokens: React.FC = () => {
           if (a.metadata?.name && b.metadata?.name) {
             const numA = parseNumber(a.metadata.name);
             const numB = parseNumber(b.metadata.name);
-            return numA - numB || a.metadata.name.localeCompare(b.metadata.name);
+            return (
+              numA - numB || a.metadata.name.localeCompare(b.metadata.name)
+            );
           } else {
             return a.mint.localeCompare(b.mint);
           }
@@ -390,7 +403,13 @@ const TransferTokens: React.FC = () => {
         />
       ));
     },
-    [selectedTokens, tokenAmounts, handleTokenSelection, handleAmountChange, deferredSearch]
+    [
+      selectedTokens,
+      tokenAmounts,
+      handleTokenSelection,
+      handleAmountChange,
+      deferredSearch,
+    ]
   );
 
   if (errorSPL || error2022) return <div>Error: {errorSPL || error2022}</div>;
@@ -433,10 +452,11 @@ const TransferTokens: React.FC = () => {
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
+          <TabsTrigger value="eth">ETH</TabsTrigger>
           <TabsTrigger value="nfts">NFTs</TabsTrigger>
           <TabsTrigger value="spl">SPL Tokens</TabsTrigger>
         </TabsList>
-        <div className="mt-4 relative">
+        <div className="relative mt-4">
           <Input
             type="text"
             placeholder="Search tokens..."
@@ -445,6 +465,7 @@ const TransferTokens: React.FC = () => {
             className="w-full max-w-sm pr-8"
           />
         </div>
+        <TabsContent value="eth"></TabsContent>
         <TabsContent value="spl">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {renderTokenCards(splTokens)}
