@@ -124,7 +124,8 @@ const TransferTokens: React.FC = () => {
   const logger = useLogger();
   const { connection } = useConnection();
   const { publicKey, signAllTransactions } = useWallet();
-  const { hashlist } = useEditionsHashlist();
+  const { isInHashlist } = useEditionsHashlist();
+
   const {
     tokens: token2022Tokens,
     loading: loading2022,
@@ -153,7 +154,7 @@ const TransferTokens: React.FC = () => {
     const validateAddress = () => {
       try {
         new PublicKey(destinationAddress);
-        if (hashlist.has(destinationAddress)) {
+        if (isInHashlist(destinationAddress)) {
           toast.error("Destination address is the same as an NFT in the collection. Please use a wallet address.");
           setIsValidAddress(false);
           return;
