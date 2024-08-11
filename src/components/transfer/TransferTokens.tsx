@@ -170,7 +170,7 @@ const TransferTokens: React.FC = () => {
     } else {
       setIsValidAddress(false);
     }
-  }, [destinationAddress]);
+  }, [destinationAddress, isInHashlist]);
 
   const handleTokenSelection = (tokenAccount: string) => {
     setSelectedTokens((prev) =>
