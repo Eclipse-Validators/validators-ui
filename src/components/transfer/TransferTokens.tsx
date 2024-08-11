@@ -218,6 +218,11 @@ const TransferTokens: React.FC = () => {
           continue;
         }
 
+        if (destinationAddress === token.mint) {
+          toast.error("Cannot transfer to the same address as the token mint");
+          break;
+        }
+
         const destinationTokenAccount = getAssociatedTokenAddressSync(
           new PublicKey(token.mint),
           new PublicKey(destinationAddress),
