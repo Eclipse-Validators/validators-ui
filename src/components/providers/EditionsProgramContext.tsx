@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import * as anchor from "@coral-xyz/anchor";
 import {
   useAnchorWallet,
@@ -20,6 +20,7 @@ import {
   IDL,
   LibreplexEditions,
 } from "../../lib/anchor/editions/libreplex_editions";
+import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda";
 
 interface Wallet {
   signTransaction<T extends Transaction | VersionedTransaction>(
@@ -101,4 +102,33 @@ export function useEditionsProgram() {
     throw new Error("useProgram must be used within a ProgramProvider");
   }
   return context;
+}
+
+export function useEditionsHashlist() {
+  const { program } = useEditionsProgram();
+  const [hashlist, setHashlist] = useState<Set<string>>(new Set());
+
+  const getHashlist = useCallback(async () => {
+    if (!program) return;
+    const deploymentId = new PublicKey(
+      (process.env.NEXT_PUBLIC_DEPLOYMENTID as string) ??
+      "HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP"
+    );
+    const hashlistPda = getHashlistPda(deploymentId);
+    const hashlistAccount = await program.account.hashlist.fetch(hashlistPda[0]);
+    if (hashlistAccount) {
+      const newHashlist = new Set(hashlistAccount.issues.map(issue => issue.mint.toBase58()));
+      setHashlist(newHashlist);
+    }
+  }, [program]);
+
+  useEffect(() => {
+    getHashlist();
+  }, [getHashlist]);
+
+  return {
+    hashlist,
+    refreshHashlist: getHashlist,
+    isInHashlist: (mint: string) => hashlist.has(mint)
+  };
 }

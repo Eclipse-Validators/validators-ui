@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EthTransfer } from "./EthTransfer";
+import { useEditionsHashlist } from "../providers/EditionsProgramContext";
 
 const TokenCard: React.FC<{
   token: FetchedTokenInfo;
@@ -123,6 +124,7 @@ const TransferTokens: React.FC = () => {
   const logger = useLogger();
   const { connection } = useConnection();
   const { publicKey, signAllTransactions } = useWallet();
+  const { hashlist } = useEditionsHashlist();
   const {
     tokens: token2022Tokens,
     loading: loading2022,
@@ -151,6 +153,11 @@ const TransferTokens: React.FC = () => {
     const validateAddress = () => {
       try {
         new PublicKey(destinationAddress);
+        if (hashlist.has(destinationAddress)) {
+          toast.error("Destination address is the same as an NFT in the collection. Please use a wallet address.");
+          setIsValidAddress(false);
+          return;
+        }
         setIsValidAddress(true);
       } catch (error) {
         setIsValidAddress(false);
@@ -220,7 +227,7 @@ const TransferTokens: React.FC = () => {
 
         if (destinationAddress === token.mint) {
           toast.error("Cannot transfer to the same address as the token mint");
-          break;
+          continue;
         }
 
         const destinationTokenAccount = getAssociatedTokenAddressSync(
