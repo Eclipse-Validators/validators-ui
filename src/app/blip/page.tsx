@@ -2,7 +2,17 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { transferSol } from "@metaplex-foundation/mpl-toolbox";
+import {
+  generateSigner,
+  publicKey,
+  sol,
+  transactionBuilder,
+} from "@metaplex-foundation/umi";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+import { creators, metadata, mint, niftyAsset } from "@nifty-oss/asset";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +25,7 @@ export default function MessagePage() {
   const [to, setTo] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const wallet = useWallet();
+  const { connection } = useConnection();
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
@@ -26,13 +37,55 @@ export default function MessagePage() {
   };
 
   async function handleSendBlip(message: string, to: string) {
-    if (!wallet?.publicKey) {
+    if (!wallet || !wallet.publicKey || !wallet.signAllTransactions) {
       return;
     }
 
+    const umi = createUmi(connection.rpcEndpoint).use(niftyAsset());
+    umi.use(walletAdapterIdentity(wallet, true));
+
     try {
       const from = wallet.publicKey.toString();
-      await generateBlip(message, to, from);
+      const assetUploadData = await generateBlip(message, to, from);
+      if (!assetUploadData.data || assetUploadData.error) {
+        console.error("Error generating Blip:", assetUploadData.error);
+        return;
+      }
+
+      const assetSigner = generateSigner(umi);
+      const mintBuilderGroup = mint(umi, {
+        asset: assetSigner,
+        owner: publicKey(to),
+        authority: publicKey(to),
+        payer: umi.payer,
+        mutable: false,
+        standard: 0,
+        name: "Blip",
+        extensions: [
+          metadata({
+            uri: assetUploadData.data.jsonUri,
+            symbol: "Blip",
+            description: "",
+          }),
+          creators([{ address: publicKey(from), share: 100 }]),
+        ],
+      });
+
+      const transferSolIx = transferSol(umi, {
+        source: umi.payer,
+        destination: publicKey("6juCmFHoPnJTzhjJfcjFhCXeptCE89vp9dHP91EUaxR8"),
+        amount: sol(0.001),
+      });
+
+      const txn = await transactionBuilder()
+        .add(transferSolIx)
+        .add(mintBuilderGroup.merge())
+        .buildWithLatestBlockhash(umi);
+
+      const nftSignedTxn = await assetSigner.signTransaction(txn);
+      const signedTxn = await umi.identity.signTransaction(nftSignedTxn);
+
+      await umi.rpc.sendTransaction(signedTxn);
     } catch (error) {
       console.error("Error SENDING blip:", error);
     }
