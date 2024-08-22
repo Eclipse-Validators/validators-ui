@@ -133,6 +133,14 @@ export async function generateBlip(message: string, from: string) {
           value: formatDate(Date.now()),
         },
       ],
+      properties: {
+        files: [
+          {
+            type: "image/png",
+            uri: `https://www.arweave.net/${imgTxId}?ext=png`,
+          },
+        ],
+      },
     };
 
     const jsonTx = await uploadJson(arweave, JSON.stringify(tokenMetadata));
