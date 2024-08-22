@@ -55,10 +55,10 @@ const Navbar = () => {
                 Bridge
               </Link>
               <Link
-                href="/"
+                href="/blip"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
-                Mint
+                Blip
               </Link>
               <Link
                 href="/gallery"
@@ -131,11 +131,11 @@ const Navbar = () => {
               Bridge
             </Link>
             <Link
-              href="/"
+              href="/blip"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
-              Mint
+              Blip
             </Link>
             <Link
               href="/gallery"
