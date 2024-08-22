@@ -49,6 +49,13 @@ export default function MessagePage() {
       return;
     }
 
+    if (!message) {
+      toast.error("No Message Provided", {
+        description: "Please enter a message for your Blip!",
+      });
+      return;
+    }
+
     setIsSending(true);
 
     const umi = createUmi(connection.rpcEndpoint);
