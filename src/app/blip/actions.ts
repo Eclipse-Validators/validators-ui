@@ -70,7 +70,29 @@ const formatDate = (timestamp: number) => {
   return date.toLocaleString("en-US", options);
 };
 
-const mediaPath = path.join(process.cwd(), "./src/media");
+const currentDir = process.cwd();
+
+function exploreDirectory(dir: string, depth: number = 0) {
+  const items = fs.readdirSync(dir);
+
+  items.forEach((item) => {
+    const fullPath = path.join(dir, item);
+    const stats = fs.statSync(fullPath);
+    const indent = "  ".repeat(depth);
+
+    if (stats.isDirectory()) {
+      console.log(`${indent}📁 ${item}`);
+      exploreDirectory(fullPath, depth + 1);
+    } else {
+      console.log(`${indent}📄 ${item}`);
+    }
+  });
+}
+
+console.log("Contents of the current working directory:");
+exploreDirectory(currentDir);
+
+const mediaPath = path.join(process.cwd(), "./media");
 const TEMPLATE_IMG = fs.readFileSync(path.join(mediaPath, "placeholder.png"));
 registerFont(path.join(mediaPath, "Manrope-Regular.ttf"), {
   family: "Manrope",
