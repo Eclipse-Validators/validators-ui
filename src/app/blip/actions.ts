@@ -71,9 +71,15 @@ const formatDate = (timestamp: number) => {
 };
 
 const TEMPLATE_IMG = fs.readFileSync(
-  path.join(process.cwd(), "public/blip/placeholder.png")
+  path.join(process.cwd(), "./public/blip/placeholder.png")
 );
-registerFont(path.join(process.cwd(), "public/blip/Manrope-Regular.ttf"), {
+// read the font so vercel nft pulls it in
+const FONT = fs.readFileSync(
+  path.join(process.cwd(), "./public/fonts/Manrope-Regular.ttf")
+);
+console.log(FONT);
+
+registerFont(path.join(process.cwd(), "./public/fonts/Manrope-Regular.ttf"), {
   family: "Manrope",
 });
 
