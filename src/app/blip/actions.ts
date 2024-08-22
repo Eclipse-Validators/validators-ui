@@ -71,9 +71,9 @@ const formatDate = (timestamp: number) => {
 };
 
 const TEMPLATE_IMG = fs.readFileSync(
-  path.join(process.cwd(), "placeholder.png")
+  path.join(process.cwd(), "public/blip/placeholder.png")
 );
-registerFont(path.join(process.cwd(), "Manrope-Regular.ttf"), {
+registerFont(path.join(process.cwd(), "public/blip/Manrope-Regular.ttf"), {
   family: "Manrope",
 });
 
