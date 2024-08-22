@@ -166,7 +166,8 @@ export default function MessagePage() {
             </div>
 
             <div className="w-full pt-4 text-center text-[12px]">
-              Each Blip costs .001 eth fee and .0004 for mint transaction costs.
+              Each Blip costs .001 eth fee and .000031 for mint transaction
+              costs.
             </div>
           </CardContent>
         </Card>
