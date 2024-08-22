@@ -6,6 +6,7 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { base58, base64 } from "@metaplex-foundation/umi/serializers";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,7 @@ export default function MessagePage() {
   const [message, setMessage] = useState<string>("");
   const wallet = useWallet();
   const { connection } = useConnection();
+  const [isSending, setIsSending] = useState(false);
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
@@ -34,6 +36,8 @@ export default function MessagePage() {
       return;
     }
 
+    setIsSending(true);
+
     const umi = createUmi(connection.rpcEndpoint);
     umi.use(walletAdapterIdentity(wallet, true));
 
@@ -42,7 +46,10 @@ export default function MessagePage() {
       const from = wallet.publicKey.toString();
       const response = await generateBlip(message, to, from);
       if (!response.data || response.error) {
-        console.error("Error generating Blip:", response.error);
+        toast.error("Error generating Blip!", {
+          description: response.error ?? "Unknown error",
+        });
+        setIsSending(false);
         return;
       }
 
@@ -52,8 +59,25 @@ export default function MessagePage() {
       txnSignature = base58.deserialize(
         await umi.rpc.sendTransaction(signedTxn)
       )[0];
+
+      toast.success(`Successfully sent Blip!`, {
+        description: "You can view your transacton on the Eclipse Explorer",
+        action: {
+          label: "View Transactions",
+          onClick: () =>
+            window.open(
+              `${process.env.NEXT_PUBLIC_EXPLORER!}/tx/${txnSignature}`,
+              "_blank"
+            ),
+        },
+      });
     } catch (error) {
       console.error(`Error SENDING blip (txn sig: ${txnSignature}):`, error);
+      toast.error("Error sending Blip!", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    } finally {
+      setIsSending(false);
     }
   }
 
@@ -100,6 +124,9 @@ export default function MessagePage() {
                     className="w-full"
                     variant="default"
                     onClick={() => handleSendBlip(message, to)}
+                    disabled={isSending || !wallet?.publicKey}
+                    loading={isSending}
+                    loadingText={isSending ? "Sending Transaction" : ""}
                   >
                     Send Blip!
                   </Button>
