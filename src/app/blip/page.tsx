@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { generateBlip } from "./actions";
 
 export default function MessagePage() {
-  const [from, setFrom] = useState<string>("");
+  const [to, setTo] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const wallet = useWallet();
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
@@ -23,9 +25,14 @@ export default function MessagePage() {
     ));
   };
 
-  async function handleSendBlip(message: string, from: string) {
+  async function handleSendBlip(message: string, to: string) {
+    if (!wallet?.publicKey) {
+      return;
+    }
+
     try {
-      await generateBlip(message, from);
+      const from = wallet.publicKey.toString();
+      await generateBlip(message, to, from);
     } catch (error) {
       console.error("Error SENDING blip:", error);
     }
@@ -60,8 +67,8 @@ export default function MessagePage() {
                   type="text"
                   placeholder="Enter Eclipse Wallet Address"
                   className="mb-4"
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value)}
+                  value={to}
+                  onChange={(e) => setTo(e.target.value)}
                 />
                 <Textarea
                   placeholder="Write your message..."
@@ -69,13 +76,19 @@ export default function MessagePage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
-                <Button
-                  className="w-full"
-                  variant="default"
-                  onClick={() => handleSendBlip(message, from)}
-                >
-                  Send Blip!
-                </Button>
+                {wallet?.publicKey ? (
+                  <Button
+                    className="w-full"
+                    variant="default"
+                    onClick={() => handleSendBlip(message, to)}
+                  >
+                    Send Blip!
+                  </Button>
+                ) : (
+                  <div className="text-center">
+                    Connect wallet to send a Blip
+                  </div>
+                )}
               </div>
               <div>
                 <div className="relative aspect-square rounded-lg border border-border">

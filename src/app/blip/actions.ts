@@ -100,7 +100,7 @@ function generateImage(text: string) {
   return buffer;
 }
 
-export async function generateBlip(message: string, from: string) {
+export async function generateBlip(message: string, to: string, from: string) {
   try {
     const imgBuffer = generateImage(message);
     const compressedImgBuffer = await compressImage(imgBuffer);
@@ -123,6 +123,10 @@ export async function generateBlip(message: string, from: string) {
         {
           trait_type: "Message",
           value: message.replace(/\n/g, " "),
+        },
+        {
+          trait_type: "To",
+          value: to,
         },
         {
           trait_type: "From",
