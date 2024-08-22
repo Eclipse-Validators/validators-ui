@@ -43,7 +43,7 @@ const Navbar = () => {
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
               <Link
-                href="https://validators.wtf"
+                href="/"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 Home
@@ -117,7 +117,7 @@ const Navbar = () => {
         <div className="md:hidden">
           <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
             <Link
-              href="https://validators.wtf"
+              href="/"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
