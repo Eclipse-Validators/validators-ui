@@ -1,10 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { base58, base64 } from "@metaplex-foundation/umi/serializers";
+import {
+  Asset,
+  ExtensionType,
+  fetchAllAsset,
+  getAssetGpaBuilder,
+} from "@nifty-oss/asset";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
@@ -13,6 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { BlipNftData } from "@/components/mint/blipNftCard";
+import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 
 import { generateBlip } from "./actions";
 
@@ -22,6 +31,8 @@ export default function MessagePage() {
   const wallet = useWallet();
   const { connection } = useConnection();
   const [isSending, setIsSending] = useState(false);
+  const [isLoadingBlips, setIsLoadingBlips] = useState(false);
+  const [walletBlipNfts, setWalletBlipNfts] = useState<BlipNftData[]>([]);
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
@@ -31,6 +42,61 @@ export default function MessagePage() {
       </React.Fragment>
     ));
   };
+
+  const umi = createUmi(connection.rpcEndpoint);
+
+  useEffect(() => {
+    async function loadBlips() {
+      if (!wallet?.publicKey) {
+        return;
+      }
+
+      setIsLoadingBlips(true);
+
+      const blipAssetAccounts = await getAssetGpaBuilder(umi)
+        .whereField(
+          "group",
+          publicKey("b1ipWX4C4xYRYvNg2YRPM6EUofH9NqU8PwUtTK5VCrx")
+        )
+        .whereField("owner", publicKey(wallet.publicKey.toBase58()))
+        .getPublicKeys();
+
+      const blipNftAccountsData = await fetchAllAsset(umi, blipAssetAccounts);
+
+      const blipNfts = await Promise.all(
+        blipNftAccountsData.map(async (blipNft: Asset) => {
+          const metadataExtension = blipNft.extensions.find(
+            (e) => e.type === ExtensionType.Metadata
+          );
+          if (!metadataExtension?.uri) {
+            return null;
+          }
+
+          try {
+            const metadataResponse = await fetch(metadataExtension.uri);
+            const metadata = await metadataResponse.json();
+            return {
+              address: blipNft.publicKey.toString(),
+              metadata: {
+                image: metadata.image,
+                attributes: metadata.attributes,
+              },
+            } as BlipNftData;
+          } catch (error) {
+            console.error("Error fetching metadata:", error);
+            return null;
+          }
+        })
+      );
+
+      setWalletBlipNfts(
+        blipNfts.filter((nft): nft is BlipNftData => nft !== null)
+      );
+      setIsLoadingBlips(false);
+    }
+
+    loadBlips();
+  }, [wallet.publicKey]);
 
   async function handleSendBlip(message: string, to: string) {
     if (!wallet || !wallet.publicKey || !wallet.signAllTransactions) {
@@ -58,7 +124,6 @@ export default function MessagePage() {
 
     setIsSending(true);
 
-    const umi = createUmi(connection.rpcEndpoint);
     umi.use(walletAdapterIdentity(wallet, true));
 
     let txnSignature: string | null = null;
@@ -184,6 +249,17 @@ export default function MessagePage() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="mt-8">
+          <h1 className="text-2xl font-bold">Your Blips</h1>
+          <div className="mt-4">
+            {wallet?.publicKey ? (
+              <BlipNftGrid nfts={walletBlipNfts} loading={isLoadingBlips} />
+            ) : (
+              "Connect your wallet to check for Blips!"
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
