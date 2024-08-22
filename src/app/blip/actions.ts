@@ -1,6 +1,7 @@
 "use server";
 
 import fs from "fs";
+import path from "path";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { createCanvas, Image, registerFont } from "canvas";
@@ -69,9 +70,11 @@ const formatDate = (timestamp: number) => {
   return date.toLocaleString("en-US", options);
 };
 
-const TEMPLATE_IMG = fs.readFileSync("./public/blip/placeholder.png");
-
-registerFont("./public/fonts/Manrope-Regular.ttf", { family: "Manrope" });
+const mediaPath = path.join(process.cwd(), "./src/media");
+const TEMPLATE_IMG = fs.readFileSync(path.join(mediaPath, "placeholder.png"));
+registerFont(path.join(mediaPath, "Manrope-Regular.ttf"), {
+  family: "Manrope",
+});
 
 async function compressImage(buffer: Buffer): Promise<Buffer> {
   return sharp(buffer).png({ quality: 50, compressionLevel: 9 }).toBuffer();
