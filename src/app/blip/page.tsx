@@ -6,6 +6,7 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { base58, base64 } from "@metaplex-foundation/umi/serializers";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,18 @@ export default function MessagePage() {
 
   async function handleSendBlip(message: string, to: string) {
     if (!wallet || !wallet.publicKey || !wallet.signAllTransactions) {
+      toast.error("Wallet Not Connected", {
+        description: "Please connect your wallet.",
+      });
+      return;
+    }
+
+    try {
+      new PublicKey(to);
+    } catch (error) {
+      toast.error("Invalid Recipient Address", {
+        description: "Please enter a valid Solana address.",
+      });
       return;
     }
 
