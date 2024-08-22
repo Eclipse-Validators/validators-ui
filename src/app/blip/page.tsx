@@ -35,10 +35,22 @@ export default function MessagePage() {
       <div className="mx-auto max-w-4xl">
         <Card className="border-border bg-card/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-center text-2xl font-bold">
+            <CardTitle className="flex items-center justify-center text-center text-2xl font-bold">
               <Image src="/blip/logo.png" alt="Blip" width={200} height={200} />
             </CardTitle>
-            <p className="pt-4">Send an NFT message.</p>
+            <p className="flex items-center justify-center pt-4">
+              Want to send a message to a wallet on Eclipse?
+            </p>
+            <p className="flex items-center justify-center">
+              Say you want to buy a NFT, or send a special message to an enemy,
+              or just say hi, with a Blip&nbsp;
+              <Image
+                src="/logo/small.webp"
+                alt="Validators"
+                width={20}
+                height={20}
+              />
+            </p>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -82,6 +94,10 @@ export default function MessagePage() {
                   <span className="ml-2"></span>
                 </div>
               </div>
+            </div>
+
+            <div className="w-full pt-4 text-center text-[12px]">
+              Each Blip costs .001 eth fee and .0004 for mint transaction costs.
             </div>
           </CardContent>
         </Card>
