@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { generateBlip } from "./actions";
 
 export default function MessagePage() {
+  const [from, setFrom] = useState<string>("");
   const [message, setMessage] = useState<string>("");
 
   const formatMessage = (text: string) => {
@@ -22,11 +23,11 @@ export default function MessagePage() {
     ));
   };
 
-  async function handleSendBlip(message: string) {
+  async function handleSendBlip(message: string, from: string) {
     try {
-      await generateBlip(message);
+      await generateBlip(message, from);
     } catch (error) {
-      console.error("Error generating or downloading blip:", error);
+      console.error("Error SENDING blip:", error);
     }
   }
 
@@ -59,6 +60,8 @@ export default function MessagePage() {
                   type="text"
                   placeholder="Enter Eclipse Wallet Address"
                   className="mb-4"
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
                 />
                 <Textarea
                   placeholder="Write your message..."
@@ -69,7 +72,7 @@ export default function MessagePage() {
                 <Button
                   className="w-full"
                   variant="default"
-                  onClick={() => handleSendBlip(message)}
+                  onClick={() => handleSendBlip(message, from)}
                 >
                   Send Blip!
                 </Button>
@@ -82,7 +85,7 @@ export default function MessagePage() {
                     layout="fill"
                     objectFit="contain"
                   />
-                  <div className="absolute ml-[40px] mt-[80px] w-full p-4">
+                  <div className="absolute ml-[40px] mt-[100px] w-full p-4">
                     <div className="w-auto max-w-none">
                       <p className="whitespace-nowrap text-[21px] text-foreground">
                         {formatMessage(message)}
