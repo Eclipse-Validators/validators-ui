@@ -20,7 +20,7 @@ function generateImage(text: string) {
   ctx.fillStyle = "#fff";
 
   ctx.font = "70px Manrope";
-  ctx.fillText(text, 200, 350);
+  ctx.fillText(text, 200, 455);
 
   const buffer = canvas.toBuffer("image/png", {
     compressionLevel: 0,
