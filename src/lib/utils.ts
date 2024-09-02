@@ -75,12 +75,12 @@ export async function fetchTokenInfo(
         decimals: account.account.data.parsed.info.tokenAmount.decimals,
         metadata: tokenMetadata
           ? {
-            name: tokenMetadata?.name,
-            symbol: tokenMetadata?.symbol,
-            json: tokenMetadata?.uri,
-            image: imageUri,
-            attributes,
-          }
+              name: tokenMetadata?.name,
+              symbol: tokenMetadata?.symbol,
+              json: tokenMetadata?.uri,
+              image: imageUri,
+              attributes,
+            }
           : null,
       };
     })

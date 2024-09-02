@@ -13,7 +13,7 @@ import {
   getAssetGpaBuilder,
 } from "@nifty-oss/asset";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, SendTransactionError } from "@solana/web3.js";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -161,6 +161,10 @@ export default function MessagePage() {
       toast.error("Error sending Blip!", {
         description: error instanceof Error ? error.message : "Unknown error",
       });
+      if (error instanceof SendTransactionError) {
+        const logs = await error.getLogs(connection);
+        console.log(error.logs, logs);
+      }
     } finally {
       setIsSending(false);
     }

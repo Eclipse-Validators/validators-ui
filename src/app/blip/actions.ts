@@ -7,7 +7,7 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 import { createCanvas, Image, registerFont } from "canvas";
 import sharp from "sharp";
 
-import { generateBlipTransaction } from "@/lib/blip";
+import { generateBlipTransactionV2 } from "@/lib/blip";
 
 const arweave = Arweave.init({
   host: "arweave.net",
@@ -168,7 +168,11 @@ export async function generateBlip(message: string, to: string, from: string) {
       jsonUri,
     };
 
-    const blipSerializedTxn = await generateBlipTransaction(from, to, jsonUri);
+    const blipSerializedTxn = await generateBlipTransactionV2(
+      from,
+      to,
+      jsonUri
+    );
 
     return {
       data: responseData,
