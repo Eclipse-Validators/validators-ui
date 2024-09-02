@@ -62,7 +62,7 @@ export default function Home() {
     if (!editionsProgram) return;
     const deploymentId = new PublicKey(
       (process.env.NEXT_PUBLIC_DEPLOYMENTID as string) ??
-        "HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP"
+      "HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP"
     );
     const hashlistPda = getHashlistPda(deploymentId);
     const hashlistAccount = await editionsProgram?.account.hashlist.fetch(

@@ -86,7 +86,6 @@ export function EditionsProgramProvider({
 
       const program = new anchor.Program<LibreplexEditions>(
         IDL,
-        PROGRAM_ID_EDITIONS,
         provider
       );
 
@@ -119,7 +118,7 @@ export function useEditionsHashlist() {
     if (!program) return;
     const deploymentId = new PublicKey(
       (process.env.NEXT_PUBLIC_DEPLOYMENTID as string) ??
-        "HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP"
+      "HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP"
     );
     const hashlistPda = getHashlistPda(deploymentId);
     const hashlistAccount = await program.account.hashlist.fetch(

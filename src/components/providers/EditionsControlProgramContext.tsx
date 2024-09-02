@@ -78,7 +78,6 @@ export function EditionsControlProgramProvider({
 
       const program = new anchor.Program<LibreplexEditionsControls>(
         IDL,
-        PROGRAM_ID_CONTROLS,
         provider
       );
 

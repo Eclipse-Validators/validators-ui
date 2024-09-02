@@ -14,14 +14,14 @@ export const getBase64FromDatabytes = (dataBytes: Buffer, dataType: string) => {
 
 export const decodeEditions =
   (program: Program<LibreplexEditions>) =>
-  (buffer: Buffer | undefined, pubkey: PublicKey) => {
-    const coder = new BorshCoder(program.idl);
-    const liquidity = buffer
-      ? coder.accounts.decode<EditionsDeployment>("editionsDeployment", buffer)
-      : null;
+    (buffer: Buffer | undefined, pubkey: PublicKey) => {
+      const coder = new BorshCoder(program.idl);
+      const liquidity = buffer
+        ? coder.accounts.decode<EditionsDeployment>("editionsDeployment", buffer)
+        : null;
 
-    return {
-      item: liquidity,
-      pubkey,
+      return {
+        item: liquidity,
+        pubkey,
+      };
     };
-  };
