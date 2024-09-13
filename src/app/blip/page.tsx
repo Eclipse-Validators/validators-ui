@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { BlipNftData } from "@/components/mint/blipNftCard";
 import { BlipNftGrid } from "@/components/mint/blipNftGrid";
+import { AssetV1, fetchAssetsByOwner } from '@metaplex-foundation/mpl-core';
 
 import { generateBlip } from "./actions";
 
@@ -53,41 +54,45 @@ export default function MessagePage() {
 
       setIsLoadingBlips(true);
 
-      const blipAssetAccounts = await getAssetGpaBuilder(umi)
-        .whereField(
-          "group",
-          publicKey("b1ipWX4C4xYRYvNg2YRPM6EUofH9NqU8PwUtTK5VCrx")
-        )
-        .whereField("owner", publicKey(wallet.publicKey.toBase58()))
-        .getPublicKeys();
+      const fetchCoreAssets = async () => {
+        if (!wallet?.publicKey) {
+          return [];
+        }
+        const ownedAssets = await fetchAssetsByOwner(umi, publicKey(wallet.publicKey.toBase58()), {
+          skipDerivePlugins: false,
+        })
+        console.log("ownedAssets", ownedAssets)
+        const ownedBlips = ownedAssets.filter((asset) => asset.updateAuthority.address === publicKey("7MWzy1jbS3KC561EnY6DBixqToVwMfDqd7eXcGXZkj2A"))
+        return ownedBlips;
+      };
 
-      const blipNftAccountsData = await fetchAllAsset(umi, blipAssetAccounts);
-
-      const blipNfts = await Promise.all(
-        blipNftAccountsData.map(async (blipNft: Asset) => {
-          const metadataExtension = blipNft.extensions.find(
-            (e) => e.type === ExtensionType.Metadata
-          );
-          if (!metadataExtension?.uri) {
-            return null;
-          }
-
+      const mappedBlips = async (assets: AssetV1[]): Promise<BlipNftData[]> => {
+        const blipDataPromises = assets.map(async (asset) => {
           try {
-            const metadataResponse = await fetch(metadataExtension.uri);
-            const metadata = await metadataResponse.json();
+            const response = await fetch(asset.uri);
+            if (!response.ok) {
+              throw new Error(`Failed to fetch JSON from ${asset.uri}`);
+            }
+            const data = await response.json();
             return {
-              address: blipNft.publicKey.toString(),
+              address: asset.publicKey.toString(),
               metadata: {
-                image: metadata.image,
-                attributes: metadata.attributes,
+                image: data.image,
+                attributes: data.attributes || [],
               },
             } as BlipNftData;
           } catch (error) {
-            console.error("Error fetching metadata:", error);
-            return null;
+            console.error(`Error processing asset ${asset.publicKey.toString()}:`, error);
+            return null; // Skip this asset if there's an error
           }
-        })
-      );
+        });
+
+        const blipData = await Promise.all(blipDataPromises);
+        // Filter out any null values resulting from fetch errors
+        return blipData.filter((nft): nft is BlipNftData => nft !== null);
+      };
+
+      const blipNfts = await mappedBlips(await fetchCoreAssets());
 
       setWalletBlipNfts(
         blipNfts.filter((nft): nft is BlipNftData => nft !== null)
