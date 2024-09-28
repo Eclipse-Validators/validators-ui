@@ -40,9 +40,9 @@ const LandingPage: React.FC = () => {
               beings, featuring 4 unique factions that celebrate the diversity
               of the Eclipse community.
             </p>
-            <Link href="/mint">
+            <Link target="_blank" href="https:///discord.gg/XRMXk5hKUn">
               <Button variant="secondary" size="lg">
-                Mint yours
+                Buy OTC
               </Button>
             </Link>
           </div>
@@ -69,9 +69,9 @@ const LandingPage: React.FC = () => {
               differences in their interpretations of this cosmic duty emerged,
               leading to the formation of distinct factions among them...
             </p>
-            <Link href="/mint">
+            <Link target="_blank" href="https:///discord.gg/XRMXk5hKUn">
               <Button variant="secondary" size="lg">
-                Mint yours
+                Buy OTC
               </Button>
             </Link>
           </div>
