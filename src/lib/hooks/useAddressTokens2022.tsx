@@ -39,7 +39,8 @@ export function useAddressTokens2022(
         TOKEN_2022_PROGRAM_ID,
         fetchTokenMetadata
       );
-      setTokens(tokenInfo);
+      const filteredTokens = tokenInfo.filter(x => x.amount > 0);
+      setTokens(filteredTokens);
     } catch (err) {
       console.error("Error fetching address tokens:", err);
       setError("Failed to fetch address tokens");
