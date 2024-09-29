@@ -290,7 +290,7 @@ const TransferTokens: React.FC = () => {
           currentTx.add(tokenCloseInstruction);
         }
         //add memo to transaction
-        const message = `Transferred ${token.metadata?.name ?? token.mint} using Validators UI`;
+        const message = `Transferred ${token?.metadata?.name ?? token.mint} using Validators UI`;
         const memoIx = new TransactionInstruction({
           keys: [{ pubkey: publicKey, isSigner: true, isWritable: true }],
           data: Buffer.from(message, "utf-8"),
