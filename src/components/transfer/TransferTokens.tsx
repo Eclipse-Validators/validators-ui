@@ -15,7 +15,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { X } from "lucide-react";
 import { useLogger } from "next-axiom";
 import { toast } from "sonner";
@@ -32,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useEditionsHashlist } from "../providers/EditionsProgramContext";
 import { EthTransfer } from "./EthTransfer";
+import { SPL_MEMO_PROGRAM_ID } from "@metaplex-foundation/mpl-toolbox";
 
 const TokenCard: React.FC<{
   token: FetchedTokenInfo;
@@ -288,6 +289,14 @@ const TransferTokens: React.FC = () => {
           );
           currentTx.add(tokenCloseInstruction);
         }
+        //add memo to transaction
+        const message = `Transferred ${token.metadata?.name ?? token.mint} using Validators UI`;
+        const memoIx = new TransactionInstruction({
+          keys: [{ pubkey: publicKey, isSigner: true, isWritable: true }],
+          data: Buffer.from(message, "utf-8"),
+          programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+        });
+        currentTx.add(memoIx);
         tokenCount++;
 
         if (tokenCount === MAX_TOKENS_PER_TRANSACTION) {
