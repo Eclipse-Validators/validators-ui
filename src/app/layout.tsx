@@ -13,6 +13,7 @@ import { EditionsControlProgramProvider } from "@/components/providers/EditionsC
 import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext";
 import SolanaWalletProvider from "@/components/SolanaWalletProvider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -104,6 +105,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </GlobalConnectionProvider>
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId="G-0QLYYL5TGN" />
     </html>
   );
 }
