@@ -14,6 +14,7 @@ import { EditionsProgramProvider } from "@/components/providers/EditionsProgramC
 import SolanaWalletProvider from "@/components/SolanaWalletProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { EthereumProviders } from "@/components/EthProviders";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -87,22 +88,24 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem={false}
           disableTransitionOnChange
         >
-          <GlobalConnectionProvider>
-            <SolanaWalletProvider>
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-grow">
-                  <EditionsProgramProvider>
-                    <EditionsControlProgramProvider>
-                      {children}
-                    </EditionsControlProgramProvider>
-                  </EditionsProgramProvider>
-                </main>
-                <Footer />
-                <Toaster />
-              </div>
-            </SolanaWalletProvider>
-          </GlobalConnectionProvider>
+          <EthereumProviders>
+            <GlobalConnectionProvider>
+              <SolanaWalletProvider>
+                <div className="flex min-h-screen flex-col">
+                  <Navbar />
+                  <main className="flex-grow">
+                    <EditionsProgramProvider>
+                      <EditionsControlProgramProvider>
+                        {children}
+                      </EditionsControlProgramProvider>
+                    </EditionsProgramProvider>
+                  </main>
+                  <Footer />
+                  <Toaster />
+                </div>
+              </SolanaWalletProvider>
+            </GlobalConnectionProvider>
+          </EthereumProviders>
         </ThemeProvider>
       </body>
       <GoogleAnalytics gaId="G-0QLYYL5TGN" />

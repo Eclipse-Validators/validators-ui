@@ -49,7 +49,7 @@ const Navbar = () => {
                 Home
               </Link>
               <Link
-                href="https://bridge.validators.wtf"
+                href="/bridge"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 Bridge
@@ -124,7 +124,7 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              href="https://bridge.validators.wtf"
+              href="/bridge"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
