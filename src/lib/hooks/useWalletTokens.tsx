@@ -34,7 +34,8 @@ export function useWalletTokens(fetchTokenMetadata: boolean = false) {
         TOKEN_2022_PROGRAM_ID,
         fetchTokenMetadata
       );
-      setTokens(tokenInfo);
+
+      setTokens(tokenInfo.filter((token) => token.amount > 0));
     } catch (err) {
       console.error("Error fetching wallet tokens:", err);
       setError("Failed to fetch wallet tokens");
