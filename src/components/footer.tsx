@@ -20,7 +20,7 @@ export function Footer() {
             target="_blank"
             rel="noreferrer"
           >
-            <Twitter className="h-5 w-5" />
+            <Twitter className="h-5 w-5 text-secondary" />
           </Link>
           <Link
             href="https://discord.gg/8cjJ55hKUz"
