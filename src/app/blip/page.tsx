@@ -253,8 +253,8 @@ export default function MessagePage() {
             </div>
 
             <div className="w-full pt-4 text-center text-[12px]">
-              Each Blip costs .0005 eth fee and .000038x for mint account costs.{" "}
-              <i>/Metaplex charges .000018 as a protocol fee./</i>
+              Each Blip costs .0005 eth fee and ~.000038 for mint account costs.{" "}
+              <i>Metaplex charges .000018 as a protocol fee.</i>
             </div>
           </CardContent>
         </Card>
