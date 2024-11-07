@@ -69,7 +69,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
                                     value={amount}
                                     onChange={handleAmountChange}
                                     onClick={(e) => e.stopPropagation()}
-                                    placeholder="Amount to burn"
+                                    placeholder="Burn"
                                     min="0"
                                     max={token.amount.toString()}
                                     className="flex-1"
