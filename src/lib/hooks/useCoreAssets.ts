@@ -6,6 +6,7 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { publicKey } from "@metaplex-foundation/umi";
 import { AssetV1, collectionAddress, fetchAssetsByOwner, MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
 import { FetchedTokenInfo } from "@/lib/types";
+import { fetchAllDigitalAssetByOwner } from "@metaplex-foundation/mpl-token-metadata";
 
 interface JsonMetadata {
     name?: string;
@@ -14,6 +15,34 @@ interface JsonMetadata {
     description?: string;
     attributes?: Array<{ trait_type: string; value: string }>;
 }
+
+const fetchMetadata = async (uri: string): Promise<JsonMetadata> => {
+    try {
+        const response = await fetch(uri);
+        const contentType = response.headers.get('content-type');
+
+        if (contentType?.includes('image/')) {
+            return {
+                image: uri,
+                name: '',
+                symbol: '',
+            };
+        }
+
+        try {
+            return await response.json();
+        } catch {
+            return {
+                image: uri,
+                name: '',
+                symbol: '',
+            };
+        }
+    } catch (err) {
+        console.error(`Error fetching metadata for ${uri}:`, err);
+        return {};
+    }
+};
 
 export function useCoreAssets() {
     const { publicKey: walletPublicKey } = useWallet();
@@ -40,32 +69,49 @@ export function useCoreAssets() {
                     umi,
                     publicKey(walletPublicKey.toBase58())
                 );
+                //TODO: add in normal metaplex nfts at somepoint
+                // const traditionalNfts = await fetchAllDigitalAssetByOwner(umi, publicKey(walletPublicKey.toBase58()));
+                // const mappedNftTokensPromises = traditionalNfts.map(async asset => {
+                //     let metadata: JsonMetadata = {};
 
-                // Fetch metadata for each asset
+                //     if (asset.metadata) {
+                //         metadata = await fetchMetadata(asset.metadata.uri);
+                //     }
+                //     return {
+                //         tokenAccount: asset.,
+                //         mint: asset.mint.publicKey,
+                //         amount: 1,
+                //         decimals: 0,
+                //         metadata: {
+                //             collectionAddress: collectionAddress(asset),
+                //             name: metadata.name || asset.name,
+                //             symbol: metadata.symbol || "",
+                //             image: metadata.image || asset.uri,
+                //             json: asset.uri,
+                //             attributes: metadata.attributes || asset.attributes?.attributeList
+                //         },
+                //         owner: walletPublicKey.toBase58(),
+                //         programId: MPL_CORE_PROGRAM_ID.toString()
+                //     } as FetchedTokenInfo;
+                // });
                 const mappedTokensPromises = assets.map(async asset => {
                     let metadata: JsonMetadata = {};
 
                     if (asset.uri) {
-                        try {
-                            const response = await fetch(asset.uri);
-                            if (response.ok) {
-                                metadata = await response.json();
-                            }
-                        } catch (err) {
-                            console.error(`Error fetching metadata for ${asset.publicKey.toString()}:`, err);
-                        }
+                        metadata = await fetchMetadata(asset.uri);
                     }
-
                     return {
-                        tokenAccount: collectionAddress(asset),
+                        tokenAccount: asset.publicKey.toString(),
                         mint: asset.publicKey.toString(),
                         amount: 1,
                         decimals: 0,
                         metadata: {
+                            collectionAddress: collectionAddress(asset),
                             name: metadata.name || asset.name,
                             symbol: metadata.symbol || "",
                             image: metadata.image || asset.uri,
-                            attributes: asset.attributes?.attributeList
+                            json: asset.uri,
+                            attributes: metadata.attributes || asset.attributes?.attributeList
                         },
                         owner: walletPublicKey.toBase58(),
                         programId: MPL_CORE_PROGRAM_ID.toString()
@@ -73,8 +119,23 @@ export function useCoreAssets() {
                 });
 
                 const mappedTokens = await Promise.all(mappedTokensPromises);
-                setTokens(mappedTokens);
+
+                // Sort tokens by name/mint similar to TransferTokens
+                const sortedTokens = mappedTokens.sort((a, b) => {
+                    const parseNumber = (name: string) => {
+                        const match = name.match(/\d+/);
+                        return match ? parseInt(match[0]) : 0;
+                    };
+
+                    if (a.metadata?.name && b.metadata?.name) {
+                        const numA = parseNumber(a.metadata.name);
+                        const numB = parseNumber(b.metadata.name);
+                        return numA - numB || a.metadata.name.localeCompare(b.metadata.name);
+                    }
+                    return a.mint.localeCompare(b.mint);
+                });
                 setAssets(assets);
+                setTokens(sortedTokens);
             } catch (err) {
                 console.error("Error fetching core assets:", err);
                 setError(err instanceof Error ? err.message : "Unknown error");

@@ -243,7 +243,7 @@ const BurnTokens: React.FC = () => {
                         .accountsPartial({
                             payer: publicKey,
                             asset: new PublicKey(token.mint),
-                            collection: token.tokenAccount !== "" ? new PublicKey(token.tokenAccount) : null,
+                            collection: token.metadata?.collectionAddress ? new PublicKey(token.metadata.collectionAddress) : null,
                             feeCollector: FEE_COLLECTOR_ADDRESS,
                             config: configAccount,
                             mplCoreProgram: MPL_CORE_PROGRAM_ID,

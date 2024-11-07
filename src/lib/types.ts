@@ -8,6 +8,7 @@ export interface FetchedTokenInfo {
   decimals: number;
   programId: string;
   metadata?: {
+    collectionAddress?: string
     name?: string;
     symbol?: string;
     image?: string | null;
