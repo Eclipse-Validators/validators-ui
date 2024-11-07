@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X, FireExtinguisherIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -59,6 +59,15 @@ const Navbar = () => {
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 Blip
+              </Link>
+              <Link
+                href="/burn"
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              >
+                <span className="flex items-center">
+                  <FireExtinguisherIcon className="mr-1 h-4 w-4" />
+                  Burn
+                </span>
               </Link>
               <Link
                 href="/gallery"
@@ -136,6 +145,15 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Blip
+            </Link>
+            <Link
+              href="/burn"
+              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              <span className="flex items-center">
+                <FireExtinguisherIcon className="mr-1 h-4 w-4" />
+                Burn
+              </span>
             </Link>
             <Link
               href="/gallery"

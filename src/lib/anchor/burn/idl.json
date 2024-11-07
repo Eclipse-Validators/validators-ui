@@ -1,0 +1,345 @@
+{
+  "address": "BURN4rs11nKf5apPBLA13XHbNqcTGJFZb9vbBRNc69K7",
+  "metadata": {
+    "name": "validator_burn",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "burn",
+      "discriminator": [116, 110, 29, 56, 107, 219, 42, 93],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "token_account",
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "fee_collector",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "burn_metaplex_core",
+      "discriminator": [25, 21, 192, 32, 22, 229, 24, 81],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "asset",
+          "writable": true
+        },
+        {
+          "name": "collection",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "fee_collector",
+          "writable": true
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "burn_metaplex_nft",
+      "discriminator": [224, 148, 243, 18, 243, 11, 196, 199],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "token_account",
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "metadata",
+          "writable": true
+        },
+        {
+          "name": "master_edition",
+          "writable": true
+        },
+        {
+          "name": "fee_collector",
+          "writable": true
+        },
+        {
+          "name": "collection_metadata",
+          "optional": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "metadata_program",
+          "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_token_account",
+      "discriminator": [132, 172, 24, 60, 100, 156, 135, 97],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 110, 102, 105, 103]
+              }
+            ]
+          }
+        },
+        {
+          "name": "fee_collector",
+          "writable": true
+        },
+        {
+          "name": "token_account",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize",
+      "discriminator": [175, 175, 109, 31, 13, 152, 155, 237],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [99, 111, 110, 102, 105, 103]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "bump",
+          "type": "u8"
+        },
+        {
+          "name": "burn_token_fee",
+          "type": "u64"
+        },
+        {
+          "name": "burn_nft_fee",
+          "type": "u64"
+        },
+        {
+          "name": "close_token_fee",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_config",
+      "discriminator": [29, 158, 252, 191, 10, 83, 219, 99],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "burn_token_fee",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "burn_nft_fee",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "close_token_fee",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "is_enabled",
+          "type": {
+            "option": "bool"
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "ValidatorBurnConfig",
+      "discriminator": [21, 41, 108, 77, 205, 235, 175, 27]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "IncorrectAuthority",
+      "msg": "Incorrect Authority Signer"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidFeeCollector",
+      "msg": "Invalid Fee Collector"
+    },
+    {
+      "code": 6002,
+      "name": "ConfigAlreadyInitialized",
+      "msg": "Config Already Initialized"
+    },
+    {
+      "code": 6003,
+      "name": "ConfigNotInitializedOrEnabled",
+      "msg": "Config Not Initialized or Enabled"
+    },
+    {
+      "code": 6004,
+      "name": "AlreadyInitialized",
+      "msg": "Already initialized"
+    },
+    {
+      "code": 6005,
+      "name": "CloseAccountError",
+      "msg": "Close Account Error"
+    },
+    {
+      "code": 6006,
+      "name": "TokenAccountNotEmpty",
+      "msg": "Token Account Not Empty"
+    }
+  ],
+  "types": [
+    {
+      "name": "ValidatorBurnConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "is_initialized",
+            "type": "bool"
+          },
+          {
+            "name": "is_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "burn_token_fee",
+            "type": "u64"
+          },
+          {
+            "name": "burn_nft_fee",
+            "type": "u64"
+          },
+          {
+            "name": "close_token_fee",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

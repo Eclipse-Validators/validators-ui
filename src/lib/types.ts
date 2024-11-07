@@ -6,6 +6,7 @@ export interface FetchedTokenInfo {
   amount: number;
   tokenAccount: string;
   decimals: number;
+  programId: string;
   metadata?: {
     name?: string;
     symbol?: string;

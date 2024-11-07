@@ -73,14 +73,15 @@ export async function fetchTokenInfo(
         amount: account.account.data.parsed.info.tokenAmount.uiAmount,
         tokenAccount: account.pubkey.toBase58(),
         decimals: account.account.data.parsed.info.tokenAmount.decimals,
+        programId: programId.toBase58(),
         metadata: tokenMetadata
           ? {
-              name: tokenMetadata?.name,
-              symbol: tokenMetadata?.symbol,
-              json: tokenMetadata?.uri,
-              image: imageUri,
-              attributes,
-            }
+            name: tokenMetadata?.name,
+            symbol: tokenMetadata?.symbol,
+            json: tokenMetadata?.uri,
+            image: imageUri,
+            attributes,
+          }
           : null,
       };
     })
