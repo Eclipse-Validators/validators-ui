@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: 'Burn Tokens & NFTs | Validators.wtf',
-    description: 'Safely burn unwanted tokens and NFTs on Solana. Reclaim ETH from unused accounts or reduce token supply.',
+    description: 'Safely burn unwanted tokens and NFTs on Solana. Reclaim ETH from unused accounts, unwanted nfts or reduce token supply.',
     keywords: 'Eclipse, Solana, burn tokens, NFT burn, wallet cleanup, ETH reclaim, token management, validators.wtf',
     openGraph: {
         title: 'Burn Tokens & NFTs | Validators.wtf',

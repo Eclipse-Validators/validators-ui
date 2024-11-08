@@ -24,20 +24,13 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url.base),
+  metadataBase: new URL('https://validators.wtf'),
   title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    default: 'Validators.wtf | Eclipse Tools',
+    template: '%s | Validators.wtf'
   },
-  description: siteConfig.description,
-  keywords: siteConfig.keywords,
-  authors: [
-    {
-      name: siteConfig.author,
-      url: siteConfig.url.author,
-    },
-  ],
-  creator: siteConfig.author,
+  description: 'Eclipse blockchain tools for bridging, burning tokens, and sending messages.',
+  keywords: ['Eclipse', 'blockchain', 'crypto', 'bridge', 'token burner', 'messaging'],
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -67,6 +60,10 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
 };
 
