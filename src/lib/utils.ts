@@ -29,6 +29,81 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export async function fetchTokenMetadataHelper(
+  connection: Connection,
+  mintAddress: PublicKey,
+  programId: PublicKey = TOKEN_2022_PROGRAM_ID
+) {
+  const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata());
+
+  try {
+    // Try Token-2022 metadata first
+    let tokenMetadata = await getTokenMetadata(
+      connection,
+      mintAddress,
+      "confirmed",
+      programId
+    );
+
+    // If no Token-2022 metadata, try MPL Token Metadata
+    if (!tokenMetadata) {
+      const metadataPda = await fetchDigitalAsset(umi, publicKey(mintAddress.toString()));
+      console.log('metadatapda', metadataPda);
+      if (metadataPda) {
+        tokenMetadata = {
+          mint: mintAddress,
+          updateAuthority: new PublicKey(metadataPda.metadata.updateAuthority.toString()),
+          uri: metadataPda.metadata.uri,
+          name: metadataPda.metadata.name,
+          symbol: metadataPda.metadata.symbol,
+          additionalMetadata: []
+        };
+      }
+    }
+
+    if (tokenMetadata?.uri) {
+      const metadata = await fetchMetadata(tokenMetadata.uri);
+      return {
+        name: tokenMetadata.name,
+        symbol: tokenMetadata.symbol,
+        json: tokenMetadata.uri,
+        image: metadata.image,
+        description: metadata.description,
+        attributes: metadata.attributes || [],
+      };
+    }
+  } catch (err) {
+    console.error("Error fetching token metadata:", err);
+  }
+
+  return null;
+}
+
+async function fetchMetadata(uri: string) {
+  try {
+    const response = await fetch(uri);
+    const contentType = response.headers.get('content-type');
+
+    if (contentType?.includes('image/')) {
+      return { image: uri };
+    }
+
+    try {
+      const metadata = await response.json();
+      return {
+        image: metadata.image,
+        description: metadata.description,
+        attributes: metadata.attributes
+      };
+    } catch {
+      return { image: uri };
+    }
+  } catch (error) {
+    console.error("Error fetching metadata:", error);
+    return {};
+  }
+}
+
 export async function fetchTokenInfo(
   connection: Connection,
   tokenAccounts: {
@@ -38,70 +113,16 @@ export async function fetchTokenInfo(
   programId: PublicKey,
   fetchTokenMetadata: boolean
 ): Promise<FetchedTokenInfo[]> {
-  const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata())
-
-  const fetchMetadata = async (uri: string) => {
-    try {
-      const response = await fetch(uri);
-      const contentType = response.headers.get('content-type');
-
-      if (contentType?.includes('image/')) {
-        // If URI points directly to an image
-        return { image: uri };
-      }
-
-      // Try parsing as JSON
-      try {
-        const metadata = await response.json();
-        return {
-          image: metadata.image,
-          attributes: metadata.attributes
-        };
-      } catch {
-        // If JSON parsing fails, assume it's a direct image URL
-        return { image: uri };
-      }
-    } catch (error) {
-      console.error("Error fetching metadata:", error);
-      return {};
-    }
-  };
-
   return Promise.all(
     tokenAccounts.map(async (account) => {
-      let tokenMetadata = null;
-      let imageUri: string | null = null;
-      let attributes: Attribute[] = [];
+      let metadata = null;
 
       if (fetchTokenMetadata) {
-        try {
-          tokenMetadata = await getTokenMetadata(
-            connection,
-            new PublicKey(account.account.data.parsed.info.mint),
-            "confirmed",
-            programId
-          );
-
-          const metadataPda = !tokenMetadata && await fetchDigitalAsset(umi, publicKey(account.account.data.parsed.info.mint));
-          if (metadataPda) {
-            tokenMetadata = {
-              mint: account.account.data.parsed.info.mint,
-              updateAuthority: new PublicKey(metadataPda.metadata.updateAuthority.toString()),
-              uri: metadataPda.metadata.uri,
-              name: metadataPda.metadata.name,
-              symbol: metadataPda.metadata.symbol,
-              additionalMetadata: []
-            };
-          }
-
-          if (tokenMetadata?.uri) {
-            const metadata = await fetchMetadata(tokenMetadata.uri);
-            imageUri = metadata.image;
-            attributes = metadata.attributes || [];
-          }
-        } catch (err) {
-          console.log("Error fetching token metadata:", err);
-        }
+        metadata = await fetchTokenMetadataHelper(
+          connection,
+          new PublicKey(account.account.data.parsed.info.mint),
+          programId
+        );
       }
 
       return {
@@ -111,15 +132,7 @@ export async function fetchTokenInfo(
         tokenAccount: account.pubkey.toBase58(),
         decimals: account.account.data.parsed.info.tokenAmount.decimals,
         programId: programId.toBase58(),
-        metadata: tokenMetadata
-          ? {
-            name: tokenMetadata?.name,
-            symbol: tokenMetadata?.symbol,
-            json: tokenMetadata?.uri,
-            image: imageUri,
-            attributes,
-          }
-          : null,
+        metadata,
       };
     })
   );
