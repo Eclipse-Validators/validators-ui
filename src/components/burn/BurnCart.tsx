@@ -58,35 +58,35 @@ const BurnCart: React.FC<BurnCartProps> = ({
     const estimatedEth = calculateEstimatedEth();
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-3 sm:p-4 z-50">
             <div className="container mx-auto">
-                <div className="flex flex-col space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">Selected for Burning</h3>
-                        <div className="flex flex-col items-end">
-                            <span className="text-sm text-muted-foreground">
+                <div className="flex flex-col space-y-3 sm:space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h3 className="text-base sm:text-lg font-semibold">Selected for Burning</h3>
+                        <div className="flex flex-row sm:flex-col items-start sm:items-end justify-between sm:justify-start gap-2">
+                            <span className="text-xs sm:text-sm text-muted-foreground">
                                 {selectedTokens.length} item(s)
                             </span>
-                            <span className="text-sm font-medium">
+                            <span className="text-xs sm:text-sm font-medium">
                                 Estimated Rent Reclaim: {estimatedEth.toFixed(9)} ETH
                             </span>
                         </div>
                     </div>
 
-                    <div className="flex gap-2 overflow-x-auto pb-2">
+                    <div className="flex gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
                         {selectedTokens.map(({ token, amount }) => (
-                            <Card key={token.tokenAccount} className="min-w-[200px]">
-                                <CardContent className="p-3">
+                            <Card key={token.tokenAccount} className="min-w-[160px] sm:min-w-[200px] flex-shrink-0">
+                                <CardContent className="p-2 sm:p-3">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center space-x-2">
                                             {token.metadata?.image && (
                                                 <img
                                                     src={token.metadata.image}
                                                     alt={token.metadata.name}
-                                                    className="h-8 w-8 rounded"
+                                                    className="h-6 w-6 sm:h-8 sm:w-8 rounded"
                                                 />
                                             )}
-                                            <span className="text-sm truncate max-w-[100px]">
+                                            <span className="text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[100px]">
                                                 {token.metadata?.name || token.mint.slice(0, 8)}
                                             </span>
                                         </div>
@@ -97,7 +97,7 @@ const BurnCart: React.FC<BurnCartProps> = ({
                                             <X className="h-4 w-4" />
                                         </button>
                                     </div>
-                                    <div className="text-sm text-muted-foreground">
+                                    <div className="text-xs sm:text-sm text-muted-foreground">
                                         Burning: {amount || '0'} {token.metadata?.symbol || 'tokens'}
                                     </div>
                                 </CardContent>
@@ -110,7 +110,7 @@ const BurnCart: React.FC<BurnCartProps> = ({
                         disabled={isBurnDisabled || selectedTokens.some(item =>
                             item.token.amount > 0 && !item.amount
                         )}
-                        className="w-full"
+                        className="w-full text-sm sm:text-base py-2 sm:py-3"
                         variant="destructive"
                     >
                         {isBurnDisabled

@@ -336,15 +336,23 @@ const BurnTokens: React.FC = () => {
     if (errorSPL || error2022 || errorEmptyAccounts || errorCore) return <div>Error: {errorSPL || error2022 || errorEmptyAccounts || errorCore}</div>;
 
     return (
-        <div className="container mx-auto p-4 pb-32">
-            <div className="flex items-center justify-center pb-24">
-                <Image src="/blackhole.png" alt="Burn" width={150} height={150} />
+        <div className="container mx-auto p-3 sm:p-4 pb-32">
+            <div className="flex items-center justify-center pb-16 sm:pb-24">
+                <div className="relative w-[100px] h-[100px] sm:w-[150px] sm:h-[150px] md:w-[300px] md:h-[300px] lg:w-[500px] lg:h-[500px]">
+                    <Image
+                        src="/blackhole.png"
+                        alt="Burn"
+                        fill
+                        className="object-contain"
+                        priority
+                    />
+                </div>
             </div>
-            <h1 className="mb-4 text-2xl font-bold">Burn Tokens</h1>
+            <h1 className="mb-4 text-xl sm:text-2xl font-bold">Enter the Blackhole</h1>
 
-            <div className="mb-8 space-y-4 max-w-3xl">
-                <p className="text-lg text-muted-foreground">
-                    Reclaim ETH from unused accounts or burn tokens that will reduce token supply.
+            <div className="mb-6 sm:mb-8 space-y-4 max-w-3xl">
+                <p className="text-base sm:text-lg text-muted-foreground">
+                    Reclaim ETH from unused accounts or burn tokens that will reduce token supply. You also have the ability to close empty accounts or declutter your wallet.
                 </p>
 
                 <div className="p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-950/30">
@@ -352,7 +360,7 @@ const BurnTokens: React.FC = () => {
                         WARNING
                     </p>
                     <p className="text-yellow-700 dark:text-yellow-500">
-                        Burning your entire balance will close your token account and is not recoverable.
+                        Burning your entire balance will close your token account and is not recoverable so please use with caution. You can always recreate the token account for later use.
                         Closing empty accounts is safe.
                     </p>
                 </div>
@@ -364,44 +372,44 @@ const BurnTokens: React.FC = () => {
                 </div>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList>
-                    <TabsTrigger value="spl">SPL Tokens</TabsTrigger>
-                    <TabsTrigger value="token2022">Token-2022</TabsTrigger>
-                    <TabsTrigger value="empty">Empty Accounts</TabsTrigger>
-                    <TabsTrigger value="nfts">NFTs</TabsTrigger>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+                <TabsList className="w-full flex overflow-x-auto">
+                    <TabsTrigger value="spl" className="flex-1">SPL Tokens</TabsTrigger>
+                    <TabsTrigger value="token2022" className="flex-1">Token-2022</TabsTrigger>
+                    <TabsTrigger value="empty" className="flex-1">Empty Accounts</TabsTrigger>
+                    <TabsTrigger value="nfts" className="flex-1">NFTs</TabsTrigger>
                 </TabsList>
 
-                <div className="relative mt-4">
+                <div className="relative">
                     <Input
                         type="text"
                         placeholder="Search tokens..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full max-w-sm pr-8"
+                        className="w-full max-w-full sm:max-w-sm pr-8"
                     />
                 </div>
 
                 <TabsContent value="spl">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {renderTokenCards(splTokens)}
                     </div>
                 </TabsContent>
 
                 <TabsContent value="token2022">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {renderTokenCards(token2022Tokens)}
                     </div>
                 </TabsContent>
 
                 <TabsContent value="empty">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {renderEmptyAccounts(emptyAccounts)}
                     </div>
                 </TabsContent>
 
                 <TabsContent value="nfts">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         {renderCoreAssets(coreAssets)}
                     </div>
                 </TabsContent>

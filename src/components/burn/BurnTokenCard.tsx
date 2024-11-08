@@ -29,15 +29,15 @@ export const TokenCard: React.FC<TokenCardProps> = ({
 
     return (
         <Card
-            className={`w-full max-w-sm cursor-pointer ${isSelected ? "ring-2 ring-purple-500" : ""}`}
+            className={`w-full cursor-pointer ${isSelected ? "ring-2 ring-purple-500" : ""}`}
             onClick={(e) => {
                 if (e.target instanceof HTMLInputElement) return;
                 onSelect();
             }}
         >
-            <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                    <span>
+            <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="flex items-center justify-between text-base sm:text-lg">
+                    <span className="truncate">
                         {token.metadata?.name ||
                             token.mint.slice(0, 4) + "..." + token.mint.slice(-4)}
                     </span>
@@ -48,18 +48,18 @@ export const TokenCard: React.FC<TokenCardProps> = ({
                     />
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="flex items-center space-x-4">
+            <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     {token.metadata?.image && (
                         <img
                             src={token.metadata.image}
                             alt={token.metadata.name}
-                            className="h-16 w-16 rounded"
+                            className="h-16 w-16 rounded object-cover"
                         />
                     )}
-                    <div>
-                        {token.decimals > 0 ? <p>Balance: {token.amount}</p> : null}
-                        <p>
+                    <div className="flex-1 space-y-2">
+                        {token.decimals > 0 ? <p className="text-sm">Balance: {token.amount}</p> : null}
+                        <p className="text-sm">
                             <b>Symbol:</b> {token.metadata?.symbol || "N/A"}
                         </p>
                         {token.decimals > 0 && (
@@ -72,7 +72,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
                                     placeholder="Burn"
                                     min="0"
                                     max={token.amount.toString()}
-                                    className="flex-1"
+                                    className="flex-1 text-sm"
                                 />
                                 <Button
                                     variant="outline"
@@ -84,7 +84,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
                                         }
                                         onAmountChange(token.amount.toString());
                                     }}
-                                    className="whitespace-nowrap"
+                                    className="whitespace-nowrap text-sm"
                                 >
                                     Max
                                 </Button>
