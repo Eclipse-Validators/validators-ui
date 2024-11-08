@@ -89,6 +89,11 @@ const Navbar = () => {
                   >
                     Wallet Peek
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => handleDropdownItemClick("/manage")}
+                  >
+                    Manage
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               {isDev && (
@@ -147,6 +152,12 @@ const Navbar = () => {
               className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
             >
               Rug Check
+            </Link>
+            <Link
+              href="/manage"
+              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              Manage
             </Link>
             <Link
               href="/gallery"
