@@ -61,12 +61,11 @@ const Navbar = () => {
                 Blip
               </Link>
               <Link
-                href="/burn"
+                href="/blackhole"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 <span className="flex items-center">
-                  <FireExtinguisherIcon className="mr-1 h-4 w-4" />
-                  Burn
+                  Blackhole
                 </span>
               </Link>
               <Link
@@ -147,13 +146,10 @@ const Navbar = () => {
               Blip
             </Link>
             <Link
-              href="/burn"
+              href="/blackhole"
               className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
             >
-              <span className="flex items-center">
-                <FireExtinguisherIcon className="mr-1 h-4 w-4" />
-                Burn
-              </span>
+              Blackhole
             </Link>
             <Link
               href="/gallery"
