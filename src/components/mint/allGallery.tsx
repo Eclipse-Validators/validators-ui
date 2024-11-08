@@ -4,11 +4,10 @@ import React, { useCallback, useEffect, useRef, useState, useMemo, useDeferredVa
 import { getTokenMetadata, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
-import { X } from "lucide-react";
-
+import { X, ArrowUp } from "lucide-react";
+import { useInView } from 'react-intersection-observer';
 import { useGroupMembers } from "@/components/providers/GroupMembersContext";
 
-import { Button } from "../ui/button";
 import { NFTData } from "./nftCard";
 import { NFTGrid } from "./nftGrid";
 import { Input } from "../ui/input";
@@ -28,6 +27,12 @@ export function AllNFTGallery({ ownedNftsData }: { ownedNftsData: NFTData[] }) {
   const fetchedTokens = useRef(new Set<string>());
   const remainingTokens = useRef<string[]>([]);
   const allLoadedNfts = useRef<NFTData[]>([]);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const { ref: loadMoreRef, inView } = useInView({
+    threshold: 0,
+    rootMargin: '200px',
+  });
 
   const fetchNFTMetadata = useCallback(
     async (tokenMint: string): Promise<NFTData> => {
@@ -123,12 +128,31 @@ export function AllNFTGallery({ ownedNftsData }: { ownedNftsData: NFTData[] }) {
     fetchAllNFTs();
   }, [fetchAllNFTs]);
 
+  useEffect(() => {
+    if (inView && !fetchingMore && !loading && remainingTokens.current.length > 0 && !deferredSearch) {
+      loadMore();
+    }
+  }, [inView, fetchingMore, loading, loadMore, deferredSearch]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400); // Show after scrolling 400px
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="space-y-4">
       <div className="relative w-full max-w-sm">
         <Input
           type="text"
-          placeholder="Search NFTs..."
+          placeholder={`Search NFTs... (${allLoadedNfts.current.length} / ${members.length} loaded)`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pr-8"
@@ -151,11 +175,31 @@ export function AllNFTGallery({ ownedNftsData }: { ownedNftsData: NFTData[] }) {
         loading={loading}
       />
 
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 rounded-full bg-primary p-3 text-primary-foreground shadow-lg transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
+      )}
+
       {!deferredSearch && remainingTokens.current.length > 0 && (
-        <div className="mt-4 flex justify-center">
-          <Button variant="outline" onClick={loadMore} disabled={fetchingMore}>
-            {fetchingMore ? "Loading..." : "Load More"}
-          </Button>
+        <div
+          ref={loadMoreRef}
+          className="h-20 w-full text-center"
+          aria-hidden="true"
+        >
+          {fetchingMore ? (
+            <div className="text-sm text-muted-foreground">
+              Loading more NFTs... ({allLoadedNfts.current.length} / {allLoadedNfts.current.length + remainingTokens.current.length})
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              Scroll to load more ({allLoadedNfts.current.length} / {allLoadedNfts.current.length + remainingTokens.current.length})
+            </div>
+          )}
         </div>
       )}
     </div>
