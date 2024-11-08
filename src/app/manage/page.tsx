@@ -60,7 +60,7 @@ function RevokeContent() {
         setLoading(true);
         setError(null);
 
-        router.push(`/revoke?mint=${mintToCheck}`);
+        router.push(`/manage?mint=${mintToCheck}`);
 
         try {
             const mint = new PublicKey(mintToCheck);
@@ -157,7 +157,7 @@ function RevokeContent() {
         `https://dev.eclipsescan.xyz/token/${address}`;
 
     const shareAnalysis = () => {
-        const url = `${window.location.origin}/revoke?mint=${mintAddress}`;
+        const url = `${window.location.origin}/manage?mint=${mintAddress}`;
         navigator.clipboard.writeText(url);
         toast.success("Link copied to clipboard!");
     };
