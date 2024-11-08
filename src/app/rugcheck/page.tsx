@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { ParsedAccountData, PublicKey } from "@solana/web3.js";
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getMint, getExtensionTypes, ExtensionType } from "@solana/spl-token";
-import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck, Share2 } from "lucide-react";
+import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck, Share2, LockIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -205,6 +205,15 @@ function RugCheckContent() {
                                 )}
                             </CardTitle>
                             <div className="flex items-center gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => router.push(`/manage?mint=${mintAddress}`)}
+                                    className="text-muted-foreground hover:text-foreground"
+                                    title="Manage Token"
+                                >
+                                    <LockIcon size={16} />
+                                </Button>
                                 <a
                                     href={getExplorerUrl(mintAddress)}
                                     target="_blank"
