@@ -16,6 +16,10 @@ const nextConfig = {
   images: {
     domains: ["shdw-drive.genesysgo.net"],
   },
+  webpack: (config) => {
+    config.externals.push("encoding");
+    return config;
+  },
 };
 
 module.exports = withAxiom(nextConfig);
