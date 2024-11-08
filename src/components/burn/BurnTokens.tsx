@@ -4,6 +4,7 @@ import React, { useCallback, useDeferredValue, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 
+import Image from "next/image";
 import { useSPLTokens } from "@/lib/hooks/useWalletSplTokens";
 import { useWalletTokens } from "@/lib/hooks/useWalletTokens";
 import { FetchedTokenInfo } from "@/lib/types";
@@ -336,6 +337,9 @@ const BurnTokens: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 pb-32">
+            <div className="flex items-center justify-center pb-24">
+                <Image src="/blackhole.png" alt="Burn" width={150} height={150} />
+            </div>
             <h1 className="mb-4 text-2xl font-bold">Burn Tokens</h1>
 
             <div className="mb-8 space-y-4 max-w-3xl">
