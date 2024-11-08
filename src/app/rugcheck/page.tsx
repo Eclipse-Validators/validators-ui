@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { ParsedAccountData, PublicKey } from "@solana/web3.js";
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getMint } from "@solana/spl-token";
 import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck, Share2 } from "lucide-react";
@@ -21,6 +21,7 @@ interface TokenAnalysis {
     freezeAuthority: string | null;
     supply: bigint;
     decimals: number;
+    tokenProgram: typeof TOKEN_2022_PROGRAM_ID | typeof TOKEN_PROGRAM_ID;
     metadata?: {
         name?: string;
         symbol?: string;
@@ -39,7 +40,7 @@ interface TokenAnalysis {
     }[];
 }
 
-export default function RugCheckPage() {
+function RugCheckContent() {
     const connection = useGlobalConnection();
     const [mintAddress, setMintAddress] = useState("");
     const [analysis, setAnalysis] = useState<TokenAnalysis | null>(null);
@@ -138,6 +139,7 @@ export default function RugCheckPage() {
                 freezeAuthority: mintInfo.freezeAuthority?.toString() || null,
                 supply: mintInfo.supply,
                 decimals: mintInfo.decimals,
+                tokenProgram,
                 metadata: metadata || undefined,
                 largestHolders: holders,
                 warnings
@@ -301,6 +303,11 @@ export default function RugCheckPage() {
                                     {analysis.decimals}
                                 </div>
                                 <div>
+                                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-50">
+                                        {analysis.tokenProgram === TOKEN_2022_PROGRAM_ID ? 'Token2022' : 'SPL Token'}
+                                    </Badge>
+                                </div>
+                                <div>
                                     <span className="font-medium">Mint Authority: </span>
                                     {analysis.mintAuthority ? (
                                         <CopyableText text={analysis.mintAuthority} maxLength={6} />
@@ -310,7 +317,7 @@ export default function RugCheckPage() {
                                         </Badge>
                                     )}
                                 </div>
-                                <div>
+                                <div className="col-span-2">
                                     <span className="font-medium">Freeze Authority: </span>
                                     {analysis.freezeAuthority ? (
                                         <CopyableText text={analysis.freezeAuthority} maxLength={6} />
@@ -341,5 +348,13 @@ export default function RugCheckPage() {
                 </Card>
             )}
         </div>
+    );
+}
+
+export default function RugCheckPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RugCheckContent />
+        </Suspense>
     );
 } 
