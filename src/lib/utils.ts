@@ -20,11 +20,88 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { Attribute } from "@/components/mint/nftCard";
-
+import { fetchDigitalAsset, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata"
 import { FetchedTokenInfo } from "./types";
+import { publicKey } from "@metaplex-foundation/umi";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export async function fetchTokenMetadataHelper(
+  connection: Connection,
+  mintAddress: PublicKey,
+  programId: PublicKey = TOKEN_2022_PROGRAM_ID
+) {
+  const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata());
+
+  try {
+    // Try Token-2022 metadata first
+    let tokenMetadata = await getTokenMetadata(
+      connection,
+      mintAddress,
+      "confirmed",
+      programId
+    );
+
+    // If no Token-2022 metadata, try MPL Token Metadata
+    if (!tokenMetadata) {
+      const metadataPda = await fetchDigitalAsset(umi, publicKey(mintAddress.toString()));
+      console.log('metadatapda', metadataPda);
+      if (metadataPda) {
+        tokenMetadata = {
+          mint: mintAddress,
+          updateAuthority: new PublicKey(metadataPda.metadata.updateAuthority.toString()),
+          uri: metadataPda.metadata.uri,
+          name: metadataPda.metadata.name,
+          symbol: metadataPda.metadata.symbol,
+          additionalMetadata: []
+        };
+      }
+    }
+
+    if (tokenMetadata?.uri) {
+      const metadata = await fetchMetadata(tokenMetadata.uri);
+      return {
+        name: tokenMetadata.name,
+        symbol: tokenMetadata.symbol,
+        json: tokenMetadata.uri,
+        image: metadata.image,
+        description: metadata.description,
+        attributes: metadata.attributes || [],
+      };
+    }
+  } catch (err) {
+    console.error("Error fetching token metadata:", err);
+  }
+
+  return null;
+}
+
+async function fetchMetadata(uri: string) {
+  try {
+    const response = await fetch(uri);
+    const contentType = response.headers.get('content-type');
+
+    if (contentType?.includes('image/')) {
+      return { image: uri };
+    }
+
+    try {
+      const metadata = await response.json();
+      return {
+        image: metadata.image,
+        description: metadata.description,
+        attributes: metadata.attributes
+      };
+    } catch {
+      return { image: uri };
+    }
+  } catch (error) {
+    console.error("Error fetching metadata:", error);
+    return {};
+  }
 }
 
 export async function fetchTokenInfo(
@@ -38,50 +115,24 @@ export async function fetchTokenInfo(
 ): Promise<FetchedTokenInfo[]> {
   return Promise.all(
     tokenAccounts.map(async (account) => {
-      let tokenMetadata: any = null;
-      let imageUri: string | null = null;
-      let attributes: Attribute[] = [];
+      let metadata = null;
+
       if (fetchTokenMetadata) {
-        try {
-          tokenMetadata = await getTokenMetadata(
-            connection,
-            new PublicKey(account.account.data.parsed.info.mint),
-            "confirmed",
-            programId
-          );
-          if (tokenMetadata && tokenMetadata.uri) {
-            try {
-              const metadataResponse = await fetch(tokenMetadata.uri);
-              const metadata = await metadataResponse.json();
-              imageUri = metadata.image;
-              attributes = metadata.attributes;
-            } catch (error) {
-              console.error(
-                "Error fetching or parsing metadata:",
-                error,
-                tokenMetadata.uri
-              );
-            }
-          }
-        } catch (err) {
-          console.log("Error fetching token metadata:", err);
-        }
+        metadata = await fetchTokenMetadataHelper(
+          connection,
+          new PublicKey(account.account.data.parsed.info.mint),
+          programId
+        );
       }
+
       return {
         owner: account.account.data.parsed.info.owner,
         mint: account.account.data.parsed.info.mint,
         amount: account.account.data.parsed.info.tokenAmount.uiAmount,
         tokenAccount: account.pubkey.toBase58(),
         decimals: account.account.data.parsed.info.tokenAmount.decimals,
-        metadata: tokenMetadata
-          ? {
-            name: tokenMetadata?.name,
-            symbol: tokenMetadata?.symbol,
-            json: tokenMetadata?.uri,
-            image: imageUri,
-            attributes,
-          }
-          : null,
+        programId: programId.toBase58(),
+        metadata,
       };
     })
   );

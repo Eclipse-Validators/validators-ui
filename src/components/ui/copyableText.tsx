@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, ClipboardCopyIcon, Copy } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 
 import {
   Tooltip,
@@ -13,43 +13,43 @@ interface CopyableTextProps {
   maxLength?: number;
 }
 
-export const CopyableText: React.FC<CopyableTextProps> = ({
-  text,
-  maxLength,
-}) => {
+const truncateAddress = (address: string, length: number) => {
+  if (address.length <= length * 2) return address;
+  return `${address.slice(0, length)}...${address.slice(-length)}`;
+};
+
+export function CopyableText({ text, maxLength = 0 }: CopyableTextProps) {
   const [copied, setCopied] = useState(false);
+  const displayText = maxLength > 0 ? truncateAddress(text, maxLength) : text;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 1000);
   };
 
-  const displayText =
-    maxLength && text.length > maxLength
-      ? `${text.slice(0, maxLength)}...`
-      : text;
-
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            className="flex cursor-pointer items-center space-x-2"
-            onClick={copyToClipboard}
-          >
-            <span className="truncate text-sm">{displayText}</span>
-            {copied ? (
-              <Check size={16} className="text-green-500" />
-            ) : (
-              <ClipboardCopyIcon size={16} />
-            )}
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{copied ? "Copied!" : "Click to copy"}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <span className="inline-flex items-center space-x-1">
+      <span className="truncate">{displayText}</span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={copyToClipboard}
+              className="inline-flex h-4 w-4 items-center justify-center text-muted-foreground hover:text-foreground"
+            >
+              {copied ? (
+                <Check className="h-3 w-3" />
+              ) : (
+                <Copy className="h-3 w-3" />
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{copied ? 'Copied!' : 'Click to copy'}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </span>
   );
-};
+}

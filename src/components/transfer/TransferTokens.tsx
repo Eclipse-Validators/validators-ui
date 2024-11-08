@@ -15,7 +15,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { X } from "lucide-react";
 import { useLogger } from "next-axiom";
 import { toast } from "sonner";
@@ -29,8 +29,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EthTransfer } from "./EthTransfer";
+
 import { useEditionsHashlist } from "../providers/EditionsProgramContext";
+import { EthTransfer } from "./EthTransfer";
+import { SPL_MEMO_PROGRAM_ID } from "@metaplex-foundation/mpl-toolbox";
 
 const TokenCard: React.FC<{
   token: FetchedTokenInfo;
@@ -155,7 +157,9 @@ const TransferTokens: React.FC = () => {
       try {
         new PublicKey(destinationAddress);
         if (isInHashlist(destinationAddress)) {
-          toast.error("Destination address is the same as an NFT in the collection. Please use a wallet address.");
+          toast.error(
+            "Destination address is the same as an NFT in the collection. Please use a wallet address."
+          );
           setIsValidAddress(false);
           return;
         }
@@ -285,6 +289,14 @@ const TransferTokens: React.FC = () => {
           );
           currentTx.add(tokenCloseInstruction);
         }
+        //add memo to transaction
+        const message = `Transferred ${token?.metadata?.name ?? token.mint} using Validators UI`;
+        const memoIx = new TransactionInstruction({
+          keys: [{ pubkey: publicKey, isSigner: true, isWritable: true }],
+          data: Buffer.from(message, "utf-8"),
+          programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+        });
+        currentTx.add(memoIx);
         tokenCount++;
 
         if (tokenCount === MAX_TOKENS_PER_TRANSACTION) {
@@ -449,20 +461,24 @@ const TransferTokens: React.FC = () => {
             Please enter a Solana compatible address
           </p>
         )}
-        {activeTab !== "eth" && <Button
-          className="w-96"
-          variant="outline"
-          onClick={handleTransfer}
-          disabled={
-            !isValidAddress || selectedTokens.length === 0 || isTransferDisabled
-          }
-        >
-          {isTransferDisabled
-            ? "Transferring..."
-            : selectedTokens.length > 0
-              ? `Transfer ${selectedTokens.length} tokens`
-              : "Select tokens to transfer"}
-        </Button>}
+        {activeTab !== "eth" && (
+          <Button
+            className="w-96"
+            variant="outline"
+            onClick={handleTransfer}
+            disabled={
+              !isValidAddress ||
+              selectedTokens.length === 0 ||
+              isTransferDisabled
+            }
+          >
+            {isTransferDisabled
+              ? "Transferring..."
+              : selectedTokens.length > 0
+                ? `Transfer ${selectedTokens.length} tokens`
+                : "Select tokens to transfer"}
+          </Button>
+        )}
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
@@ -470,17 +486,22 @@ const TransferTokens: React.FC = () => {
           <TabsTrigger value="nfts">NFTs</TabsTrigger>
           <TabsTrigger value="spl">SPL Tokens</TabsTrigger>
         </TabsList>
-        {activeTab !== "eth" && <div className="relative mt-4">
-          <Input
-            type="text"
-            placeholder="Search tokens..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full max-w-sm pr-8"
-          />
-        </div>}
+        {activeTab !== "eth" && (
+          <div className="relative mt-4">
+            <Input
+              type="text"
+              placeholder="Search tokens..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full max-w-sm pr-8"
+            />
+          </div>
+        )}
         <TabsContent value="eth">
-          <EthTransfer destinationAddress={destinationAddress} isValidAddress={isValidAddress} />
+          <EthTransfer
+            destinationAddress={destinationAddress}
+            isValidAddress={isValidAddress}
+          />
         </TabsContent>
         <TabsContent value="spl">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -13,6 +13,9 @@ import { EditionsControlProgramProvider } from "@/components/providers/EditionsC
 import { EditionsProgramProvider } from "@/components/providers/EditionsProgramContext";
 import SolanaWalletProvider from "@/components/SolanaWalletProvider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GoogleAnalytics } from '@next/third-parties/google'
+import { EthereumProviders } from "@/components/EthProviders";
+import { ValidatorBurnProgramProvider } from "@/components/providers/ValidatorBurnProgramContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,20 +24,13 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url.base),
+  metadataBase: new URL('https://validators.wtf'),
   title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    default: 'Validators.wtf | Eclipse Tools',
+    template: '%s | Validators.wtf'
   },
-  description: siteConfig.description,
-  keywords: siteConfig.keywords,
-  authors: [
-    {
-      name: siteConfig.author,
-      url: siteConfig.url.author,
-    },
-  ],
-  creator: siteConfig.author,
+  description: 'Eclipse blockchain tools for bridging, burning tokens, and sending messages.',
+  keywords: ['Eclipse', 'blockchain', 'crypto', 'bridge', 'token burner', 'messaging'],
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -61,6 +57,14 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 };
 
 export const viewport: Viewport = {
@@ -86,24 +90,29 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem={false}
           disableTransitionOnChange
         >
-          <GlobalConnectionProvider>
-            <SolanaWalletProvider>
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-grow">
-                  <EditionsProgramProvider>
-                    <EditionsControlProgramProvider>
-                      {children}
-                    </EditionsControlProgramProvider>
-                  </EditionsProgramProvider>
-                </main>
-                <Footer />
-                <Toaster />
-              </div>
-            </SolanaWalletProvider>
-          </GlobalConnectionProvider>
+          <EthereumProviders>
+            <GlobalConnectionProvider>
+              <SolanaWalletProvider>
+                <div className="flex min-h-screen flex-col">
+                  <Navbar />
+                  <main className="flex-grow">
+                    <EditionsProgramProvider>
+                      <EditionsControlProgramProvider>
+                        <ValidatorBurnProgramProvider>
+                          {children}
+                        </ValidatorBurnProgramProvider>
+                      </EditionsControlProgramProvider>
+                    </EditionsProgramProvider>
+                  </main>
+                  <Footer />
+                  <Toaster />
+                </div>
+              </SolanaWalletProvider>
+            </GlobalConnectionProvider>
+          </EthereumProviders>
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId="G-0QLYYL5TGN" />
     </html>
   );
 }

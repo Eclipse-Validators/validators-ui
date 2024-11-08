@@ -1,10 +1,13 @@
 "use server";
 
 import fs from "fs";
+import path from "path";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { createCanvas, Image, registerFont } from "canvas";
 import sharp from "sharp";
+
+import { generateBlipTransactionV2 } from "@/lib/blip";
 
 const arweave = Arweave.init({
   host: "arweave.net",
@@ -69,9 +72,18 @@ const formatDate = (timestamp: number) => {
   return date.toLocaleString("en-US", options);
 };
 
-const TEMPLATE_IMG = fs.readFileSync("./public/blip/placeholder.png");
+const TEMPLATE_IMG = fs.readFileSync(
+  path.join(process.cwd(), "./public/blip/placeholder.png")
+);
+// read the font so vercel nft pulls it in
+const FONT = fs.readFileSync(
+  path.join(process.cwd(), "./public/fonts/Manrope-Regular.ttf")
+);
+console.log(FONT);
 
-registerFont("./public/fonts/Manrope-Regular.ttf", { family: "Manrope" });
+registerFont(path.join(process.cwd(), "./public/fonts/Manrope-Regular.ttf"), {
+  family: "Manrope",
+});
 
 async function compressImage(buffer: Buffer): Promise<Buffer> {
   return sharp(buffer).png({ quality: 50, compressionLevel: 9 }).toBuffer();
@@ -156,8 +168,15 @@ export async function generateBlip(message: string, to: string, from: string) {
       jsonUri,
     };
 
+    const blipSerializedTxn = await generateBlipTransactionV2(
+      from,
+      to,
+      jsonUri
+    );
+
     return {
       data: responseData,
+      serializedTxn: blipSerializedTxn,
     };
   } catch (err) {
     return {

@@ -1,5 +1,4 @@
 "use client";
-
 import { WalletPeeker } from "@/components/viewer/WalletPeeker";
 
 export default function WalletPeekerPage() {

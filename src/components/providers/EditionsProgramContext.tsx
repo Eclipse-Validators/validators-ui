@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import * as anchor from "@coral-xyz/anchor";
 import {
   useAnchorWallet,
@@ -15,12 +21,13 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 
+import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda";
+
 import { PROGRAM_ID_EDITIONS } from "../../lib/anchor/editions/constants";
 import {
   IDL,
   LibreplexEditions,
 } from "../../lib/anchor/editions/libreplex_editions";
-import { getHashlistPda } from "@/lib/anchor/editions/pdas/getHashlistPda";
 
 interface Wallet {
   signTransaction<T extends Transaction | VersionedTransaction>(
@@ -79,7 +86,6 @@ export function EditionsProgramProvider({
 
       const program = new anchor.Program<LibreplexEditions>(
         IDL,
-        PROGRAM_ID_EDITIONS,
         provider
       );
 
@@ -115,9 +121,13 @@ export function useEditionsHashlist() {
       "HaCuUQ3nQKB4bVCoWqCmhWuySueS4WLWU9ZaohxkNYKP"
     );
     const hashlistPda = getHashlistPda(deploymentId);
-    const hashlistAccount = await program.account.hashlist.fetch(hashlistPda[0]);
+    const hashlistAccount = await program.account.hashlist.fetch(
+      hashlistPda[0]
+    );
     if (hashlistAccount) {
-      const newHashlist = new Set(hashlistAccount.issues.map(issue => issue.mint.toBase58()));
+      const newHashlist = new Set(
+        hashlistAccount.issues.map((issue) => issue.mint.toBase58())
+      );
       setHashlist(newHashlist);
     }
   }, [program]);
@@ -129,6 +139,6 @@ export function useEditionsHashlist() {
   return {
     hashlist,
     refreshHashlist: getHashlist,
-    isInHashlist: (mint: string) => hashlist.has(mint)
+    isInHashlist: (mint: string) => hashlist.has(mint),
   };
 }

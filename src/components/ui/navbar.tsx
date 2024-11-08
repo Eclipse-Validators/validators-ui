@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X, FireExtinguisherIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -49,7 +49,7 @@ const Navbar = () => {
                 Home
               </Link>
               <Link
-                href="https://bridge.validators.wtf"
+                href="/bridge"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
                 Bridge
@@ -74,6 +74,11 @@ const Navbar = () => {
                   Utilities <ChevronDown className="ml-1 h-4 w-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onSelect={() => handleDropdownItemClick("/rugcheck")}
+                  >
+                    Rug Check
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onSelect={() => handleDropdownItemClick("/transfer")}
                   >
@@ -124,7 +129,7 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              href="https://bridge.validators.wtf"
+              href="/bridge"
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
               onClick={() => setIsOpen(false)}
             >
@@ -136,6 +141,12 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Blip
+            </Link>
+            <Link
+              href="/rugcheck"
+              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+            >
+              Rug Check
             </Link>
             <Link
               href="/gallery"

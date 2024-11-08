@@ -1,31 +1,33 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { transferSol } from "@metaplex-foundation/mpl-toolbox";
-import {
-  generateSigner,
-  publicKey,
-  sol,
-  transactionBuilder,
-} from "@metaplex-foundation/umi";
+import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-import { creators, metadata, mint, niftyAsset } from "@nifty-oss/asset";
+import { base58, base64 } from "@metaplex-foundation/umi/serializers";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey, SendTransactionError } from "@solana/web3.js";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { BlipNftData } from "@/components/mint/blipNftCard";
+import { BlipNftGrid } from "@/components/mint/blipNftGrid";
+import { AssetV1, fetchAssetsByOwner } from '@metaplex-foundation/mpl-core';
 
 import { generateBlip } from "./actions";
+
 
 export default function MessagePage() {
   const [to, setTo] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const wallet = useWallet();
   const { connection } = useConnection();
+  const [isSending, setIsSending] = useState(false);
+  const [isLoadingBlips, setIsLoadingBlips] = useState(false);
+  const [walletBlipNfts, setWalletBlipNfts] = useState<BlipNftData[]>([]);
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
@@ -36,58 +38,134 @@ export default function MessagePage() {
     ));
   };
 
-  async function handleSendBlip(message: string, to: string) {
-    if (!wallet || !wallet.publicKey || !wallet.signAllTransactions) {
-      return;
-    }
+  const umi = createUmi(connection.rpcEndpoint);
 
-    const umi = createUmi(connection.rpcEndpoint).use(niftyAsset());
-    umi.use(walletAdapterIdentity(wallet, true));
-
-    try {
-      const from = wallet.publicKey.toString();
-      const assetUploadData = await generateBlip(message, to, from);
-      if (!assetUploadData.data || assetUploadData.error) {
-        console.error("Error generating Blip:", assetUploadData.error);
+  useEffect(() => {
+    async function loadBlips() {
+      if (!wallet?.publicKey) {
         return;
       }
 
-      const assetSigner = generateSigner(umi);
-      const mintBuilderGroup = mint(umi, {
-        asset: assetSigner,
-        owner: publicKey(to),
-        authority: publicKey(to),
-        payer: umi.payer,
-        mutable: false,
-        standard: 0,
-        name: "Blip",
-        extensions: [
-          metadata({
-            uri: assetUploadData.data.jsonUri,
-            symbol: "Blip",
-            description: "",
-          }),
-          creators([{ address: publicKey(from), share: 100 }]),
-        ],
+      setIsLoadingBlips(true);
+
+      const fetchCoreAssets = async () => {
+        if (!wallet?.publicKey) {
+          return [];
+        }
+        const ownedAssets = await fetchAssetsByOwner(umi, publicKey(wallet.publicKey.toBase58()), {
+          skipDerivePlugins: false,
+        })
+        console.log("ownedAssets", ownedAssets)
+        const ownedBlips = ownedAssets.filter((asset) => asset.updateAuthority.address === publicKey("7MWzy1jbS3KC561EnY6DBixqToVwMfDqd7eXcGXZkj2A"))
+        return ownedBlips;
+      };
+
+      const mappedBlips = async (assets: AssetV1[]): Promise<BlipNftData[]> => {
+        const blipDataPromises = assets.map(async (asset) => {
+          try {
+            const response = await fetch(asset.uri);
+            if (!response.ok) {
+              throw new Error(`Failed to fetch JSON from ${asset.uri}`);
+            }
+            const data = await response.json();
+            return {
+              address: asset.publicKey.toString(),
+              metadata: {
+                image: data.image,
+                attributes: data.attributes || [],
+              },
+            } as BlipNftData;
+          } catch (error) {
+            console.error(`Error processing asset ${asset.publicKey.toString()}:`, error);
+            return null; // Skip this asset if there's an error
+          }
+        });
+
+        const blipData = await Promise.all(blipDataPromises);
+        // Filter out any null values resulting from fetch errors
+        return blipData.filter((nft): nft is BlipNftData => nft !== null);
+      };
+
+      const blipNfts = await mappedBlips(await fetchCoreAssets());
+
+      setWalletBlipNfts(
+        blipNfts.filter((nft): nft is BlipNftData => nft !== null)
+      );
+      setIsLoadingBlips(false);
+    }
+
+    loadBlips();
+  }, [wallet.publicKey]);
+
+  async function handleSendBlip(message: string, to: string) {
+    if (!wallet || !wallet.publicKey || !wallet.signAllTransactions) {
+      toast.error("Wallet Not Connected", {
+        description: "Please connect your wallet.",
       });
+      return;
+    }
 
-      const transferSolIx = transferSol(umi, {
-        source: umi.payer,
-        destination: publicKey("6juCmFHoPnJTzhjJfcjFhCXeptCE89vp9dHP91EUaxR8"),
-        amount: sol(0.001),
-      });
-
-      const txn = await transactionBuilder()
-        .add(transferSolIx)
-        .add(mintBuilderGroup.merge())
-        .buildWithLatestBlockhash(umi);
-
-      const nftSignedTxn = await assetSigner.signTransaction(txn);
-      const signedTxn = await umi.identity.signTransaction(nftSignedTxn);
-
-      await umi.rpc.sendTransaction(signedTxn);
+    try {
+      new PublicKey(to);
     } catch (error) {
-      console.error("Error SENDING blip:", error);
+      toast.error("Invalid Recipient Address", {
+        description: "Please enter a valid Solana address.",
+      });
+      return;
+    }
+
+    if (!message) {
+      toast.error("No Message Provided", {
+        description: "Please enter a message for your Blip!",
+      });
+      return;
+    }
+
+    setIsSending(true);
+
+    umi.use(walletAdapterIdentity(wallet, true));
+
+    let txnSignature: string | null = null;
+    try {
+      const from = wallet.publicKey.toString();
+      const response = await generateBlip(message, to, from);
+      if (!response.data || response.error) {
+        toast.error("Error generating Blip!", {
+          description: response.error ?? "Unknown error",
+        });
+        setIsSending(false);
+        return;
+      }
+
+      const deserializedTxnAsU8 = base64.serialize(response.serializedTxn);
+      const deserializedTxn = umi.transactions.deserialize(deserializedTxnAsU8);
+      const signedTxn = await umi.identity.signTransaction(deserializedTxn);
+      txnSignature = base58.deserialize(
+        await umi.rpc.sendTransaction(signedTxn)
+      )[0];
+
+      toast.success(`Successfully sent Blip!`, {
+        description: "You can view your transacton on the Eclipse Explorer",
+        action: {
+          label: "View Transactions",
+          onClick: () =>
+            window.open(
+              `${process.env.NEXT_PUBLIC_EXPLORER!}/tx/${txnSignature}`,
+              "_blank"
+            ),
+        },
+      });
+    } catch (error) {
+      console.error(`Error SENDING blip (txn sig: ${txnSignature}):`, error);
+      toast.error("Error sending Blip!", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+      if (error instanceof SendTransactionError) {
+        const logs = await error.getLogs(connection);
+        console.log(error.logs, logs);
+      }
+    } finally {
+      setIsSending(false);
     }
   }
 
@@ -134,6 +212,9 @@ export default function MessagePage() {
                     className="w-full"
                     variant="default"
                     onClick={() => handleSendBlip(message, to)}
+                    disabled={isSending || !wallet?.publicKey}
+                    loading={isSending}
+                    loadingText={isSending ? "Sending Transaction" : ""}
                   >
                     Send Blip!
                   </Button>
@@ -166,11 +247,22 @@ export default function MessagePage() {
             </div>
 
             <div className="w-full pt-4 text-center text-[12px]">
-              Each Blip costs .001 eth fee and .000031 for mint transaction
-              costs.
+              Each Blip costs .0007 ETH and ~.000038 ETH for mint account costs.{" "}
+              <i>Metaplex charges .000018 as a protocol fee.</i>
             </div>
           </CardContent>
         </Card>
+
+        <div className="mt-8">
+          <h1 className="text-2xl font-bold">Your Blips</h1>
+          <div className="mt-4">
+            {wallet?.publicKey ? (
+              <BlipNftGrid nfts={walletBlipNfts} loading={isLoadingBlips} />
+            ) : (
+              "Connect your wallet to check for Blips!"
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

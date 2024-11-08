@@ -56,27 +56,13 @@ export default function AirdropPage() {
             <p className="text-sm text-muted-foreground">
               Balance: {balance.toFixed(2)}
             </p>
-            <div className="flex justify-between">
+            <div className="flex justify-center gap-4">
               <Button
                 onClick={() => handleAirdrop(1)}
                 disabled={isAirdropping || !wallet?.publicKey}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 1 ETH
-              </Button>
-              <Button
-                onClick={() => handleAirdrop(5)}
-                disabled={isAirdropping || !wallet?.publicKey}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                5 ETH
-              </Button>
-              <Button
-                onClick={() => handleAirdrop(10)}
-                disabled={isAirdropping || !wallet?.publicKey}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                10 ETH
               </Button>
             </div>
           </CardContent>

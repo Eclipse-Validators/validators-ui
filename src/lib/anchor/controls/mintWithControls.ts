@@ -128,7 +128,7 @@ export const mintWithControls = async ({
           .mintWithControls({
             phaseIndex,
           })
-          .accounts({
+          .accountsPartial({
             editionsDeployment: editions,
             editionsControls: editionsControlsPda,
             hashlist,
@@ -140,10 +140,10 @@ export const mintWithControls = async ({
             minter: wallet.publicKey,
             minterStats,
             minterStatsPhase,
-            group: editionsObj?.item?.group,
+            group: editionsObj?.item?.group!,
             groupExtensionProgram: PROGRAM_ID_GROUP_EXTENSIONS,
             tokenAccount,
-            treasury: editionsControlsObj?.item?.treasury,
+            treasury: editionsControlsObj?.item?.treasury!,
             systemProgram: SystemProgram.programId,
             tokenProgram: TOKEN_2022_PROGRAM_ID,
             libreplexEditionsProgram: editionsProgram.programId,
