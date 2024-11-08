@@ -51,6 +51,10 @@ const BurnCart: React.FC<BurnCartProps> = ({
         return totalEth;
     };
 
+    const handleClearAll = () => {
+        selectedTokens.forEach(({ token }) => onRemove(token.tokenAccount));
+    };
+
     if (selectedTokens.length === 0) {
         return null;
     }
@@ -62,7 +66,17 @@ const BurnCart: React.FC<BurnCartProps> = ({
             <div className="container mx-auto">
                 <div className="flex flex-col space-y-3 sm:space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <h3 className="text-base sm:text-lg font-semibold">Selected for Burning</h3>
+                        <div className="flex items-center gap-3">
+                            <h3 className="text-base sm:text-lg font-semibold">Selected for Burning</h3>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleClearAll}
+                                className="h-8 px-3 text-xs"
+                            >
+                                Clear All
+                            </Button>
+                        </div>
                         <div className="flex flex-row sm:flex-col items-start sm:items-end justify-between sm:justify-start gap-2">
                             <span className="text-xs sm:text-sm text-muted-foreground">
                                 {selectedTokens.length} item(s)

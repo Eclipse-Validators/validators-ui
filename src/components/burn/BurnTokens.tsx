@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { BN } from "@coral-xyz/anchor";
 import { useCoreAssets } from "@/lib/hooks/useCoreAssets";
 import { MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
+import { AlertTriangleIcon } from 'lucide-react'
 
 const BurnTokens: React.FC = () => {
     const { connection } = useConnection();
@@ -357,7 +358,12 @@ const BurnTokens: React.FC = () => {
 
                 <div className="p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-950/30">
                     <p className="font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
-                        WARNING
+                        <div className="flex items-center">
+                            <span className="flex items-center">
+                                <AlertTriangleIcon className="h-5 w-5 text-yellow-600 mr-2" />
+                                WARNING
+                            </span>
+                        </div>
                     </p>
                     <p className="text-yellow-700 dark:text-yellow-500">
                         Burning your entire balance will close your token account and is not recoverable so please use with caution. You can always recreate the token account for later use.
@@ -373,12 +379,36 @@ const BurnTokens: React.FC = () => {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-                <TabsList className="w-full flex overflow-x-auto">
-                    <TabsTrigger value="spl" className="flex-1">SPL Tokens</TabsTrigger>
-                    <TabsTrigger value="token2022" className="flex-1">Token-2022</TabsTrigger>
-                    <TabsTrigger value="empty" className="flex-1">Empty Accounts</TabsTrigger>
-                    <TabsTrigger value="nfts" className="flex-1">NFTs</TabsTrigger>
-                </TabsList>
+                <div className="overflow-x-auto -mx-3 sm:mx-0">
+                    <div className="px-3 sm:px-0 min-w-full">
+                        <TabsList className="w-full grid grid-cols-2 sm:grid-cols-4 h-auto gap-1">
+                            <TabsTrigger
+                                value="spl"
+                                className="px-2 py-1.5 text-xs sm:text-sm md:text-base"
+                            >
+                                SPL Tokens
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="token2022"
+                                className="px-2 py-1.5 text-xs sm:text-sm md:text-base"
+                            >
+                                Token-2022
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="empty"
+                                className="px-2 py-1.5 text-xs sm:text-sm md:text-base"
+                            >
+                                Empty Accounts
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="nfts"
+                                className="px-2 py-1.5 text-xs sm:text-sm md:text-base"
+                            >
+                                NFTs
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+                </div>
 
                 <div className="relative">
                     <Input
