@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ParsedAccountData, PublicKey } from "@solana/web3.js";
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getMint } from "@solana/spl-token";
-import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck } from "lucide-react";
-import Image from "next/image";
+import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSearchParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { useGlobalConnection } from "@/components/GlobalConnectionProvider";
 import { Input } from "@/components/ui/input";
@@ -44,12 +45,26 @@ export default function RugCheckPage() {
     const [analysis, setAnalysis] = useState<TokenAnalysis | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const mintParam = searchParams.get('mint');
 
-    const analyzeToken = async () => {
+    useEffect(() => {
+        if (mintParam && !mintAddress) {
+            setMintAddress(mintParam);
+            analyzeToken(mintParam);
+        }
+    }, [mintParam]);
+
+    const analyzeToken = async (address?: string) => {
+        const mintToAnalyze = address || mintAddress;
         setLoading(true);
         setError(null);
+
+        router.push(`/rugcheck?mint=${mintToAnalyze}`);
+
         try {
-            const mint = new PublicKey(mintAddress);
+            const mint = new PublicKey(mintToAnalyze);
 
             let tokenProgram;
             let mintInfo;
@@ -139,6 +154,12 @@ export default function RugCheckPage() {
     const getExplorerUrl = (address: string) =>
         `https://dev.eclipsescan.xyz/token/${address}`;
 
+    const shareAnalysis = () => {
+        const url = `${window.location.origin}/rugcheck?mint=${mintAddress}`;
+        navigator.clipboard.writeText(url);
+        toast.success("Link copied to clipboard!");
+    };
+
     return (
         <div className="container max-w-4xl py-6 space-y-6">
             <div className="space-y-2">
@@ -154,7 +175,7 @@ export default function RugCheckPage() {
                     value={mintAddress}
                     onChange={(e) => setMintAddress(e.target.value)}
                 />
-                <Button onClick={analyzeToken} disabled={loading}>
+                <Button onClick={() => analyzeToken()} disabled={loading}>
                     {loading ? "Analyzing..." : "Check"}
                 </Button>
             </div>
@@ -170,12 +191,32 @@ export default function RugCheckPage() {
             {analysis && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            {analysis.metadata?.name || "Unknown Token"}
-                            {analysis.warnings.length > 0 && (
-                                <ShieldAlert className="h-5 w-5 text-yellow-500" />
-                            )}
-                        </CardTitle>
+                        <div className="flex justify-between items-center">
+                            <CardTitle className="flex items-center gap-2">
+                                {analysis.metadata?.name || "Unknown Token"}
+                                {analysis.warnings.length > 0 && (
+                                    <ShieldAlert className="h-5 w-5 text-yellow-500" />
+                                )}
+                            </CardTitle>
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={getExplorerUrl(mintAddress)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-muted-foreground hover:text-foreground"
+                                >
+                                    <ExternalLink size={16} />
+                                </a>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={shareAnalysis}
+                                    className="text-muted-foreground hover:text-foreground"
+                                >
+                                    <Share2 size={16} />
+                                </Button>
+                            </div>
+                        </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         {/* Token Basic Info */}
@@ -198,14 +239,6 @@ export default function RugCheckPage() {
                                     <span className="font-semibold">Mint:</span>
                                     <div className="flex items-center gap-2">
                                         <CopyableText text={mintAddress} maxLength={8} />
-                                        <a
-                                            href={getExplorerUrl(mintAddress)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-muted-foreground hover:text-foreground"
-                                        >
-                                            <ExternalLink size={16} />
-                                        </a>
                                     </div>
                                 </div>
                                 {analysis.metadata?.description && (
