@@ -1,19 +1,10 @@
 "use client";
-
-import { Metadata } from 'next';
-
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { base58, base64 } from "@metaplex-foundation/umi/serializers";
-import {
-  Asset,
-  ExtensionType,
-  fetchAllAsset,
-  getAssetGpaBuilder,
-} from "@nifty-oss/asset";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SendTransactionError } from "@solana/web3.js";
 import { toast } from "sonner";
@@ -27,27 +18,7 @@ import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 import { AssetV1, fetchAssetsByOwner } from '@metaplex-foundation/mpl-core';
 
 import { generateBlip } from "./actions";
-import { siteConfig } from '@/config/site';
 
-// Add metadata
-export const metadata: Metadata = {
-  title: 'Send Messages on Eclipse | Validators.wtf',
-  description: 'Send on-chain messages to any wallet on Eclipse. Connect your wallet to send Blips - personalized messages stored permanently on the blockchain.',
-  openGraph: {
-    title: 'Send Messages on Eclipse | Validators.wtf',
-    description: 'Send on-chain messages to any wallet on Eclipse. Connect your wallet to send Blips - personalized messages stored permanently on the blockchain.',
-    url: 'https://validators.wtf/blip',
-    siteName: 'Validators.wtf',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Send Messages on Eclipse | Validators.wtf',
-    description: 'Send on-chain messages to any wallet on Eclipse. Connect your wallet to send Blips - personalized messages stored permanently on the blockchain.',
-    images: [siteConfig.ogImage],
-    creator: "@Validators_",
-  }
-};
 
 export default function MessagePage() {
   const [to, setTo] = useState<string>("");
