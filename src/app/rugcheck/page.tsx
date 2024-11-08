@@ -118,7 +118,7 @@ function RugCheckContent() {
                             level: 'high',
                             message: `Wallet ${ownerAddress || account.address.toString()} holds ${percentage.toFixed(2)}% of supply`
                         });
-                    } else if (percentage > 20 && mint.toBase58() !== "LaihKXA47apnS599tyEyasY2REfEzBNe4heunANhsMx") {
+                    } else if (percentage > 20) {
                         warnings.push({
                             level: 'medium',
                             message: `Wallet ${ownerAddress || account.address.toString()} holds ${percentage.toFixed(2)}% of supply`
