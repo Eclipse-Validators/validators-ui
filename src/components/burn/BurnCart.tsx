@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useValidatorBurnProgram } from "../providers/ValidatorBurnProgramContext";
 
-const ETH_RETURN_AMOUNT = 0.000009924;
+const ETH_RETURN_AMOUNT = 0.000004924;
 
 interface BurnCartProps {
     selectedTokens: { token: FetchedTokenInfo; amount?: string }[];
