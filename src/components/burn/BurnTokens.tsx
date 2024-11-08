@@ -339,7 +339,7 @@ const BurnTokens: React.FC = () => {
     return (
         <div className="container mx-auto p-3 sm:p-4 pb-[200px] sm:pb-48">
             <div className="flex items-center justify-center pb-16 sm:pb-24">
-                <div className="relative w-[100px] h-[100px] sm:w-[150px] sm:h-[150px] md:w-[300px] md:h-[300px] lg:w-[500px] lg:h-[500px]">
+                <div className="relative w-[100px] h-[100px] sm:w-[150px] sm:h-[150px] md:w-[200px] md:h-[200px] lg:w-[200px] lg:h-[200px]">
                     <Image
                         src="/blackhole.png"
                         alt="Burn"
