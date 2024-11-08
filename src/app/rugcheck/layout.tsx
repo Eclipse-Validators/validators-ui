@@ -1,6 +1,7 @@
 import { siteConfig } from '@/config/site'
 import { Metadata } from 'next'
 
+
 export const metadata: Metadata = {
     title: 'Token Rug Check | Validators.wtf',
     description: 'Analyze Eclipse tokens for potential red flags and risks. Check mint authority, freeze authority, and token holder distribution.',
@@ -27,4 +28,12 @@ export const metadata: Metadata = {
         description: 'Analyze Eclipse tokens for potential red flags and risks. Check mint authority, freeze authority, and token holder distribution.',
         images: [siteConfig.ogImage],
     },
+}
+
+export default function RugCheckLayout({
+    children,
+}: {
+    children: React.ReactNode
+}) {
+    return <>{children}</>
 } 
