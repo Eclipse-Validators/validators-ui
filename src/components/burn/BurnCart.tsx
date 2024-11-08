@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useValidatorBurnProgram } from "../providers/ValidatorBurnProgramContext";
 
-const ETH_RETURN_AMOUNT = 0.000019924;
+const ETH_RETURN_AMOUNT = 0.000009924;
 
 interface BurnCartProps {
     selectedTokens: { token: FetchedTokenInfo; amount?: string }[];
@@ -42,7 +42,8 @@ const BurnCart: React.FC<BurnCartProps> = ({
                 const burnAmount = parseFloat(amount || "0");
                 if (burnAmount === token.amount) {
                     fee = configAccount.burnTokenFee.toNumber() / LAMPORTS_PER_SOL;
-                    totalEth += baseReturn - fee;
+                    const closeFee = configAccount.closeTokenFee.toNumber() / LAMPORTS_PER_SOL;
+                    totalEth += baseReturn - fee - closeFee;
                 }
             }
         });
@@ -67,7 +68,7 @@ const BurnCart: React.FC<BurnCartProps> = ({
                                 {selectedTokens.length} item(s)
                             </span>
                             <span className="text-sm font-medium">
-                                Estimated: {estimatedEth.toFixed(9)} ETH
+                                Estimated Rent Reclaim: {estimatedEth.toFixed(9)} ETH
                             </span>
                         </div>
                     </div>
