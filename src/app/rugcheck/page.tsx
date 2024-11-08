@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { ParsedAccountData, PublicKey } from "@solana/web3.js";
-import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getMint } from "@solana/spl-token";
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getMint, getExtensionTypes, ExtensionType } from "@solana/spl-token";
 import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -38,6 +38,7 @@ interface TokenAnalysis {
         level: 'high' | 'medium' | 'low';
         message: string;
     }[];
+    extensions?: ExtensionType[];
 }
 
 function RugCheckContent() {
@@ -69,10 +70,12 @@ function RugCheckContent() {
 
             let tokenProgram;
             let mintInfo;
+            let extensionTypes: ExtensionType[] = [];
 
             try {
                 mintInfo = await getMint(connection, mint, "confirmed", TOKEN_2022_PROGRAM_ID);
                 tokenProgram = TOKEN_2022_PROGRAM_ID;
+                extensionTypes = getExtensionTypes(mintInfo.tlvData);
             } catch (e) {
                 try {
                     mintInfo = await getMint(connection, mint, "confirmed", TOKEN_PROGRAM_ID);
@@ -142,7 +145,8 @@ function RugCheckContent() {
                 tokenProgram,
                 metadata: metadata || undefined,
                 largestHolders: holders,
-                warnings
+                warnings,
+                extensions: tokenProgram === TOKEN_2022_PROGRAM_ID ? extensionTypes : undefined
             });
 
         } catch (err) {
@@ -327,6 +331,22 @@ function RugCheckContent() {
                                         </Badge>
                                     )}
                                 </div>
+                                {analysis.extensions && analysis.extensions.length > 0 && (
+                                    <div className="col-span-2 space-y-2">
+                                        <span className="font-medium">Extensions: </span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {analysis.extensions.map((ext, i) => (
+                                                <Badge
+                                                    key={i}
+                                                    variant="secondary"
+                                                    className="bg-purple-50 text-purple-700 hover:bg-purple-50"
+                                                >
+                                                    {ExtensionType[ext]}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
