@@ -1,4 +1,23 @@
 import BurnTokens from "@/components/burn/BurnTokens";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'Burn Tokens & NFTs | Validator.xyz',
+    description: 'Safely burn unwanted tokens and NFTs on Solana. Reclaim ETH from unused accounts or reduce token supply.',
+    keywords: 'Eclipse, Solana, burn tokens, NFT burn, wallet cleanup, ETH reclaim, token management, validator.xyz',
+    openGraph: {
+        title: 'Burn Tokens & NFTs | Validator.xyz',
+        description: 'Safely burn unwanted tokens and NFTs on Eclipse. Reclaim ETH from unused accounts or reduce token supply.',
+        url: 'https://validator.xyz/burn',
+        siteName: 'Validator.xyz',
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Burn Tokens & NFTs | Validator.xyz',
+        description: 'Safely burn unwanted tokens and NFTs on Eclipse. Reclaim ETH from unused accounts or reduce token supply.',
+    }
+};
 
 export default function Home() {
     return (
