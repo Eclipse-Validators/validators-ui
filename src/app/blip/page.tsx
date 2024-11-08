@@ -27,6 +27,7 @@ import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 import { AssetV1, fetchAssetsByOwner } from '@metaplex-foundation/mpl-core';
 
 import { generateBlip } from "./actions";
+import { siteConfig } from '@/config/site';
 
 // Add metadata
 export const metadata: Metadata = {
@@ -43,6 +44,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Send Messages on Eclipse | Validators.wtf',
     description: 'Send on-chain messages to any wallet on Eclipse. Connect your wallet to send Blips - personalized messages stored permanently on the blockchain.',
+    images: [siteConfig.ogImage],
+    creator: "@Validators_",
   }
 };
 

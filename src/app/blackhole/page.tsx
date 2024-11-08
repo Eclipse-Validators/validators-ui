@@ -1,4 +1,5 @@
 import BurnTokens from "@/components/burn/BurnTokens";
+import { siteConfig } from "@/config/site";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,11 +12,14 @@ export const metadata: Metadata = {
         url: 'https://validators.wtf/blackhole',
         siteName: 'Validators.wtf',
         type: 'website',
+        images: [siteConfig.ogImage],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'Burn Tokens & NFTs | Validators.wtf',
         description: 'Safely burn unwanted tokens and NFTs on Eclipse. Reclaim ETH from unused accounts or reduce token supply.',
+        images: [siteConfig.ogImage],
+        creator: "@Validators_",
     }
 };
 
