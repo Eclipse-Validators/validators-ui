@@ -1,5 +1,7 @@
 "use client";
 
+import { Metadata } from 'next';
+
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { publicKey } from "@metaplex-foundation/umi";
@@ -25,6 +27,24 @@ import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 import { AssetV1, fetchAssetsByOwner } from '@metaplex-foundation/mpl-core';
 
 import { generateBlip } from "./actions";
+
+// Add metadata
+export const metadata: Metadata = {
+  title: 'Send Messages on Eclipse | Validators.wtf',
+  description: 'Send on-chain messages to any wallet on Eclipse. Connect your wallet to send Blips - personalized messages stored permanently on the blockchain.',
+  openGraph: {
+    title: 'Send Messages on Eclipse | Validators.wtf',
+    description: 'Send on-chain messages to any wallet on Eclipse. Connect your wallet to send Blips - personalized messages stored permanently on the blockchain.',
+    url: 'https://validators.wtf/blip',
+    siteName: 'Validators.wtf',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Send Messages on Eclipse | Validators.wtf',
+    description: 'Send on-chain messages to any wallet on Eclipse. Connect your wallet to send Blips - personalized messages stored permanently on the blockchain.',
+  }
+};
 
 export default function MessagePage() {
   const [to, setTo] = useState<string>("");
