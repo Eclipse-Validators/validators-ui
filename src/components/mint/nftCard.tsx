@@ -106,9 +106,9 @@ export function NFTCard({
               </a>
             </div>
           </div>
-          <p className="truncate text-xs text-muted-foreground">
+          <div className="truncate text-xs text-muted-foreground">
             <CopyableText text={nft.address} maxLength={6} />
-          </p>
+          </div>
 
           {nft.metadata?.attributes && nft.metadata.attributes.length > 0 && (
             <Collapsible
