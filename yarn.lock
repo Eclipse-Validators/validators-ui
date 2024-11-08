@@ -1186,6 +1186,13 @@
   dependencies:
     "@msgpack/msgpack" "^3.0.0-beta2"
 
+"@metaplex-foundation/mpl-token-metadata@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-token-metadata/-/mpl-token-metadata-3.3.0.tgz#a6134bf807d23413cfce2db583bad4ca3539f4fb"
+  integrity sha512-t5vO8Wr3ZZZPGrVrGNcosX5FMkwQSgBiVMQMRNDG2De7voYFJmIibD5jdG05EoQ4Y5kZVEiwhYaO+wJB3aO5AA==
+  dependencies:
+    "@metaplex-foundation/mpl-toolbox" "^0.9.4"
+
 "@metaplex-foundation/mpl-toolbox@^0.9.4":
   version "0.9.4"
   resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-toolbox/-/mpl-toolbox-0.9.4.tgz#2211b2f726b1e5745c03908d26fd8ee580838b6f"

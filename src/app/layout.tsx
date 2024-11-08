@@ -15,6 +15,7 @@ import SolanaWalletProvider from "@/components/SolanaWalletProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { EthereumProviders } from "@/components/EthProviders";
+import { ValidatorBurnProgramProvider } from "@/components/providers/ValidatorBurnProgramContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -96,7 +97,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <main className="flex-grow">
                     <EditionsProgramProvider>
                       <EditionsControlProgramProvider>
-                        {children}
+                        <ValidatorBurnProgramProvider>
+                          {children}
+                        </ValidatorBurnProgramProvider>
                       </EditionsControlProgramProvider>
                     </EditionsProgramProvider>
                   </main>

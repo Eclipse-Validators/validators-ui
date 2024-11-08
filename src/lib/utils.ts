@@ -20,8 +20,10 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { Attribute } from "@/components/mint/nftCard";
-
+import { fetchDigitalAsset, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata"
 import { FetchedTokenInfo } from "./types";
+import { publicKey } from "@metaplex-foundation/umi";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,11 +38,41 @@ export async function fetchTokenInfo(
   programId: PublicKey,
   fetchTokenMetadata: boolean
 ): Promise<FetchedTokenInfo[]> {
+  const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata())
+
+  const fetchMetadata = async (uri: string) => {
+    try {
+      const response = await fetch(uri);
+      const contentType = response.headers.get('content-type');
+
+      if (contentType?.includes('image/')) {
+        // If URI points directly to an image
+        return { image: uri };
+      }
+
+      // Try parsing as JSON
+      try {
+        const metadata = await response.json();
+        return {
+          image: metadata.image,
+          attributes: metadata.attributes
+        };
+      } catch {
+        // If JSON parsing fails, assume it's a direct image URL
+        return { image: uri };
+      }
+    } catch (error) {
+      console.error("Error fetching metadata:", error);
+      return {};
+    }
+  };
+
   return Promise.all(
     tokenAccounts.map(async (account) => {
-      let tokenMetadata: any = null;
+      let tokenMetadata = null;
       let imageUri: string | null = null;
       let attributes: Attribute[] = [];
+
       if (fetchTokenMetadata) {
         try {
           tokenMetadata = await getTokenMetadata(
@@ -49,38 +81,44 @@ export async function fetchTokenInfo(
             "confirmed",
             programId
           );
-          if (tokenMetadata && tokenMetadata.uri) {
-            try {
-              const metadataResponse = await fetch(tokenMetadata.uri);
-              const metadata = await metadataResponse.json();
-              imageUri = metadata.image;
-              attributes = metadata.attributes;
-            } catch (error) {
-              console.error(
-                "Error fetching or parsing metadata:",
-                error,
-                tokenMetadata.uri
-              );
-            }
+
+          const metadataPda = !tokenMetadata && await fetchDigitalAsset(umi, publicKey(account.account.data.parsed.info.mint));
+          if (metadataPda) {
+            tokenMetadata = {
+              mint: account.account.data.parsed.info.mint,
+              updateAuthority: new PublicKey(metadataPda.metadata.updateAuthority.toString()),
+              uri: metadataPda.metadata.uri,
+              name: metadataPda.metadata.name,
+              symbol: metadataPda.metadata.symbol,
+              additionalMetadata: []
+            };
+          }
+
+          if (tokenMetadata?.uri) {
+            const metadata = await fetchMetadata(tokenMetadata.uri);
+            imageUri = metadata.image;
+            attributes = metadata.attributes || [];
           }
         } catch (err) {
           console.log("Error fetching token metadata:", err);
         }
       }
+
       return {
         owner: account.account.data.parsed.info.owner,
         mint: account.account.data.parsed.info.mint,
         amount: account.account.data.parsed.info.tokenAmount.uiAmount,
         tokenAccount: account.pubkey.toBase58(),
         decimals: account.account.data.parsed.info.tokenAmount.decimals,
+        programId: programId.toBase58(),
         metadata: tokenMetadata
           ? {
-              name: tokenMetadata?.name,
-              symbol: tokenMetadata?.symbol,
-              json: tokenMetadata?.uri,
-              image: imageUri,
-              attributes,
-            }
+            name: tokenMetadata?.name,
+            symbol: tokenMetadata?.symbol,
+            json: tokenMetadata?.uri,
+            image: imageUri,
+            attributes,
+          }
           : null,
       };
     })
