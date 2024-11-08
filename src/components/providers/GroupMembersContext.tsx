@@ -1,18 +1,11 @@
 "use client";
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState, useRef } from "react";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
 import { decodeEditions } from "@/lib/anchor/editions/accounts";
 import { getGroupMembers } from "@/lib/anchor/getGroupMembers";
-
 import { useEditionsProgram } from "./EditionsProgramContext";
 
 interface GroupMember {
@@ -29,9 +22,7 @@ interface GroupMembersContextType {
   refreshMembers: () => Promise<void>;
 }
 
-const GroupMembersContext = createContext<GroupMembersContextType | undefined>(
-  undefined
-);
+const GroupMembersContext = createContext<GroupMembersContextType | undefined>(undefined);
 
 export function GroupMembersProvider({
   children,
@@ -45,24 +36,30 @@ export function GroupMembersProvider({
   const [groupId, setGroupId] = useState<PublicKey | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Add refs to track initialization
+  const isInitialized = useRef(false);
+  const currentDeploymentId = useRef(deploymentId.toBase58());
+
   const { connection } = useConnection();
   const { program } = useEditionsProgram();
 
   const fetchMembers = useCallback(async () => {
+    // Skip if already initialized with the same deployment ID
+    if (isInitialized.current && currentDeploymentId.current === deploymentId.toBase58()) {
+      setIsLoading(false);
+      return;
+    }
+
     if (!program) return;
 
     setIsLoading(true);
     try {
-      // Fetch the deployment account data only once
       const accountData = await connection.getAccountInfo(deploymentId);
       if (!accountData) {
         throw Error(`Deployment ${deploymentId.toBase58()} not found`);
       }
 
-      const deploymentObj = decodeEditions(program)(
-        accountData.data,
-        deploymentId
-      );
+      const deploymentObj = decodeEditions(program)(accountData.data, deploymentId);
       if (!deploymentObj || !deploymentObj.item) {
         throw new Error("No deployment data");
       }
@@ -71,12 +68,13 @@ export function GroupMembersProvider({
       setGroupId(fetchedGroupId);
 
       const fetchedMembers = await getGroupMembers(connection, fetchedGroupId);
+      console.log("fetchedMembers", fetchedMembers);
       const groupMembers = fetchedMembers.map((member) => ({
         member: member.member,
         mint: member.mint,
         owner: member.owner,
       }));
-      console.log("groupMembers", groupMembers);
+
       setMembers(groupMembers);
       const newHashlist = new Set(
         fetchedMembers
@@ -84,8 +82,13 @@ export function GroupMembersProvider({
           .filter((y): y is string => y !== undefined)
       );
       setHashlist(newHashlist);
+
+      // Mark as initialized after successful fetch
+      isInitialized.current = true;
+      currentDeploymentId.current = deploymentId.toBase58();
     } catch (error) {
       console.error("Error fetching group members:", error);
+      isInitialized.current = false;
     } finally {
       setIsLoading(false);
     }
@@ -98,24 +101,23 @@ export function GroupMembersProvider({
   }, [fetchMembers, program]);
 
   const refreshMembers = useCallback(async () => {
-    if (groupId) {
-      setIsLoading(true);
-      try {
-        const fetchedMembers = await getGroupMembers(connection, groupId);
-        setMembers(fetchedMembers);
+    if (!groupId) return;
 
-        // Update hashlist
-        const newHashlist = new Set(
-          fetchedMembers
-            .map((member) => member.mint)
-            .filter((y): y is string => y !== undefined)
-        );
-        setHashlist(newHashlist);
-      } catch (error) {
-        console.error("Error refreshing group members:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    setIsLoading(true);
+    try {
+      const fetchedMembers = await getGroupMembers(connection, groupId);
+      setMembers(fetchedMembers);
+
+      const newHashlist = new Set(
+        fetchedMembers
+          .map((member) => member.mint)
+          .filter((y): y is string => y !== undefined)
+      );
+      setHashlist(newHashlist);
+    } catch (error) {
+      console.error("Error refreshing group members:", error);
+    } finally {
+      setIsLoading(false);
     }
   }, [connection, groupId]);
 
@@ -131,9 +133,7 @@ export function GroupMembersProvider({
 export function useGroupMembers() {
   const context = useContext(GroupMembersContext);
   if (context === undefined) {
-    throw new Error(
-      "useGroupMembers must be used within a GroupMembersProvider"
-    );
+    throw new Error("useGroupMembers must be used within a GroupMembersProvider");
   }
   return context;
 }
