@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { BN } from "@coral-xyz/anchor";
 import { useCoreAssets } from "@/lib/hooks/useCoreAssets";
 import { MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
-import { AlertTriangleIcon } from 'lucide-react'
+import { AlertTriangleIcon, CheckCircle2Icon } from 'lucide-react'
 import { SkeletonCard } from "../loading/skeletonCard";
 
 const BurnTokens: React.FC = () => {
@@ -269,7 +269,8 @@ const BurnTokens: React.FC = () => {
                 else {
                     console.log(token, amount);
                     const burnAmount = parseFloat(amount!) * Math.pow(10, token.decimals);
-                    const burnAmountLamports = new BN(burnAmount);
+                    console.log(burnAmount);
+                    const burnAmountLamports = new BN(burnAmount.toString());
                     const burnInstruction = await program.methods
                         .burn(burnAmountLamports)
                         .accountsPartial({
@@ -307,7 +308,20 @@ const BurnTokens: React.FC = () => {
             for (const tx of signedTransactions) {
                 const sig = await connection.sendRawTransaction(tx.serialize());
                 await connection.confirmTransaction(sig, 'confirmed');
-                toast.success(`Transaction confirmed: ${sig.slice(0, 8)}...`);
+                toast.success(
+                    <div className="flex items-center gap-2">
+                        <CheckCircle2Icon className="h-4 w-4 text-green-500" />
+                        Transaction confirmed:{' '}
+                        <a
+                            href={`${process.env.NEXT_PUBLIC_EXPLORER}/tx/${sig}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:no-underline"
+                        >
+                            {sig.slice(0, 8)}...
+                        </a>
+                    </div>
+                );
             }
 
             // Refresh all token lists
