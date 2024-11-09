@@ -5,46 +5,12 @@ import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { publicKey } from "@metaplex-foundation/umi";
 import { AssetV1, collectionAddress, fetchAssetsByOwner, MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
-import { FetchedTokenInfo } from "@/lib/types";
+import { FetchedTokenInfo, JsonMetadata } from "@/lib/types";
 import { fetchAllDigitalAssetByOwner } from "@metaplex-foundation/mpl-token-metadata";
+import { PublicKey } from "@solana/web3.js";
+import { fetchFullMetadata } from "../utils";
 
-interface JsonMetadata {
-    name?: string;
-    symbol?: string;
-    image?: string;
-    description?: string;
-    attributes?: Array<{ trait_type: string; value: string }>;
-}
-
-const fetchMetadata = async (uri: string): Promise<JsonMetadata> => {
-    try {
-        const response = await fetch(uri);
-        const contentType = response.headers.get('content-type');
-
-        if (contentType?.includes('image/')) {
-            return {
-                image: uri,
-                name: '',
-                symbol: '',
-            };
-        }
-
-        try {
-            return await response.json();
-        } catch {
-            return {
-                image: uri,
-                name: '',
-                symbol: '',
-            };
-        }
-    } catch (err) {
-        console.error(`Error fetching metadata for ${uri}:`, err);
-        return {};
-    }
-};
-
-export function useCoreAssets() {
+export function useCoreAssets(address?: string | null) {
     const { publicKey: walletPublicKey } = useWallet();
     const { connection } = useConnection();
     const [loading, setLoading] = useState(false);
@@ -54,7 +20,8 @@ export function useCoreAssets() {
 
     useEffect(() => {
         async function fetchCoreAssets() {
-            if (!walletPublicKey) {
+            const targetAddress = address ? new PublicKey(address) : walletPublicKey;
+            if (!targetAddress) {
                 setTokens([]);
                 setAssets([]);
                 return;
@@ -67,7 +34,7 @@ export function useCoreAssets() {
                 const umi = createUmi(connection.rpcEndpoint);
                 const assets = await fetchAssetsByOwner(
                     umi,
-                    publicKey(walletPublicKey.toBase58())
+                    publicKey(targetAddress.toBase58())
                 );
                 //TODO: add in normal metaplex nfts at somepoint
                 // const traditionalNfts = await fetchAllDigitalAssetByOwner(umi, publicKey(walletPublicKey.toBase58()));
@@ -98,7 +65,7 @@ export function useCoreAssets() {
                     let metadata: JsonMetadata = {};
 
                     if (asset.uri) {
-                        metadata = await fetchMetadata(asset.uri);
+                        metadata = await fetchFullMetadata(asset.uri);
                     }
                     return {
                         tokenAccount: asset.publicKey.toString(),
@@ -113,7 +80,7 @@ export function useCoreAssets() {
                             json: asset.uri,
                             attributes: metadata.attributes || asset.attributes?.attributeList
                         },
-                        owner: walletPublicKey.toBase58(),
+                        owner: targetAddress.toBase58(),
                         programId: MPL_CORE_PROGRAM_ID.toString()
                     } as FetchedTokenInfo;
                 });
@@ -145,7 +112,7 @@ export function useCoreAssets() {
         }
 
         fetchCoreAssets();
-    }, [walletPublicKey, connection]);
+    }, [walletPublicKey, connection, address]);
 
     const refreshTokens = () => {
         setLoading(true);

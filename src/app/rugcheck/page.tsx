@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { ParsedAccountData, PublicKey } from "@solana/web3.js";
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, getMint, getExtensionTypes, ExtensionType } from "@solana/spl-token";
-import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck, Share2, LockIcon } from "lucide-react";
+import { AlertTriangle, ShieldAlert, ExternalLink, ShieldCheck, Share2, LockIcon, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -365,7 +365,16 @@ function RugCheckContent() {
                             <div className="space-y-2">
                                 {analysis.largestHolders.map((holder, i) => (
                                     <div key={i} className="flex justify-between items-center p-2 bg-muted rounded-lg">
-                                        <CopyableText text={holder.owner || holder.address} maxLength={8} />
+                                        <div className="flex items-center gap-2">
+                                            <CopyableText text={holder.owner || holder.address} maxLength={8} />
+                                            <a
+                                                href={`/viewer?wallet=${holder.owner || holder.address}`}
+                                                className="text-muted-foreground hover:text-foreground"
+                                                title="View Wallet"
+                                            >
+                                                <Eye size={16} />
+                                            </a>
+                                        </div>
                                         <div className="font-medium">
                                             {holder.percentage.toFixed(2)}%
                                         </div>

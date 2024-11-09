@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Image from "next/image";
 import { Download, X } from "lucide-react";
 
 import { Button } from "../ui/button";
@@ -32,13 +31,11 @@ export function ViewImageDialog({ name, image }: ViewImageDialogProps) {
 
   return (
     <>
-      <Image
+      <img
         src={image}
         alt={name}
         className="absolute left-0 top-0 h-full w-full cursor-pointer object-cover"
         onClick={() => setIsOpen(true)}
-        width={800}
-        height={800}
       />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-3xl">
@@ -48,12 +45,10 @@ export function ViewImageDialog({ name, image }: ViewImageDialogProps) {
             </DialogTitle>
           </DialogHeader>
           <div className="relative">
-            <Image
+            <img
               src={image}
               alt={name}
               className="w-full rounded-lg"
-              width={800}
-              height={800}
             />
             <Button
               variant="ghost"

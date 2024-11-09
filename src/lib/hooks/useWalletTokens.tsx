@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 
 import { FetchedTokenInfo } from "../types";
 import { fetchTokenInfo } from "../utils";
 
-export function useWalletTokens(fetchTokenMetadata: boolean = false) {
+export function useWalletTokens(
+  fetchTokenMetadata: boolean = false,
+  address?: string | null
+) {
   const [tokens, setTokens] = useState<FetchedTokenInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +18,9 @@ export function useWalletTokens(fetchTokenMetadata: boolean = false) {
   const { publicKey } = useWallet();
 
   const fetchTokens = useCallback(async () => {
-    if (!publicKey) {
+    const targetAddress = address ? new PublicKey(address) : publicKey;
+    
+    if (!targetAddress) {
       setTokens([]);
       setLoading(false);
       return;
@@ -25,7 +31,7 @@ export function useWalletTokens(fetchTokenMetadata: boolean = false) {
 
     try {
       const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
-        publicKey,
+        targetAddress,
         { programId: TOKEN_2022_PROGRAM_ID }
       );
       const tokenInfo = await fetchTokenInfo(
@@ -42,7 +48,7 @@ export function useWalletTokens(fetchTokenMetadata: boolean = false) {
     } finally {
       setLoading(false);
     }
-  }, [connection, publicKey, fetchTokenMetadata]);
+  }, [connection, publicKey, fetchTokenMetadata, address]);
 
   useEffect(() => {
     fetchTokens();

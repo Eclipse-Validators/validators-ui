@@ -16,3 +16,12 @@ export interface FetchedTokenInfo {
     attributes?: Attribute[];
   } | null;
 }
+
+
+export interface JsonMetadata {
+  name?: string;
+  symbol?: string;
+  image?: string;
+  description?: string;
+  attributes?: Array<{ trait_type: string; value: string }>;
+}

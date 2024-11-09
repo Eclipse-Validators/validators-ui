@@ -21,7 +21,7 @@ import { twMerge } from "tailwind-merge";
 
 import { Attribute } from "@/components/mint/nftCard";
 import { fetchDigitalAsset, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata"
-import { FetchedTokenInfo } from "./types";
+import { FetchedTokenInfo, JsonMetadata } from "./types";
 import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 
@@ -230,4 +230,33 @@ export const createTokenTransferInstructions = async (
   }
 
   return instructions;
+};
+
+
+export const fetchFullMetadata = async (uri: string): Promise<JsonMetadata> => {
+  try {
+    const response = await fetch(uri);
+    const contentType = response.headers.get('content-type');
+
+    if (contentType?.includes('image/')) {
+      return {
+        image: uri,
+        name: '',
+        symbol: '',
+      };
+    }
+
+    try {
+      return await response.json();
+    } catch {
+      return {
+        image: uri,
+        name: '',
+        symbol: '',
+      };
+    }
+  } catch (err) {
+    console.error(`Error fetching metadata for ${uri}:`, err);
+    return {};
+  }
 };

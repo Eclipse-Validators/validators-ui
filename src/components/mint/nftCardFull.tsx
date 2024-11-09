@@ -109,9 +109,9 @@ const NFTCardFull: React.FC<NFTFullViewProps> = ({ nft }) => {
     <div className="container mx-auto p-4">
       <Card className="mx-auto w-full max-w-4xl">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{nft.metadata?.name || "Unnamed NFT"}</span>
-            <div className="ml-auto mr-2 flex items-center space-x-2">
+          <CardTitle className="flex flex-wrap items-center gap-2 sm:justify-between">
+            <span className="break-all">{nft.metadata?.name || "Unnamed NFT"}</span>
+            <div className="flex items-center gap-2">
               <CopyButton
                 textToCopy={`${process.env.NEXT_PUBLIC_APP_URL}nft/${nft.mint}`}
                 buttonText=""
@@ -121,62 +121,60 @@ const NFTCardFull: React.FC<NFTFullViewProps> = ({ nft }) => {
                   size: "icon",
                 }}
               />
-            </div>
-            {isOwner && (
-              <Dialog
-                open={isTransferModalOpen}
-                onOpenChange={setIsTransferModalOpen}
-              >
-                <DialogTrigger asChild>
-                  <div className="flex items-center space-x-2">
+              {isOwner && (
+                <Dialog
+                  open={isTransferModalOpen}
+                  onOpenChange={setIsTransferModalOpen}
+                >
+                  <DialogTrigger asChild>
                     <Button variant="outline" size="icon">
                       <Send className="h-4 w-4" />
                     </Button>
-                  </div>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>
-                      Transfer {nft.metadata?.name || "NFT"}
-                    </DialogTitle>
-                    <DialogDescription>
-                      {`Enter the destination address to transfer ${nft.metadata?.name || "NFT"}.`}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Input
-                    value={destinationAddress}
-                    onChange={(e) => {
-                      setDestinationAddress(e.target.value);
-                      try {
-                        new PublicKey(e.target.value);
-                        setIsValidAddress(true);
-                      } catch {
-                        setIsValidAddress(false);
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Transfer {nft.metadata?.name || "NFT"}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {`Enter the destination address to transfer ${nft.metadata?.name || "NFT"}.`}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Input
+                      value={destinationAddress}
+                      onChange={(e) => {
+                        setDestinationAddress(e.target.value);
+                        try {
+                          new PublicKey(e.target.value);
+                          setIsValidAddress(true);
+                        } catch {
+                          setIsValidAddress(false);
+                        }
+                      }}
+                      placeholder="Destination address"
+                      className={
+                        isValidAddress ? "border-green-500" : "border-red-500"
                       }
-                    }}
-                    placeholder="Destination address"
-                    className={
-                      isValidAddress ? "border-green-500" : "border-red-500"
-                    }
-                  />
-                  {!isValidAddress && destinationAddress && (
-                    <p className="text-sm text-red-500">
-                      Please enter a valid Solana address
-                    </p>
-                  )}
-                  <Button
-                    onClick={handleTransfer}
-                    disabled={!isValidAddress || isTransferring}
-                  >
-                    {isTransferring ? "Transferring..." : "Confirm Transfer"}
-                  </Button>
-                </DialogContent>
-              </Dialog>
-            )}
+                    />
+                    {!isValidAddress && destinationAddress && (
+                      <p className="text-sm text-red-500">
+                        Please enter a valid Solana address
+                      </p>
+                    )}
+                    <Button
+                      onClick={handleTransfer}
+                      disabled={!isValidAddress || isTransferring}
+                    >
+                      {isTransferring ? "Transferring..." : "Confirm Transfer"}
+                    </Button>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row">
+          <div className="flex flex-col gap-4 md:flex-row">
             <div className="w-full md:w-1/2">
               {nft.metadata?.image && (
                 <div className="relative pb-[100%]">
@@ -187,22 +185,27 @@ const NFTCardFull: React.FC<NFTFullViewProps> = ({ nft }) => {
                 </div>
               )}
             </div>
-            <div className="mt-4 w-full md:mt-0 md:w-1/2 md:pl-4">
-              <p>
-                <strong>Symbol:</strong> {nft.metadata?.symbol || "N/A"}
+            <div className="w-full md:w-1/2">
+              <p className="mb-2 flex flex-wrap items-center gap-1">
+                <strong>Symbol:</strong>
+                <span className="break-all">{nft.metadata?.symbol || "N/A"}</span>
               </p>
-              <p>
-                <strong>Mint:</strong>{" "}
-                <CopyableText text={nft.mint} maxLength={20} />
+              <p className="mb-2 flex flex-wrap items-center gap-1">
+                <strong>Mint:</strong>
+                <span className="break-all">
+                  <CopyableText text={nft.mint} maxLength={8} />
+                </span>
               </p>
-              <p>
-                <strong>Owner:</strong>{" "}
-                <div className="flex items-center">
-                  <CopyableText text={nft.owner} maxLength={20} />
+              <p className="mb-2">
+                <strong>Owner:</strong>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="break-all">
+                    <CopyableText text={nft.owner} maxLength={8} />
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hover:bg-transparent hover:text-foreground"
+                    className="shrink-0 hover:bg-transparent hover:text-foreground"
                     onClick={() => {
                       router.push(`/viewer?wallet=${nft.owner}`);
                     }}
