@@ -23,6 +23,7 @@ import { BN } from "@coral-xyz/anchor";
 import { useCoreAssets } from "@/lib/hooks/useCoreAssets";
 import { MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
 import { AlertTriangleIcon } from 'lucide-react'
+import { SkeletonCard } from "../loading/skeletonCard";
 
 const BurnTokens: React.FC = () => {
     const { connection } = useConnection();
@@ -93,13 +94,9 @@ const BurnTokens: React.FC = () => {
     const renderTokenCards = useCallback(
         (tokens: FetchedTokenInfo[]) => {
             if (loadingSPL || loading2022) {
-                return (
-                    <Card>
-                        <CardContent className="flex h-32 items-center justify-center">
-                            <p>Loading...</p>
-                        </CardContent>
-                    </Card>
-                );
+                return Array(6)
+                    .fill(0)
+                    .map((_, index) => <SkeletonCard key={index} />);
             }
 
             if (!tokens || tokens.length === 0) {
@@ -173,13 +170,9 @@ const BurnTokens: React.FC = () => {
     const renderCoreAssets = useCallback(
         (tokens: FetchedTokenInfo[]) => {
             if (loadingCore) {
-                return (
-                    <Card>
-                        <CardContent className="flex h-32 items-center justify-center">
-                            <p>Loading...</p>
-                        </CardContent>
-                    </Card>
-                );
+                return Array(6)
+                    .fill(0)
+                    .map((_, index) => <SkeletonCard key={index} />);
             }
 
             if (!tokens || tokens.length === 0) {

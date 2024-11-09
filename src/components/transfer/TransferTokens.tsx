@@ -16,7 +16,7 @@ import {
 } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
-import { X } from "lucide-react";
+import { ExternalLink, X } from "lucide-react";
 import { useLogger } from "next-axiom";
 import { toast } from "sonner";
 
@@ -33,6 +33,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEditionsHashlist } from "../providers/EditionsProgramContext";
 import { EthTransfer } from "./EthTransfer";
 import { SPL_MEMO_PROGRAM_ID } from "@metaplex-foundation/mpl-toolbox";
+import { CopyableText } from "@/components/ui/copyableText";
+import { SkeletonCard } from "../loading/skeletonCard";
 
 const TokenCard: React.FC<{
   token: FetchedTokenInfo;
@@ -42,81 +44,91 @@ const TokenCard: React.FC<{
   onAmountChange: (amount: string) => void;
 }> = ({ token, isSelected, onSelect, amount, onAmountChange }) => (
   <Card
-    className={`w-full max-w-sm cursor-pointer ${isSelected ? "ring-2 ring-purple-500" : ""}`}
+    className={`w-full cursor-pointer ${isSelected ? "ring-2 ring-purple-500" : ""}`}
     onClick={(e) => {
-      // Prevent toggling when clicking on the input
       if (e.target instanceof HTMLInputElement) return;
       onSelect();
     }}
   >
-    <CardHeader>
-      <CardTitle className="flex items-center justify-between">
-        <span>
-          {token.metadata?.name ||
-            token.mint.slice(0, 4) + "..." + token.mint.slice(-4)}
-        </span>
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={onSelect}
-          onClick={(e) => e.stopPropagation()} // Prevent card click when clicking checkbox
-        />
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="flex items-center space-x-4">
+    <CardHeader className="p-4 sm:p-6 pb-0">
+      <div className="flex items-start gap-4">
         {token.metadata?.image && (
           <img
             src={token.metadata.image}
             alt={token.metadata.name}
-            className="h-16 w-16 rounded"
+            className="h-16 w-16 rounded object-cover"
           />
         )}
-        <div>
-          {token.decimals > 0 ? <p>Balance: {token.amount}</p> : null}
-          {token.decimals === 0 ? (
+        <CardTitle className="flex flex-1 items-center justify-between text-base sm:text-lg">
+          <div className="flex items-center gap-2 truncate">
+            <span className="truncate">
+              {token.metadata?.name ||
+                token.mint.slice(0, 4) + "..." + token.mint.slice(-4)}
+            </span>
+            {token.metadata?.symbol && (
+              <span className="text-sm text-muted-foreground">
+                ({token.metadata.symbol})
+              </span>
+            )}
+          </div>
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={onSelect}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </CardTitle>
+      </div>
+    </CardHeader>
+    <CardContent className="p-4 sm:p-6">
+      <div className="space-y-2">
+        {token.decimals > 0 ? (
+          <p className="text-sm">Balance: {token.amount}</p>
+        ) : null}
+        <div className="text-sm space-y-1">
+          <div className="flex items-center gap-2">
             <p>
-              <b>Address:</b>{" "}
-              <code>
-                {token.mint.slice(0, 4) + "..." + token.mint.slice(-4)}
-              </code>
+              <b>Mint:</b> <CopyableText text={token.mint} maxLength={8} />
             </p>
-          ) : null}
-          <p>
-            <b>Symbol:</b> {token.metadata?.symbol || "N/A"}
-          </p>
-          {token.decimals > 0 && (
+          </div>
+          <a
+            href={`/rugcheck?mint=${token.mint}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-muted-foreground hover:text-primary inline-flex items-center gap-1"
+          >
+            <ExternalLink className="h-3 w-3" />
+            <span className="text-xs">Rugcheck</span>
+          </a>
+        </div>
+        {token.decimals > 0 && (
+          <div className="flex gap-2 mt-2">
             <Input
               type="number"
               value={amount}
               onChange={(e) => onAmountChange(e.target.value)}
-              onClick={(e) => e.stopPropagation()} // Prevent card click when clicking input
+              onClick={(e) => e.stopPropagation()}
               placeholder="Amount to send"
-              className="mt-2"
+              min="0"
+              max={token.amount.toString()}
+              className="flex-1 text-sm"
             />
-          )}
-          {token.decimals === 0 && <></>}
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const SkeletonCard: React.FC = () => (
-  <Card className="w-full max-w-sm">
-    <CardHeader>
-      <CardTitle className="flex items-center justify-between">
-        <Skeleton className="h-4 w-[200px]" />
-        <Skeleton className="h-4 w-4" />
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-16 w-16 rounded" />
-        <div>
-          <Skeleton className="mb-2 h-4 w-[100px]" />
-          <Skeleton className="mb-2 h-4 w-[80px]" />
-          <Skeleton className="h-8 w-[120px]" />
-        </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isSelected) {
+                  onSelect();
+                }
+                onAmountChange(token.amount.toString());
+              }}
+              className="whitespace-nowrap text-sm"
+            >
+              Max
+            </Button>
+          </div>
+        )}
       </div>
     </CardContent>
   </Card>
