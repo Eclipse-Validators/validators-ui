@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useState, useDeferredValue } from "react";
+import React, { KeyboardEvent, useEffect, useState, useDeferredValue, useCallback } from "react";
 import { useSPLTokens } from "@/lib/hooks/useWalletSplTokens";
 import { useCoreAssets } from "@/lib/hooks/useCoreAssets";
 import { Button } from "@/components/ui/button";
@@ -95,7 +95,8 @@ export function WalletPeeker() {
     validateInput();
   }, [input, domainLookup]);
 
-  const handleSearch = () => {
+  // Memoize handleSearch
+  const handleSearch = useCallback(() => {
     if (/\./.test(input)) {
       if (domainLookup?.publicKey && !domainLookup.error) {
         setSearchedAddress(domainLookup.publicKey);
@@ -109,7 +110,7 @@ export function WalletPeeker() {
       queryParams.set("wallet", input);
       window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
     }
-  };
+  }, [input, domainLookup]);
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && isValidInput && !isLookingUpDomain) {
@@ -120,7 +121,7 @@ export function WalletPeeker() {
   // Add a state to track if we've handled the initial query param
   const [initialQueryParamHandled, setInitialQueryParamHandled] = useState(false);
 
-  // Update the query param effect
+  // Update the query param effect to handle the complete flow
   useEffect(() => {
     const handleQueryParam = async () => {
       // Only handle query param on initial load
@@ -131,23 +132,34 @@ export function WalletPeeker() {
 
       if (wallet) {
         setInput(wallet);
-
+        
         // Check if it's a domain
         if (/\./.test(wallet)) {
-          // Wait for domain lookup
+          // If domain lookup is complete
           if (domainLookup?.publicKey && !domainLookup.error) {
             setSearchedAddress(domainLookup.publicKey);
+            // Update URL with resolved address
+            const queryParams = new URLSearchParams(window.location.search);
+            queryParams.set("wallet", domainLookup.publicKey);
+            window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
+            // Trigger the search
+            handleSearch();
           }
         } else {
+          // For regular addresses, set immediately and search
           setSearchedAddress(wallet);
+          handleSearch();
         }
       }
-
+      
       setInitialQueryParamHandled(true);
     };
 
-    handleQueryParam();
-  }, [domainLookup, initialQueryParamHandled]); // Add initialQueryParamHandled as dependency
+    // Only run if we have the domain lookup result or it's not a domain
+    if (!initialQueryParamHandled && (domainLookup || !(/\./.test(input)))) {
+      handleQueryParam();
+    }
+  }, [domainLookup, initialQueryParamHandled, input, handleSearch]);
 
   const renderTokens = (tokens: any[], loading: boolean) => {
     if (loading) {
