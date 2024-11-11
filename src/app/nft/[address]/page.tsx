@@ -88,7 +88,8 @@ export default function NFTPage() {
                 symbol: metadata.symbol || "",
                 image: metadata.image || asset.uri,
                 json: asset.uri,
-                attributes: metadata.attributes
+                attributes: metadata.attributes,
+                description: metadata.description
               },
               owner: asset.owner.toString(),
               programId: MPL_CORE_PROGRAM_ID.toString()

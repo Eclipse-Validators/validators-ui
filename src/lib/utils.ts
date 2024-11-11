@@ -121,6 +121,7 @@ async function fetchMetadata(uri: string) {
 
     try {
       const metadata = await response.json();
+      console.log('ipfs metadata', metadata);
       // If metadata.image is IPFS, resolve it too
       let imageUrl = metadata.image;
       if (metadata.image?.startsWith('ipfs://')) {
@@ -129,6 +130,7 @@ async function fetchMetadata(uri: string) {
       }
 
       return {
+        name: metadata.name,
         image: imageUrl,
         description: metadata.description,
         attributes: metadata.attributes

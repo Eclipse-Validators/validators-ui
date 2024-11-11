@@ -186,6 +186,11 @@ const NFTCardFull: React.FC<NFTFullViewProps> = ({ nft }) => {
               )}
             </div>
             <div className="w-full md:w-1/2">
+              {nft.metadata?.description && (
+                <p className="mb-4 text-sm text-muted-foreground">
+                  {nft.metadata.description}
+                </p>
+              )}
               <p className="mb-2 flex flex-wrap items-center gap-1">
                 <strong>Symbol:</strong>
                 <span className="break-all">{nft.metadata?.symbol || "N/A"}</span>

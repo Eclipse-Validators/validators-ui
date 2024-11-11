@@ -14,6 +14,7 @@ export interface FetchedTokenInfo {
     image?: string | null;
     json?: string | null;
     attributes?: Attribute[];
+    description?: string;
   } | null;
 }
 
