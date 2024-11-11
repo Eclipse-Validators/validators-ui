@@ -1,7 +1,5 @@
 import React, { KeyboardEvent, useEffect, useState, useDeferredValue } from "react";
-import { useAddressTokens2022 } from "@/lib/hooks/useAddressTokens2022";
 import { useSPLTokens } from "@/lib/hooks/useWalletSplTokens";
-import { useEmptyTokenAccounts } from "@/lib/hooks/useEmptyTokenAccounts";
 import { useCoreAssets } from "@/lib/hooks/useCoreAssets";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,9 +9,54 @@ import { NFTCard } from "@/components/mint/nftCard";
 import { SkeletonCard } from "@/components/loading/skeletonCard";
 import { useWalletTokens } from "@/lib/hooks/useWalletTokens";
 import { TokenCard } from "@/components/viewer/TokenCard";
+import { useEclipseDomains } from '@/hooks/use-eclipse-domains'
+import { Skeleton } from "../ui/skeleton";
+import { useEclipseDomainLookup } from '@/hooks/use-eclipse-domain-lookup';
+import { PublicKey } from "@solana/web3.js";
+
+function DomainCard({ address }: { address: string }) {
+  const { data: domainsData, isLoading } = useEclipseDomains(address)
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Owned Domains</CardTitle>
+        </CardHeader>
+        <CardContent className="flex h-16 items-center justify-center">
+          <Skeleton className="h-4 w-48" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (!domainsData?.domains.length) {
+    return null // Don't show anything if no domains
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Owned Domains</CardTitle>
+      </CardHeader>
+      <CardContent className="flex items-center space-x-2 py-4">
+        <div className="flex flex-wrap gap-2">
+          {domainsData.domains.map((domain, index) => (
+            <div
+              key={index}
+              className="rounded-full bg-muted px-3 py-1 text-sm font-medium"
+            >
+              {domain.domain}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 export function WalletPeeker() {
-  const [address, setAddress] = useState("");
+  const [input, setInput] = useState("");
   const [searchedAddress, setSearchedAddress] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("spl");
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,28 +66,88 @@ export function WalletPeeker() {
   const { tokens: splTokens, loading: loadingSPL, error: errorSPL } = useSPLTokens(true, searchedAddress);
   const { tokens: coreAssets, loading: loadingCore, error: errorCore } = useCoreAssets(searchedAddress);
 
+  const { data: domainLookup, isLoading: isLookingUpDomain } = useEclipseDomainLookup(
+    /\./.test(input) ? input : undefined
+  );
+
+  const [isValidInput, setIsValidInput] = useState(false);
+
+  useEffect(() => {
+    const validateInput = () => {
+      if (!input) {
+        setIsValidInput(false);
+        return;
+      }
+
+      if (/\./.test(input)) {
+        setIsValidInput(Boolean(domainLookup?.publicKey && !domainLookup.error));
+        return;
+      }
+
+      try {
+        new PublicKey(input);
+        setIsValidInput(true);
+      } catch {
+        setIsValidInput(false);
+      }
+    };
+
+    validateInput();
+  }, [input, domainLookup]);
+
   const handleSearch = () => {
-    setSearchedAddress(address);
-    const queryParams = new URLSearchParams(window.location.search);
-    queryParams.set("wallet", address);
-    window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
+    if (/\./.test(input)) {
+      if (domainLookup?.publicKey && !domainLookup.error) {
+        setSearchedAddress(domainLookup.publicKey);
+        const queryParams = new URLSearchParams(window.location.search);
+        queryParams.set("wallet", domainLookup.publicKey);
+        window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
+      }
+    } else {
+      setSearchedAddress(input);
+      const queryParams = new URLSearchParams(window.location.search);
+      queryParams.set("wallet", input);
+      window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
+    }
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && isValidInput && !isLookingUpDomain) {
       handleSearch();
     }
   };
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const wallet = queryParams.get("wallet");
+  // Add a state to track if we've handled the initial query param
+  const [initialQueryParamHandled, setInitialQueryParamHandled] = useState(false);
 
-    if (wallet) {
-      setAddress(wallet);
-      setSearchedAddress(wallet);
-    }
-  }, []);
+  // Update the query param effect
+  useEffect(() => {
+    const handleQueryParam = async () => {
+      // Only handle query param on initial load
+      if (initialQueryParamHandled) return;
+
+      const queryParams = new URLSearchParams(location.search);
+      const wallet = queryParams.get("wallet");
+
+      if (wallet) {
+        setInput(wallet);
+
+        // Check if it's a domain
+        if (/\./.test(wallet)) {
+          // Wait for domain lookup
+          if (domainLookup?.publicKey && !domainLookup.error) {
+            setSearchedAddress(domainLookup.publicKey);
+          }
+        } else {
+          setSearchedAddress(wallet);
+        }
+      }
+
+      setInitialQueryParamHandled(true);
+    };
+
+    handleQueryParam();
+  }, [domainLookup, initialQueryParamHandled]); // Add initialQueryParamHandled as dependency
 
   const renderTokens = (tokens: any[], loading: boolean) => {
     if (loading) {
@@ -97,71 +200,95 @@ export function WalletPeeker() {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Enter an address</CardTitle>
+          <CardTitle>Enter an address or domain</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-6">
-            <Input
-              autoComplete="off"
-              placeholder="Enter Solana address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="w-3/4"
-            />
-            <Button className="w-1/4" onClick={handleSearch}>
-              Search
-            </Button>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-6">
+              <Input
+                autoComplete="off"
+                placeholder="Enter Solana address or domain"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className={`w-3/4 ${input && (
+                  isValidInput ? "border-green-500" :
+                    isLookingUpDomain ? "border-yellow-500" :
+                      "border-red-500"
+                )
+                  }`}
+                disabled={isLookingUpDomain}
+              />
+              <Button
+                className="w-1/4"
+                onClick={handleSearch}
+                disabled={isLookingUpDomain || !isValidInput}
+              >
+                {isLookingUpDomain ? "Looking up..." : "Search"}
+              </Button>
+            </div>
+            {input && !isValidInput && (
+              <p className="text-sm text-red-500">
+                {/\./.test(input)
+                  ? (isLookingUpDomain
+                    ? "Looking up domain..."
+                    : domainLookup?.error || "Domain not found")
+                  : "Please enter a valid Solana address or domain"}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {searchedAddress && (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <div className="overflow-x-auto -mx-3 sm:mx-0">
-            <div className="px-3 sm:px-0 min-w-full">
-              <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 h-auto gap-1">
-                <TabsTrigger value="spl" className="px-2 py-1.5 text-xs sm:text-sm md:text-base">
-                  SPL Tokens
-                </TabsTrigger>
-                <TabsTrigger value="token2022" className="px-2 py-1.5 text-xs sm:text-sm md:text-base">
-                  Token-2022
-                </TabsTrigger>
-                <TabsTrigger value="nfts" className="px-2 py-1.5 text-xs sm:text-sm md:text-base">
-                  NFTs
-                </TabsTrigger>
-              </TabsList>
+        <>
+          <DomainCard address={searchedAddress} />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <div className="overflow-x-auto -mx-3 sm:mx-0">
+              <div className="px-3 sm:px-0 min-w-full">
+                <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 h-auto gap-1">
+                  <TabsTrigger value="spl" className="px-2 py-1.5 text-xs sm:text-sm md:text-base">
+                    SPL Tokens
+                  </TabsTrigger>
+                  <TabsTrigger value="token2022" className="px-2 py-1.5 text-xs sm:text-sm md:text-base">
+                    Token-2022
+                  </TabsTrigger>
+                  <TabsTrigger value="nfts" className="px-2 py-1.5 text-xs sm:text-sm md:text-base">
+                    NFTs
+                  </TabsTrigger>
+                </TabsList>
+              </div>
             </div>
-          </div>
 
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search tokens..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full max-w-full sm:max-w-sm pr-8"
-            />
-          </div>
-
-          <TabsContent value="spl">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {renderTokens(splTokens, loadingSPL)}
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search tokens..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full max-w-full sm:max-w-sm pr-8"
+              />
             </div>
-          </TabsContent>
 
-          <TabsContent value="token2022">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {renderTokens(token2022Tokens, loading2022)}
-            </div>
-          </TabsContent>
+            <TabsContent value="spl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {renderTokens(splTokens, loadingSPL)}
+              </div>
+            </TabsContent>
 
-          <TabsContent value="nfts">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {renderTokens(coreAssets, loadingCore)}
-            </div>
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="token2022">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {renderTokens(token2022Tokens, loading2022)}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="nfts">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {renderTokens(coreAssets, loadingCore)}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </>
       )}
     </div>
   );

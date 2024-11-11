@@ -35,6 +35,7 @@ import { EthTransfer } from "./EthTransfer";
 import { SPL_MEMO_PROGRAM_ID } from "@metaplex-foundation/mpl-toolbox";
 import { CopyableText } from "@/components/ui/copyableText";
 import { SkeletonCard } from "../loading/skeletonCard";
+import { useEclipseDomainLookup } from '@/hooks/use-eclipse-domain-lookup';
 
 const TokenCard: React.FC<{
   token: FetchedTokenInfo;
@@ -163,30 +164,54 @@ const TransferTokens: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearch = useDeferredValue(searchQuery);
+  const [inputValue, setInputValue] = useState("");
+  const { data: domainLookup, isLoading: isLookingUpDomain } = useEclipseDomainLookup(
+    /\./.test(inputValue) ? inputValue : undefined
+  );
 
   useEffect(() => {
     const validateAddress = () => {
       try {
-        new PublicKey(destinationAddress);
-        if (isInHashlist(destinationAddress)) {
+        if (!inputValue) {
+          setIsValidAddress(false);
+          setDestinationAddress("");
+          return;
+        }
+
+        // Check if it's a domain
+        if (/\./.test(inputValue)) {
+          // Only set valid if we have a successful lookup with a publicKey
+          if (domainLookup?.publicKey && !domainLookup.error) {
+            setDestinationAddress(domainLookup.publicKey);
+            setIsValidAddress(true);
+          } else {
+            setIsValidAddress(false);
+            setDestinationAddress("");
+          }
+          return;
+        }
+
+        // Check if it's a valid public key
+        new PublicKey(inputValue);
+        if (isInHashlist(inputValue)) {
           toast.error(
             "Destination address is the same as an NFT in the collection. Please use a wallet address."
           );
           setIsValidAddress(false);
+          setDestinationAddress("");
           return;
         }
+        
+        setDestinationAddress(inputValue);
         setIsValidAddress(true);
       } catch (error) {
         setIsValidAddress(false);
+        setDestinationAddress("");
       }
     };
 
-    if (destinationAddress) {
-      validateAddress();
-    } else {
-      setIsValidAddress(false);
-    }
-  }, [destinationAddress, isInHashlist]);
+    validateAddress();
+  }, [inputValue, domainLookup, isLookingUpDomain, isInHashlist]);
 
   const handleTokenSelection = (tokenAccount: string) => {
     setSelectedTokens((prev) =>
@@ -463,14 +488,21 @@ const TransferTokens: React.FC = () => {
           id="destinationAddress"
           autoComplete="off"
           type="text"
-          value={destinationAddress}
-          onChange={(e) => setDestinationAddress(e.target.value)}
-          placeholder="Enter destination address"
-          className={`w-96 ${isValidAddress ? "border-green-500" : "border-red-500"}`}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Enter destination address or domain"
+          className={`w-96 ${isValidAddress ? "border-green-500" :
+            isLookingUpDomain ? "border-yellow-500" :
+              inputValue ? "border-red-500" : ""
+            }`}
         />
-        {!isValidAddress && destinationAddress && (
+        {!isValidAddress && inputValue && (
           <p className="text-sm text-red-500">
-            Please enter a Solana compatible address
+            {/\./.test(inputValue)
+              ? (isLookingUpDomain 
+                  ? "Looking up domain..." 
+                  : domainLookup?.error || "Domain not found")
+              : "Please enter a valid Solana address or domain"}
           </p>
         )}
         {activeTab !== "eth" && (
