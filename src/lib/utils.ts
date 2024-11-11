@@ -62,6 +62,7 @@ export async function fetchTokenMetadataHelper(
     }
 
     if (tokenMetadata?.uri) {
+      console.log('tokenuri', tokenMetadata);
       const metadata = await fetchMetadata(tokenMetadata.uri);
       return {
         name: tokenMetadata.name,
@@ -81,7 +82,37 @@ export async function fetchTokenMetadataHelper(
 
 async function fetchMetadata(uri: string) {
   try {
-    const response = await fetch(uri);
+    // Handle IPFS URIs
+    let fetchUrl = uri;
+    if (uri.startsWith('ipfs://')) {
+      // Try multiple IPFS gateways in case one fails
+      const ipfsGateways = [
+        'https://ipfs.io/ipfs/',
+        'https://gateway.pinata.cloud/ipfs/',
+        'https://cloudflare-ipfs.com/ipfs/',
+      ];
+
+      const ipfsHash = uri.replace('ipfs://', '');
+
+      // Try each gateway until one works
+      for (const gateway of ipfsGateways) {
+        try {
+          const response = await fetch(gateway + ipfsHash);
+          if (response.ok) {
+            fetchUrl = gateway + ipfsHash;
+            break;
+          }
+        } catch {
+          continue;
+        }
+      }
+    }
+
+    const response = await fetch(fetchUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const contentType = response.headers.get('content-type');
 
     if (contentType?.includes('image/')) {
@@ -90,8 +121,15 @@ async function fetchMetadata(uri: string) {
 
     try {
       const metadata = await response.json();
+      // If metadata.image is IPFS, resolve it too
+      let imageUrl = metadata.image;
+      if (metadata.image?.startsWith('ipfs://')) {
+        const ipfsHash = metadata.image.replace('ipfs://', '');
+        imageUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
+      }
+
       return {
-        image: metadata.image,
+        image: imageUrl,
         description: metadata.description,
         attributes: metadata.attributes
       };
@@ -99,7 +137,7 @@ async function fetchMetadata(uri: string) {
       return { image: uri };
     }
   } catch (error) {
-    console.error("Error fetching metadata:", error);
+    console.error("Error fetching metadata:", error, "URI:", uri);
     return {};
   }
 }
