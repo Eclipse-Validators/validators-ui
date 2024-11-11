@@ -36,6 +36,7 @@ export default function Bridge() {
             setRecentTransactions(JSON.parse(storedTransactions));
         }
     }, []);
+
     return (
         <div className="min-h-screen flex flex-col">
             <main className="flex-grow container mx-auto p-4">
