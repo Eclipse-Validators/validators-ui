@@ -124,41 +124,32 @@ export function WalletPeeker() {
   // Update the query param effect
   useEffect(() => {
     const handleQueryParam = async () => {
-      console.log('handleQueryParam called', { initialQueryParamHandled, domainLookup });
-
-      if (initialQueryParamHandled) {
-        console.log('skipping - already handled');
-        return;
-      }
+      if (initialQueryParamHandled) return;
 
       const queryParams = new URLSearchParams(location.search);
       const wallet = queryParams.get("wallet");
-      console.log('got wallet from query', { wallet });
 
       if (wallet) {
         setInput(wallet);
 
         // Check if it's a domain
         if (/\./.test(wallet)) {
-          console.log('wallet is domain', { domainLookup });
-
           // If domain lookup is complete
           if (domainLookup?.publicKey && !domainLookup.error) {
-            console.log('domain lookup successful', { publicKey: domainLookup.publicKey });
             const resolvedAddress = domainLookup.publicKey;
             setSearchedAddress(resolvedAddress);
             queryParams.set("wallet", resolvedAddress);
             window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
-            setInitialQueryParamHandled(true); // Only set this after successful domain resolution
+            setInitialQueryParamHandled(true);
           }
         } else {
-          console.log('wallet is address');
           try {
             new PublicKey(wallet);
             setSearchedAddress(wallet);
-            setInitialQueryParamHandled(true); // Set this for regular addresses
+            setInitialQueryParamHandled(true);
           } catch {
             console.log('invalid address');
+            // Invalid address - don't load
           }
         }
       }
