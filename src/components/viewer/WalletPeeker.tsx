@@ -13,6 +13,7 @@ import { useEclipseDomains } from '@/hooks/use-eclipse-domains'
 import { Skeleton } from "../ui/skeleton";
 import { useEclipseDomainLookup } from '@/hooks/use-eclipse-domain-lookup';
 import { PublicKey } from "@solana/web3.js";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 function DomainCard({ address }: { address: string }) {
   const { data: domainsData, isLoading } = useEclipseDomains(address)
@@ -60,32 +61,34 @@ export function WalletPeeker() {
   const [searchedAddress, setSearchedAddress] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("spl");
   const [searchQuery, setSearchQuery] = useState("");
-  const deferredSearch = useDeferredValue(searchQuery);
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const deferredSearch = useDeferredValue(debouncedSearch);
+  const debouncedInput = useDebounce(input, 300);
 
   const { tokens: token2022Tokens, loading: loading2022, error: error2022 } = useWalletTokens(true, searchedAddress);
   const { tokens: splTokens, loading: loadingSPL, error: errorSPL } = useSPLTokens(true, searchedAddress);
   const { tokens: coreAssets, loading: loadingCore, error: errorCore } = useCoreAssets(searchedAddress);
 
   const { data: domainLookup, isLoading: isLookingUpDomain } = useEclipseDomainLookup(
-    /\./.test(input) ? input : undefined
+    /\./.test(debouncedInput) ? debouncedInput : undefined
   );
 
   const [isValidInput, setIsValidInput] = useState(false);
 
   useEffect(() => {
     const validateInput = () => {
-      if (!input) {
+      if (!debouncedInput) {
         setIsValidInput(false);
         return;
       }
 
-      if (/\./.test(input)) {
+      if (/\./.test(debouncedInput)) {
         setIsValidInput(Boolean(domainLookup?.publicKey && !domainLookup.error));
         return;
       }
 
       try {
-        new PublicKey(input);
+        new PublicKey(debouncedInput);
         setIsValidInput(true);
       } catch {
         setIsValidInput(false);
@@ -93,11 +96,10 @@ export function WalletPeeker() {
     };
 
     validateInput();
-  }, [input, domainLookup]);
+  }, [debouncedInput, domainLookup]);
 
-  // Memoize handleSearch
   const handleSearch = useCallback(() => {
-    if (/\./.test(input)) {
+    if (/\./.test(debouncedInput)) {
       if (domainLookup?.publicKey && !domainLookup.error) {
         setSearchedAddress(domainLookup.publicKey);
         const queryParams = new URLSearchParams(window.location.search);
@@ -105,12 +107,12 @@ export function WalletPeeker() {
         window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
       }
     } else {
-      setSearchedAddress(input);
+      setSearchedAddress(debouncedInput);
       const queryParams = new URLSearchParams(window.location.search);
-      queryParams.set("wallet", input);
+      queryParams.set("wallet", debouncedInput);
       window.history.pushState({}, "", `${window.location.pathname}?${queryParams.toString()}`);
     }
-  }, [input, domainLookup]);
+  }, [debouncedInput, domainLookup]);
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && isValidInput && !isLookingUpDomain) {
@@ -118,10 +120,8 @@ export function WalletPeeker() {
     }
   };
 
-  // Add a state to track if we've handled the initial query param
   const [initialQueryParamHandled, setInitialQueryParamHandled] = useState(false);
 
-  // Update the query param effect
   useEffect(() => {
     const handleQueryParam = async () => {
       if (initialQueryParamHandled) return;
@@ -132,9 +132,7 @@ export function WalletPeeker() {
       if (wallet) {
         setInput(wallet);
 
-        // Check if it's a domain
         if (/\./.test(wallet)) {
-          // If domain lookup is complete
           if (domainLookup?.publicKey && !domainLookup.error) {
             const resolvedAddress = domainLookup.publicKey;
             setSearchedAddress(resolvedAddress);
@@ -149,7 +147,6 @@ export function WalletPeeker() {
             setInitialQueryParamHandled(true);
           } catch {
             console.log('invalid address');
-            // Invalid address - don't load
           }
         }
       }
@@ -220,13 +217,11 @@ export function WalletPeeker() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className={`w-3/4 ${input && (
+                className={`w-3/4 ${debouncedInput && (
                   isValidInput ? "border-green-500" :
                     isLookingUpDomain ? "border-yellow-500" :
                       "border-red-500"
-                )
-                  }`}
-                disabled={isLookingUpDomain}
+                )}`}
               />
               <Button
                 className="w-1/4"
@@ -236,9 +231,9 @@ export function WalletPeeker() {
                 {isLookingUpDomain ? "Looking up..." : "Search"}
               </Button>
             </div>
-            {input && !isValidInput && (
+            {debouncedInput && !isValidInput && (
               <p className="text-sm text-red-500">
-                {/\./.test(input)
+                {/\./.test(debouncedInput)
                   ? (isLookingUpDomain
                     ? "Looking up domain..."
                     : domainLookup?.error || "Domain not found")

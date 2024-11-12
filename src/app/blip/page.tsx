@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
@@ -18,10 +18,60 @@ import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 import { AssetV1, fetchAssetsByOwner } from '@metaplex-foundation/mpl-core';
 
 import { generateBlip } from "./actions";
+import { useDebounce } from "@/lib/hooks/useDebounce";
+import { useEclipseDomainLookup } from "@/hooks/use-eclipse-domain-lookup";
 
 
 export default function MessagePage() {
   const [to, setTo] = useState<string>("");
+  const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
+  const debouncedTo = useDebounce(to, 300);
+
+  // Only lookup domain if input contains a period
+  const { data: domainLookup, isLoading: isLookingUpDomain } = useEclipseDomainLookup(
+    /\./.test(debouncedTo) ? debouncedTo : undefined
+  );
+
+  // Validate input and update resolved address
+  useEffect(() => {
+    if (!debouncedTo) {
+      setResolvedAddress(null);
+      return;
+    }
+
+    if (/\./.test(debouncedTo)) {
+      // Handle domain
+      if (domainLookup?.publicKey && !domainLookup.error) {
+        setResolvedAddress(domainLookup.publicKey);
+      } else {
+        setResolvedAddress(null);
+      }
+    } else {
+      // Handle direct address
+      try {
+        new PublicKey(debouncedTo);
+        setResolvedAddress(debouncedTo);
+      } catch {
+        setResolvedAddress(null);
+      }
+    }
+  }, [debouncedTo, domainLookup]);
+
+  const isValidInput = useCallback(() => {
+    if (!to) return false;
+
+    if (/\./.test(to)) {
+      return Boolean(domainLookup?.publicKey && !domainLookup.error);
+    }
+
+    try {
+      new PublicKey(to);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [to, domainLookup]);
+
   const [message, setMessage] = useState<string>("");
   const wallet = useWallet();
   const { connection } = useConnection();
@@ -105,11 +155,16 @@ export default function MessagePage() {
       return;
     }
 
+    let targetAddress = to;
+    if (/\./.test(to) && domainLookup?.publicKey) {
+      targetAddress = domainLookup.publicKey;
+    }
+
     try {
-      new PublicKey(to);
+      new PublicKey(targetAddress);
     } catch (error) {
       toast.error("Invalid Recipient Address", {
-        description: "Please enter a valid Solana address.",
+        description: "Please enter a valid Solana address or domain.",
       });
       return;
     }
@@ -128,7 +183,7 @@ export default function MessagePage() {
     let txnSignature: string | null = null;
     try {
       const from = wallet.publicKey.toString();
-      const response = await generateBlip(message, to, from);
+      const response = await generateBlip(message, targetAddress, from);
       if (!response.data || response.error) {
         toast.error("Error generating Blip!", {
           description: response.error ?? "Unknown error",
@@ -196,11 +251,34 @@ export default function MessagePage() {
               <div>
                 <Input
                   type="text"
-                  placeholder="Enter Eclipse Wallet Address"
-                  className="mb-4"
+                  placeholder="Enter Eclipse Wallet Address or Domain"
+                  className={`mb-2 ${to && (
+                    isLookingUpDomain ? "border-yellow-500" :
+                      isValidInput() ? "border-green-500" :
+                        "border-red-500"
+                  )}`}
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                 />
+                {to && (
+                  <div className="text-sm">
+                    {isLookingUpDomain ? (
+                      <p className="text-yellow-500">Looking up domain...</p>
+                    ) : /\./.test(to) ? (
+                      domainLookup?.publicKey ? (
+                        <p className="text-green-500">
+                          Resolved address: {domainLookup.publicKey.slice(0, 4)}...{domainLookup.publicKey.slice(-4)}
+                        </p>
+                      ) : (
+                        <p className="text-red-500">Invalid or unregistered domain</p>
+                      )
+                    ) : isValidInput() ? (
+                      <p className="text-green-500">Valid Solana address</p>
+                    ) : (
+                      <p className="text-red-500">Invalid Solana address</p>
+                    )}
+                  </div>
+                )}
                 <Textarea
                   placeholder="Write your message..."
                   className="mb-4 h-32"
@@ -212,7 +290,7 @@ export default function MessagePage() {
                     className="w-full"
                     variant="default"
                     onClick={() => handleSendBlip(message, to)}
-                    disabled={isSending || !wallet?.publicKey}
+                    disabled={isSending || !wallet?.publicKey || !isValidInput()}
                     loading={isSending}
                     loadingText={isSending ? "Sending Transaction" : ""}
                   >
