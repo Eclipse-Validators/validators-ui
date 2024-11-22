@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     creator: "@Validators_",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.ico",
   },
   robots: {
     index: true,
