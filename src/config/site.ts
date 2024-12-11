@@ -14,5 +14,5 @@ export const siteConfig: SiteConfig = {
   links: {
     github: "https://github.com/Eclipse-Validators/validators-ui",
   },
-  ogImage: `${env.NEXT_PUBLIC_APP_URL}/logo/logoblue.png`,
+  ogImage: `https://www.validators.wtf/logo/logoblue.png`,
 };
