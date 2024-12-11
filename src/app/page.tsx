@@ -40,9 +40,23 @@ const LandingPage: React.FC = () => {
               beings, featuring 4 unique factions that celebrate the diversity
               of the Eclipse community.
             </p>
-            <Link target="_blank" href="https:///discord.gg/XRMXk5hKUn">
-              <Button variant="secondary" size="lg">
-                Buy OTC
+            <Link
+              target="_blank"
+              href="https://scopenft.xyz/explore/ECLIPSE:5EvQZqoRybG2Ri9fZFE5cpV8pR8jwVdSf3x6h8qmHJkR?sort=cheapest"
+              className="group"
+            >
+              <Button
+                className="animate-pulse py-8 shadow-lg shadow-primary/50 transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/50 group-hover:animate-none"
+                variant="default"
+                size="lg"
+              >
+                <img
+                  className="h-10 w-10"
+                  src="https://wlbl-s3.wlbl.xyz/scopefav_e919a59b23/scopefav_e919a59b23.png"
+                />
+                <span className="ml-3 text-lg font-bold">
+                  Collect on Scope Marketplace
+                </span>
               </Button>
             </Link>
           </div>
@@ -69,9 +83,23 @@ const LandingPage: React.FC = () => {
               differences in their interpretations of this cosmic duty emerged,
               leading to the formation of distinct factions among them...
             </p>
-            <Link target="_blank" href="https:///discord.gg/XRMXk5hKUn">
-              <Button variant="secondary" size="lg">
-                Buy OTC
+            <Link
+              target="_blank"
+              href="https://scopenft.xyz/explore/ECLIPSE:5EvQZqoRybG2Ri9fZFE5cpV8pR8jwVdSf3x6h8qmHJkR?sort=cheapest"
+              className="group"
+            >
+              <Button
+                className="animate-pulse py-8 shadow-lg shadow-primary/50 transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/50 group-hover:animate-none"
+                variant="default"
+                size="lg"
+              >
+                <img
+                  className="h-10 w-10"
+                  src="https://wlbl-s3.wlbl.xyz/scopefav_e919a59b23/scopefav_e919a59b23.png"
+                />
+                <span className="ml-3 text-lg font-bold">
+                  Collect on Scope Marketplace
+                </span>
               </Button>
             </Link>
           </div>
