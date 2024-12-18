@@ -151,7 +151,13 @@ export async function generateBlipTransactionV2(
       ),
     })
     .transaction();
-  const latestBlockhash = await conn.getLatestBlockhash();
+  let latestBlockhash;
+  try {
+    latestBlockhash = await conn.getLatestBlockhash();
+  } catch (e) {
+    const fallbackConnection = new anchor.web3.Connection('https://eclipse.helius-rpc.com');
+    latestBlockhash = await fallbackConnection.getLatestBlockhash();
+  }
   tx.recentBlockhash = latestBlockhash.blockhash;
   tx.lastValidBlockHeight = latestBlockhash.lastValidBlockHeight;
   tx.feePayer = payer;
