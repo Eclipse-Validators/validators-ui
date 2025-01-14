@@ -57,7 +57,7 @@ async function tryMintInfo(connection: Connection, mint: PublicKey) {
       getMint(connection, mint, undefined, TOKEN_2022_PROGRAM_ID).catch(() => null),
       getMint(connection, mint, undefined, TOKEN_PROGRAM_ID).catch(() => null)
     ]);
-
+    const mintInfo = token2022Mint || tokenMint;
     const programId = token2022Mint ? TOKEN_2022_PROGRAM_ID : tokenMint ? TOKEN_PROGRAM_ID : null;
     if (!programId) return null;
 
@@ -68,9 +68,9 @@ async function tryMintInfo(connection: Connection, mint: PublicKey) {
       tokenAccount: mint.toString(),
       mint: mint.toString(),
       amount: 1,
-      decimals: 0,
+      decimals: mintInfo?.decimals || 0,
       metadata,
-      owner: "unknown",
+      owner: mintInfo?.mintAuthority?.toBase58() || mintInfo?.freezeAuthority?.toBase58() || "unknown",
       programId: programId.toString()
     };
   } catch (err) {
