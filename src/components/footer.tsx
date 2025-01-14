@@ -28,7 +28,7 @@ export function Footer() {
             rel="noreferrer"
           >
             <Image
-              src="icons/discord.svg"
+              src="/icons/discord.svg"
               alt="Discord"
               width={20}
               height={20}
