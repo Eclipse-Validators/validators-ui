@@ -324,9 +324,19 @@ export default function MessagePage() {
               </div>
             </div>
 
-            <div className="w-full pt-4 text-center text-[12px]">
-              Each Blip costs .0007 ETH and ~.000038 ETH for mint account costs.{" "}
-              <i>Metaplex charges .000018 as a protocol fee.</i>
+            <div className="w-full space-y-2 rounded-lg border border-border bg-background/50 p-4 text-center text-sm">
+              <p className="font-medium">Blip Transaction Fees</p>
+              <div className="flex justify-center space-x-4">
+                <div>
+                  <span className="text-muted-foreground">Total Cost:</span>{" "}
+                  <code className="font-semibold text-primary">
+                    ~0.000738 ETH
+                  </code>
+                  <span className="ml-2 text-muted-foreground">
+                    (includes mint and Metaplex fees)
+                  </span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
