@@ -8,8 +8,76 @@
   },
   "instructions": [
     {
+      "name": "init_config",
+      "discriminator": [
+        23,
+        235,
+        115,
+        232,
+        168,
+        96,
+        1,
+        231
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "fee_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "fee_shares",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "FeeShare"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "send_blip",
-      "discriminator": [31, 195, 67, 8, 119, 108, 224, 12],
+      "discriminator": [
+        31,
+        195,
+        67,
+        8,
+        119,
+        108,
+        224,
+        12
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -20,13 +88,50 @@
           "name": "receiver"
         },
         {
-          "name": "fee_destination",
-          "writable": true
+          "name": "fee_escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  95,
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "asset",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "collection",
@@ -53,6 +158,21 @@
       ]
     }
   ],
+  "accounts": [
+    {
+      "name": "BlipConfig",
+      "discriminator": [
+        81,
+        166,
+        254,
+        21,
+        136,
+        134,
+        193,
+        229
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -63,6 +183,81 @@
       "code": 6001,
       "name": "InvalidFeeDestination",
       "msg": "Invalid Fee Destination"
+    },
+    {
+      "code": 6002,
+      "name": "TooManyFeeShares",
+      "msg": "Too many fee shares"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidFeeBasisPoints",
+      "msg": "Invalid fee basis points"
+    },
+    {
+      "code": 6004,
+      "name": "IncorrectAuthority",
+      "msg": "Incorrect Authority"
+    },
+    {
+      "code": 6005,
+      "name": "NoFeeShareRecipients",
+      "msg": "No fee share recipients"
+    },
+    {
+      "code": 6006,
+      "name": "FeeShareRecipientNotWritable",
+      "msg": "Fee share recipient not writable"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidFeeShareRecipient",
+      "msg": "Invalid fee share recipient"
+    },
+    {
+      "code": 6008,
+      "name": "CalculationError",
+      "msg": "Calculation error"
+    }
+  ],
+  "types": [
+    {
+      "name": "BlipConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fee_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "fee_shares",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "FeeShare"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeeShare",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "basis_points",
+            "type": "u16"
+          },
+          {
+            "name": "destination",
+            "type": "pubkey"
+          }
+        ]
+      }
     }
   ]
 }

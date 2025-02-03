@@ -133,19 +133,28 @@ export async function generateBlipTransactionV2(
   const payer = new anchor.web3.PublicKey(from);
   const receiver = new anchor.web3.PublicKey(to);
   const feeAccount = new anchor.web3.PublicKey(BLIP_FEE__WALLET_ADDRESS);
+  const [configPda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("config")],
+    program.programId
+  );
+  const [feeEscrowPda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("fee_escrow")],
+    program.programId
+  );
 
   const tx = await program.methods
     .sendBlip(metadataJsonUri)
-    .accountsPartial({
+    .accountsStrict({
       asset: asset.publicKey,
       payer: payer,
       receiver: receiver,
-      feeDestination: feeAccount,
+      feeEscrow: feeEscrowPda,
+      config: configPda,
+      collection: new anchor.web3.PublicKey(BLIP_COLLECTION_ADDRESS),
+      collectionAuthority: collectionAuthKp.publicKey,
       mplCoreProgram: new anchor.web3.PublicKey(
         "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
       ),
-      collection: new anchor.web3.PublicKey(BLIP_COLLECTION_ADDRESS),
-      collectionAuthority: collectionAuthKp.publicKey,
       systemProgram: new anchor.web3.PublicKey(
         "11111111111111111111111111111111"
       ),
@@ -155,7 +164,9 @@ export async function generateBlipTransactionV2(
   try {
     latestBlockhash = await conn.getLatestBlockhash();
   } catch (e) {
-    const fallbackConnection = new anchor.web3.Connection('https://eclipse.helius-rpc.com');
+    const fallbackConnection = new anchor.web3.Connection(
+      "https://eclipse.helius-rpc.com"
+    );
     latestBlockhash = await fallbackConnection.getLatestBlockhash();
   }
   tx.recentBlockhash = latestBlockhash.blockhash;
