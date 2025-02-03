@@ -159,6 +159,36 @@ export async function generateBlipTransactionV2(
         "11111111111111111111111111111111"
       ),
     })
+    .remainingAccounts([
+      {
+        pubkey: new anchor.web3.PublicKey(
+          "CPv8neygsQSpXmxJ8QDLZvjmAnyqL8in6WLkPK7eKmfu"
+        ),
+        isWritable: true,
+        isSigner: false,
+      },
+      {
+        pubkey: new anchor.web3.PublicKey(
+          "2fHVCcy4A9bZkw3Qi95wmoMXuSBLiHaJu46gxYxgKnZT"
+        ),
+        isWritable: true,
+        isSigner: false,
+      },
+      {
+        pubkey: new anchor.web3.PublicKey(
+          "BuMrvwBhVqjgvNFBkBnU1nvL4xNQCJaRBa1Lsz396gv6"
+        ),
+        isWritable: true,
+        isSigner: false,
+      },
+      {
+        pubkey: new anchor.web3.PublicKey(
+          "6juCmFHoPnJTzhjJfcjFhCXeptCE89vp9dHP91EUaxR8"
+        ),
+        isWritable: true,
+        isSigner: false,
+      },
+    ])
     .transaction();
   let latestBlockhash;
   try {
