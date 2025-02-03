@@ -34,3 +34,5 @@ pnpm format:check
 ```bash
 pnpm format
 ```
+
+Update readme
