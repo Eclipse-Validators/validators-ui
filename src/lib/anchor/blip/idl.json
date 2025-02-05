@@ -8,6 +8,59 @@
   },
   "instructions": [
     {
+      "name": "add_template",
+      "discriminator": [
+        122,
+        237,
+        121,
+        173,
+        11,
+        15,
+        113,
+        122
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "uri",
+          "type": "string"
+        },
+        {
+          "name": "artist_wallet",
+          "type": "pubkey"
+        },
+        {
+          "name": "artist_name",
+          "type": "string"
+        },
+        {
+          "name": "artist_basis_points",
+          "type": "u16"
+        },
+        {
+          "name": "artist_socials",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "init_config",
       "discriminator": [
         23,
@@ -218,6 +271,21 @@
       "code": 6008,
       "name": "CalculationError",
       "msg": "Calculation error"
+    },
+    {
+      "code": 6009,
+      "name": "UriTooLong",
+      "msg": "URI exceeds maximum length of 120 characters"
+    },
+    {
+      "code": 6010,
+      "name": "MaxTemplatesReached",
+      "msg": "Maximum number of templates reached"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidMintOwner",
+      "msg": "Invalid Mint Owner"
     }
   ],
   "types": [
@@ -239,6 +307,16 @@
                 }
               }
             }
+          },
+          {
+            "name": "templates",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Template"
+                }
+              }
+            }
           }
         ]
       }
@@ -255,6 +333,53 @@
           {
             "name": "destination",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Template",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uri",
+            "type": {
+              "array": [
+                "u8",
+                120
+              ]
+            }
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "artist_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "artist_name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "artist_basis_points",
+            "type": "u16"
+          },
+          {
+            "name": "artist_socials",
+            "type": {
+              "array": [
+                "u8",
+                60
+              ]
+            }
           }
         ]
       }

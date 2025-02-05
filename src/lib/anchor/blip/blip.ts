@@ -14,6 +14,50 @@ export type BlipRadar = {
   };
   instructions: [
     {
+      name: "addTemplate";
+      discriminator: [122, 237, 121, 173, 11, 15, 113, 122];
+      accounts: [
+        {
+          name: "config";
+          writable: true;
+        },
+        {
+          name: "authority";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "mint";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+      ];
+      args: [
+        {
+          name: "uri";
+          type: "string";
+        },
+        {
+          name: "artistWallet";
+          type: "pubkey";
+        },
+        {
+          name: "artistName";
+          type: "string";
+        },
+        {
+          name: "artistBasisPoints";
+          type: "u16";
+        },
+        {
+          name: "artistSocials";
+          type: "string";
+        },
+      ];
+    },
+    {
       name: "initConfig";
       discriminator: [23, 235, 115, 232, 168, 96, 1, 231];
       accounts: [
@@ -173,6 +217,21 @@ export type BlipRadar = {
       name: "calculationError";
       msg: "Calculation error";
     },
+    {
+      code: 6009;
+      name: "uriTooLong";
+      msg: "URI exceeds maximum length of 120 characters";
+    },
+    {
+      code: 6010;
+      name: "maxTemplatesReached";
+      msg: "Maximum number of templates reached";
+    },
+    {
+      code: 6011;
+      name: "invalidMintOwner";
+      msg: "Invalid Mint Owner";
+    },
   ];
   types: [
     {
@@ -190,6 +249,16 @@ export type BlipRadar = {
               vec: {
                 defined: {
                   name: "feeShare";
+                };
+              };
+            };
+          },
+          {
+            name: "templates";
+            type: {
+              vec: {
+                defined: {
+                  name: "template";
                 };
               };
             };
@@ -213,6 +282,44 @@ export type BlipRadar = {
         ];
       };
     },
+    {
+      name: "template";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "uri";
+            type: {
+              array: ["u8", 120];
+            };
+          },
+          {
+            name: "mint";
+            type: "pubkey";
+          },
+          {
+            name: "artistWallet";
+            type: "pubkey";
+          },
+          {
+            name: "artistName";
+            type: {
+              array: ["u8", 32];
+            };
+          },
+          {
+            name: "artistBasisPoints";
+            type: "u16";
+          },
+          {
+            name: "artistSocials";
+            type: {
+              array: ["u8", 60];
+            };
+          },
+        ];
+      };
+    },
   ];
 };
 
@@ -225,6 +332,50 @@ export const IDL: BlipRadar = {
     description: "Created with Anchor",
   },
   instructions: [
+    {
+      name: "addTemplate",
+      discriminator: [122, 237, 121, 173, 11, 15, 113, 122],
+      accounts: [
+        {
+          name: "config",
+          writable: true,
+        },
+        {
+          name: "authority",
+          writable: true,
+          signer: true,
+        },
+        {
+          name: "mint",
+        },
+        {
+          name: "systemProgram",
+          address: "11111111111111111111111111111111",
+        },
+      ],
+      args: [
+        {
+          name: "uri",
+          type: "string",
+        },
+        {
+          name: "artistWallet",
+          type: "pubkey",
+        },
+        {
+          name: "artistName",
+          type: "string",
+        },
+        {
+          name: "artistBasisPoints",
+          type: "u16",
+        },
+        {
+          name: "artistSocials",
+          type: "string",
+        },
+      ],
+    },
     {
       name: "initConfig",
       discriminator: [23, 235, 115, 232, 168, 96, 1, 231],
@@ -385,6 +536,21 @@ export const IDL: BlipRadar = {
       name: "calculationError",
       msg: "Calculation error",
     },
+    {
+      code: 6009,
+      name: "uriTooLong",
+      msg: "URI exceeds maximum length of 120 characters",
+    },
+    {
+      code: 6010,
+      name: "maxTemplatesReached",
+      msg: "Maximum number of templates reached",
+    },
+    {
+      code: 6011,
+      name: "invalidMintOwner",
+      msg: "Invalid Mint Owner",
+    },
   ],
   types: [
     {
@@ -406,6 +572,16 @@ export const IDL: BlipRadar = {
               },
             },
           },
+          {
+            name: "templates",
+            type: {
+              vec: {
+                defined: {
+                  name: "template",
+                },
+              },
+            },
+          },
         ],
       },
     },
@@ -421,6 +597,44 @@ export const IDL: BlipRadar = {
           {
             name: "destination",
             type: "pubkey",
+          },
+        ],
+      },
+    },
+    {
+      name: "template",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "uri",
+            type: {
+              array: ["u8", 120],
+            },
+          },
+          {
+            name: "mint",
+            type: "pubkey",
+          },
+          {
+            name: "artistWallet",
+            type: "pubkey",
+          },
+          {
+            name: "artistName",
+            type: {
+              array: ["u8", 32],
+            },
+          },
+          {
+            name: "artistBasisPoints",
+            type: "u16",
+          },
+          {
+            name: "artistSocials",
+            type: {
+              array: ["u8", 60],
+            },
           },
         ],
       },
