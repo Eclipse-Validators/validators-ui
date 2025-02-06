@@ -105,7 +105,7 @@ export default function MessagePage() {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     templates[0]
   );
-  const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
