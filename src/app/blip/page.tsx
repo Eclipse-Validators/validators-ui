@@ -94,13 +94,13 @@ export default function MessagePage() {
       artistName: "Validators",
       artistSocials: "https://x.com/@Validators_",
     },
-    {
-      uri: "https://arweave.net/iAoefjlV-UF8Sv-eq4wWR_hZkZPK_DxO8h3i2tJN-Qg?ext=png",
-      mint: "2vexnke8LLx46iPguhUSMnu4P8xokr8W6eXpFeoWEMDN",
-      artistWallet: "74dYBNatgiuiHLai34kuWXZogy9sraimL2UQ2WVQMA4w",
-      artistName: "Fujii",
-      artistSocials: "https://x.com/FujiiSol",
-    },
+    // {
+    //   uri: "https://arweave.net/iAoefjlV-UF8Sv-eq4wWR_hZkZPK_DxO8h3i2tJN-Qg?ext=png",
+    //   mint: "2vexnke8LLx46iPguhUSMnu4P8xokr8W6eXpFeoWEMDN",
+    //   artistWallet: "74dYBNatgiuiHLai34kuWXZogy9sraimL2UQ2WVQMA4w",
+    //   artistName: "Fujii",
+    //   artistSocials: "https://x.com/FujiiSol",
+    // },
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     templates[0]
