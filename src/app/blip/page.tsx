@@ -86,8 +86,25 @@ export default function MessagePage() {
   const [isSending, setIsSending] = useState(false);
   const [isLoadingBlips, setIsLoadingBlips] = useState(false);
   const [walletBlipNfts, setWalletBlipNfts] = useState<BlipNftData[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>();
+  const [templates, setTemplates] = useState<Template[]>([
+    {
+      uri: "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png",
+      mint: "B6cawaKXzRDVA7c1YdaVrgrxBKWxRN9p5ADvr1gNsN6A",
+      artistWallet: "6onrnEdTbQKprwgF5VhLSRN3HH9x2JtDetVBxMoqiwmH",
+      artistName: "Validators",
+      artistSocials: "https://x.com/@Validators_",
+    },
+    {
+      uri: "https://arweave.net/iAoefjlV-UF8Sv-eq4wWR_hZkZPK_DxO8h3i2tJN-Qg?ext=png",
+      mint: "2vexnke8LLx46iPguhUSMnu4P8xokr8W6eXpFeoWEMDN",
+      artistWallet: "74dYBNatgiuiHLai34kuWXZogy9sraimL2UQ2WVQMA4w",
+      artistName: "Fujii",
+      artistSocials: "https://x.com/FujiiSol",
+    },
+  ]);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
+    templates[0]
+  );
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
 
   const formatMessage = (text: string) => {
@@ -155,16 +172,16 @@ export default function MessagePage() {
       setIsLoadingBlips(false);
     }
 
-    async function loadTemplates() {
-      setIsLoadingTemplates(true);
-      const templates = await getConfigTemplates();
-      setTemplates(templates);
-      if (templates.length > 0) {
-        setSelectedTemplate(templates[0]);
-      }
-      setIsLoadingTemplates(false);
-    }
-    loadTemplates();
+    // async function loadTemplates() {
+    //   setIsLoadingTemplates(true);
+    //   const templates = await getConfigTemplates();
+    //   setTemplates(templates);
+    //   if (templates.length > 0) {
+    //     setSelectedTemplate(templates[0]);
+    //   }
+    //   setIsLoadingTemplates(false);
+    // }
+    // loadTemplates();
 
     loadBlips();
   }, [wallet.publicKey]);
