@@ -87,6 +87,7 @@ export default function MessagePage() {
   const [walletBlipNfts, setWalletBlipNfts] = useState<BlipNftData[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>();
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
@@ -154,8 +155,13 @@ export default function MessagePage() {
     }
 
     async function loadTemplates() {
+      setIsLoadingTemplates(true);
       const templates = await getConfigTemplates();
       setTemplates(templates);
+      if (templates.length > 0) {
+        setSelectedTemplate(templates[0]);
+      }
+      setIsLoadingTemplates(false);
     }
     loadTemplates();
 
@@ -265,32 +271,48 @@ export default function MessagePage() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <div className="mb-4 w-full space-y-2 rounded-lg border border-border bg-background/50 p-4">
-                  <p className="text-center font-medium">Select Template</p>
+                  <p className="pb-2 text-center font-medium">
+                    Select Template
+                  </p>
                   <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
-                    {templates.map((template) => (
-                      <button
-                        key={template.mint}
-                        onClick={() => setSelectedTemplate(template)}
-                        className={`group relative flex w-full flex-col items-center overflow-hidden rounded-lg border transition-all hover:opacity-90 ${
-                          selectedTemplate?.mint === template.mint
-                            ? "border-primary shadow-sm"
-                            : "border-border"
-                        }`}
-                      >
-                        <div className="relative aspect-square w-full">
-                          <Image
-                            src={template.uri}
-                            alt={`${template.artistName} Template`}
-                            layout="fill"
-                            objectFit="contain"
-                            className="p-1"
-                          />
-                        </div>
-                        <span className="py-1 text-xs">
-                          {template.artistName}
-                        </span>
-                      </button>
-                    ))}
+                    {isLoadingTemplates
+                      ? Array(3)
+                          .fill(0)
+                          .map((_, i) => (
+                            <div
+                              key={i}
+                              className="aspect-square w-full animate-pulse rounded-lg bg-muted"
+                            />
+                          ))
+                      : templates.map((template) => (
+                          <button
+                            key={template.mint}
+                            onClick={() => setSelectedTemplate(template)}
+                            className={`group relative flex w-full flex-col items-center rounded-lg border transition-all hover:opacity-90 ${
+                              selectedTemplate?.mint === template.mint
+                                ? "border-primary shadow-sm"
+                                : "border-border"
+                            }`}
+                          >
+                            {template.artistName !== "Validators" && (
+                              <div className="absolute -right-3 -top-2 z-[999] rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+                                New!
+                              </div>
+                            )}
+                            <div className="relative z-0 aspect-square w-full">
+                              <Image
+                                src={template.uri}
+                                alt={`${template.artistName} Template`}
+                                layout="fill"
+                                objectFit="contain"
+                                className="p-1"
+                              />
+                            </div>
+                            <span className="py-1 text-xs">
+                              {template.artistName}
+                            </span>
+                          </button>
+                        ))}
                   </div>
                 </div>
 
@@ -307,6 +329,7 @@ export default function MessagePage() {
                   }`}
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
+                  disabled={isLoadingTemplates}
                 />
                 {to && (
                   <div className="text-sm">
@@ -332,6 +355,7 @@ export default function MessagePage() {
                   className="mb-4 h-32"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  disabled={isLoadingTemplates}
                 />
                 {wallet?.publicKey ? (
                   <Button
@@ -352,12 +376,14 @@ export default function MessagePage() {
               </div>
               <div>
                 <div className="relative aspect-square rounded-lg border border-border">
-                  <Image
-                    src={selectedTemplate?.uri}
-                    alt="Blip Template"
-                    layout="fill"
-                    objectFit="contain"
-                  />
+                  {selectedTemplate?.uri && (
+                    <Image
+                      src={selectedTemplate?.uri}
+                      alt="Blip Template"
+                      layout="fill"
+                      objectFit="contain"
+                    />
+                  )}
                   <div className="absolute ml-[40px] mt-[100px] w-full p-4">
                     <div className="w-auto max-w-none">
                       <p className="whitespace-nowrap text-[21px] text-foreground">
@@ -383,7 +409,8 @@ export default function MessagePage() {
                 </div>
                 {selectedTemplate?.artistName !== "Validators" && (
                   <div className="text-xs text-muted-foreground">
-                    A portion of the fee will go to the template artist
+                    A portion of the fee will go to{" "}
+                    {selectedTemplate?.artistName}
                   </div>
                 )}
               </div>
