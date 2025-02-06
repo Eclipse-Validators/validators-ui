@@ -95,9 +95,7 @@ export type Template = {
 };
 
 export async function getTemplates(): Promise<Template[]> {
-  const conn = new Connection(
-    process.env.NEXT_PUBLIC_NETWORK ?? "https://mainnetbeta-rpc.eclipse.xyz"
-  );
+  const conn = new Connection("https://eclipse.helius-rpc.com");
   const collectionAuthorityUnit8 = new Uint8Array(
     JSON.parse(process.env.BLIP_COLLECTION_AUTHORITY ?? "[]")
   );
