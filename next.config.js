@@ -14,7 +14,7 @@ const nextConfig = {
     },
   },
   images: {
-    domains: ["shdw-drive.genesysgo.net"],
+    domains: ["shdw-drive.genesysgo.net", "arweave.net"],
   },
   webpack: (config) => {
     config.externals.push("encoding");

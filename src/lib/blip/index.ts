@@ -86,6 +86,75 @@ export async function generateBlipTransaction(
   return base64.deserialize(serializedTxn)[0];
 }
 
+export type Template = {
+  uri: string;
+  mint: string;
+  artistWallet: string;
+  artistName: string;
+  artistSocials: string;
+};
+
+export async function getTemplates(): Promise<Template[]> {
+  const conn = new Connection(
+    process.env.NEXT_PUBLIC_NETWORK ?? "https://mainnetbeta-rpc.eclipse.xyz"
+  );
+  const collectionAuthorityUnit8 = new Uint8Array(
+    JSON.parse(process.env.BLIP_COLLECTION_AUTHORITY ?? "[]")
+  );
+  const collectionAuthKp = anchor.web3.Keypair.fromSecretKey(
+    collectionAuthorityUnit8
+  );
+  const customWallet: AnchorWallet = {
+    publicKey: collectionAuthKp.publicKey,
+    signTransaction: async <
+      T extends anchor.web3.Transaction | anchor.web3.VersionedTransaction,
+    >(
+      transaction: T
+    ): Promise<T> => {
+      if (transaction instanceof anchor.web3.Transaction) {
+        transaction.sign(collectionAuthKp);
+      }
+      return transaction;
+    },
+    signAllTransactions: async <
+      T extends anchor.web3.Transaction | anchor.web3.VersionedTransaction,
+    >(
+      transactions: T[]
+    ): Promise<T[]> => {
+      return transactions.map((tx) => {
+        if (tx instanceof anchor.web3.Transaction) {
+          tx.sign(collectionAuthKp);
+        }
+        return tx;
+      });
+    },
+  };
+  const provider = new anchor.AnchorProvider(conn, customWallet);
+
+  anchor.setProvider(provider);
+  const program = new anchor.Program<BlipRadar>(IDL, provider);
+  const [configPda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("config")],
+    program.programId
+  );
+  const configAccount = await program.account.blipConfig.fetch(configPda);
+  const templates: Template[] = [];
+  for (const template of configAccount.templates) {
+    templates.push({
+      uri: Buffer.from(template.uri).toString().replace(/\0/g, ""),
+      mint: template.mint.toBase58(),
+      artistWallet: template.artistWallet.toBase58(),
+      artistName: Buffer.from(template.artistName)
+        .toString()
+        .replace(/\0/g, ""),
+      artistSocials: Buffer.from(template.artistSocials)
+        .toString()
+        .replace(/\0/g, ""),
+    });
+  }
+  return templates;
+}
+
 export async function generateBlipTransactionV2(
   from: string,
   to: string,

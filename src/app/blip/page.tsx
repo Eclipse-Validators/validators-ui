@@ -1,6 +1,8 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { AssetV1, fetchAssetsByOwner } from "@metaplex-foundation/mpl-core";
 import { publicKey } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
@@ -9,18 +11,23 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SendTransactionError } from "@solana/web3.js";
 import { toast } from "sonner";
 
+import { useDebounce } from "@/lib/hooks/useDebounce";
+import { useEclipseDomainLookup } from "@/hooks/use-eclipse-domain-lookup";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { BlipNftData } from "@/components/mint/blipNftCard";
 import { BlipNftGrid } from "@/components/mint/blipNftGrid";
-import { AssetV1, fetchAssetsByOwner } from '@metaplex-foundation/mpl-core';
 
-import { generateBlip } from "./actions";
-import { useDebounce } from "@/lib/hooks/useDebounce";
-import { useEclipseDomainLookup } from "@/hooks/use-eclipse-domain-lookup";
+import { generateBlip, getConfigTemplates } from "./actions";
 
+type Template = {
+  uri: string;
+  mint: string;
+  artistWallet: string;
+  artistName: string;
+};
 
 export default function MessagePage() {
   const [to, setTo] = useState<string>("");
@@ -78,6 +85,8 @@ export default function MessagePage() {
   const [isSending, setIsSending] = useState(false);
   const [isLoadingBlips, setIsLoadingBlips] = useState(false);
   const [walletBlipNfts, setWalletBlipNfts] = useState<BlipNftData[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>();
 
   const formatMessage = (text: string) => {
     return text.split("\n").map((line, index) => (
@@ -143,6 +152,12 @@ export default function MessagePage() {
       );
       setIsLoadingBlips(false);
     }
+
+    async function loadTemplates() {
+      const templates = await getConfigTemplates();
+      setTemplates(templates);
+    }
+    loadTemplates();
 
     loadBlips();
   }, [wallet.publicKey]);
@@ -249,14 +264,47 @@ export default function MessagePage() {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
+                <div className="mb-4 w-full space-y-2 rounded-lg border border-border bg-background/50 p-4">
+                  <p className="text-center font-medium">Select Template</p>
+                  <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
+                    {templates.map((template) => (
+                      <button
+                        key={template.mint}
+                        onClick={() => setSelectedTemplate(template)}
+                        className={`group relative flex w-full flex-col items-center overflow-hidden rounded-lg border transition-all hover:opacity-90 ${
+                          selectedTemplate?.mint === template.mint
+                            ? "border-primary shadow-sm"
+                            : "border-border"
+                        }`}
+                      >
+                        <div className="relative aspect-square w-full">
+                          <Image
+                            src={template.uri}
+                            alt={`${template.artistName} Template`}
+                            layout="fill"
+                            objectFit="contain"
+                            className="p-1"
+                          />
+                        </div>
+                        <span className="py-1 text-xs">
+                          {template.artistName}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <Input
                   type="text"
                   placeholder="Enter Eclipse Wallet Address or Domain"
-                  className={`mb-2 ${to && (
-                    isLookingUpDomain ? "border-yellow-500" :
-                      isValidInput() ? "border-green-500" :
-                        "border-red-500"
-                  )}`}
+                  className={`mb-2 ${
+                    to &&
+                    (isLookingUpDomain
+                      ? "border-yellow-500"
+                      : isValidInput()
+                        ? "border-green-500"
+                        : "border-red-500")
+                  }`}
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                 />
@@ -305,8 +353,8 @@ export default function MessagePage() {
               <div>
                 <div className="relative aspect-square rounded-lg border border-border">
                   <Image
-                    src="/blip/placeholder.png"
-                    alt="Blip Placeholder"
+                    src={selectedTemplate?.uri}
+                    alt="Blip Template"
                     layout="fill"
                     objectFit="contain"
                   />
@@ -318,15 +366,12 @@ export default function MessagePage() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center">
-                  <span className="ml-2"></span>
-                </div>
               </div>
             </div>
 
             <div className="w-full space-y-2 rounded-lg border border-border bg-background/50 p-4 text-center text-sm">
               <p className="font-medium">Blip Transaction Fees</p>
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-col items-center justify-center space-y-2">
                 <div>
                   <span className="text-muted-foreground">Total Cost:</span>{" "}
                   <code className="font-semibold text-primary">
@@ -336,6 +381,11 @@ export default function MessagePage() {
                     (includes mint and Metaplex fees)
                   </span>
                 </div>
+                {selectedTemplate?.artistName !== "Validators" && (
+                  <div className="text-xs text-muted-foreground">
+                    A portion of the fee will go to the template artist
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
