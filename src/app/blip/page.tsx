@@ -168,7 +168,11 @@ export default function MessagePage() {
     loadBlips();
   }, [wallet.publicKey]);
 
-  async function handleSendBlip(message: string, to: string) {
+  async function handleSendBlip(
+    template: Template,
+    message: string,
+    to: string
+  ) {
     if (!wallet || !wallet.publicKey || !wallet.signAllTransactions) {
       toast.error("Wallet Not Connected", {
         description: "Please connect your wallet.",
@@ -204,7 +208,12 @@ export default function MessagePage() {
     let txnSignature: string | null = null;
     try {
       const from = wallet.publicKey.toString();
-      const response = await generateBlip(message, targetAddress, from);
+      const response = await generateBlip(
+        template,
+        message,
+        targetAddress,
+        from
+      );
       if (!response.data || response.error) {
         toast.error("Error generating Blip!", {
           description: response.error ?? "Unknown error",
@@ -361,8 +370,18 @@ export default function MessagePage() {
                   <Button
                     className="w-full"
                     variant="default"
-                    onClick={() => handleSendBlip(message, to)}
-                    disabled={isSending || !wallet?.publicKey || !isValidInput()}
+                    onClick={() => {
+                      if (!selectedTemplate) {
+                        toast.error("No template selected", {
+                          description: "Please select a template",
+                        });
+                        return;
+                      }
+                      handleSendBlip(selectedTemplate, message, to);
+                    }}
+                    disabled={
+                      isSending || !wallet?.publicKey || !isValidInput()
+                    }
                     loading={isSending}
                     loadingText={isSending ? "Sending Transaction" : ""}
                   >

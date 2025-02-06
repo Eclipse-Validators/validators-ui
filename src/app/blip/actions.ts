@@ -7,7 +7,7 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 import { createCanvas, Image, registerFont } from "canvas";
 import sharp from "sharp";
 
-import { generateBlipTransactionV2, getTemplates } from "@/lib/blip";
+import { generateBlipTransactionV2, getTemplates, Template } from "@/lib/blip";
 
 const arweave = Arweave.init({
   host: "arweave.net",
@@ -117,7 +117,12 @@ export async function getConfigTemplates() {
   return templates;
 }
 
-export async function generateBlip(message: string, to: string, from: string) {
+export async function generateBlip(
+  template: Template,
+  message: string,
+  to: string,
+  from: string
+) {
   try {
     const imgBuffer = generateImage(message);
     const compressedImgBuffer = await compressImage(imgBuffer);
@@ -130,30 +135,39 @@ export async function generateBlip(message: string, to: string, from: string) {
     const imgTxId = imageTx.id;
     const imgUri = `https://www.arweave.net/${imageTx.id}?ext=png`;
 
+    const attributes = [
+      {
+        trait_type: "Message",
+        value: message.replace(/\n/g, " "),
+      },
+      {
+        trait_type: "To",
+        value: to,
+      },
+      {
+        trait_type: "From",
+        value: from,
+      },
+      {
+        trait_type: "Date",
+        value: formatDate(Date.now()),
+      },
+    ];
+
+    if (template.artistName !== "Validators") {
+      attributes.push({
+        trait_type: "Artist",
+        value: template.artistName,
+      });
+    }
+
     const tokenMetadata = {
       tokenName: "Blip",
       symbol: "Blip",
       description:
         "Blip is a Validator's messaging service on Eclipse. https://validators.wtf/",
       image: `https://www.arweave.net/${imgTxId}?ext=png`,
-      attributes: [
-        {
-          trait_type: "Message",
-          value: message.replace(/\n/g, " "),
-        },
-        {
-          trait_type: "To",
-          value: to,
-        },
-        {
-          trait_type: "From",
-          value: from,
-        },
-        {
-          trait_type: "Date",
-          value: formatDate(Date.now()),
-        },
-      ],
+      attributes,
       properties: {
         files: [
           {
@@ -174,6 +188,7 @@ export async function generateBlip(message: string, to: string, from: string) {
     };
 
     const blipSerializedTxn = await generateBlipTransactionV2(
+      template,
       from,
       to,
       jsonUri
@@ -184,6 +199,7 @@ export async function generateBlip(message: string, to: string, from: string) {
       serializedTxn: blipSerializedTxn,
     };
   } catch (err) {
+    console.error(err);
     return {
       error: (err as Error).message.toString(),
     };
