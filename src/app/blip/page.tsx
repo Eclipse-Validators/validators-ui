@@ -27,6 +27,7 @@ type Template = {
   mint: string;
   artistWallet: string;
   artistName: string;
+  artistSocials: string;
 };
 
 export default function MessagePage() {
