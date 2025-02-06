@@ -199,6 +199,9 @@
           "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
         },
         {
+          "name": "template_mint"
+        },
+        {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
@@ -286,6 +289,21 @@
       "code": 6011,
       "name": "InvalidMintOwner",
       "msg": "Invalid Mint Owner"
+    },
+    {
+      "code": 6012,
+      "name": "TemplateNotFound",
+      "msg": "Template not found"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidArtistWallet",
+      "msg": "Invalid Artist Wallet"
+    },
+    {
+      "code": 6014,
+      "name": "ArtistWalletNotWritable",
+      "msg": "Artist wallet not writable"
     }
   ],
   "types": [

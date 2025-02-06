@@ -153,6 +153,9 @@ export type BlipRadar = {
           address: "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d";
         },
         {
+          name: "templateMint";
+        },
+        {
           name: "systemProgram";
           address: "11111111111111111111111111111111";
         },
@@ -231,6 +234,21 @@ export type BlipRadar = {
       code: 6011;
       name: "invalidMintOwner";
       msg: "Invalid Mint Owner";
+    },
+    {
+      code: 6012;
+      name: "templateNotFound";
+      msg: "Template not found";
+    },
+    {
+      code: 6013;
+      name: "invalidArtistWallet";
+      msg: "Invalid Artist Wallet";
+    },
+    {
+      code: 6014;
+      name: "artistWalletNotWritable";
+      msg: "Artist wallet not writable";
     },
   ];
   types: [
@@ -472,6 +490,9 @@ export const IDL: BlipRadar = {
           address: "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d",
         },
         {
+          name: "templateMint",
+        },
+        {
           name: "systemProgram",
           address: "11111111111111111111111111111111",
         },
@@ -550,6 +571,21 @@ export const IDL: BlipRadar = {
       code: 6011,
       name: "invalidMintOwner",
       msg: "Invalid Mint Owner",
+    },
+    {
+      code: 6012,
+      name: "templateNotFound",
+      msg: "Template not found",
+    },
+    {
+      code: 6013,
+      name: "invalidArtistWallet",
+      msg: "Invalid Artist Wallet",
+    },
+    {
+      code: 6014,
+      name: "artistWalletNotWritable",
+      msg: "Artist wallet not writable",
     },
   ],
   types: [
