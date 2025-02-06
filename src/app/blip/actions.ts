@@ -89,13 +89,13 @@ async function compressImage(buffer: Buffer): Promise<Buffer> {
   return sharp(buffer).png({ quality: 50, compressionLevel: 9 }).toBuffer();
 }
 
-function generateImage(text: string) {
+function generateImage(text: string, templateBuffer: Buffer) {
   const canvas = createCanvas(1280, 1280);
   const ctx = canvas.getContext("2d");
   ctx.quality = "best";
 
   const placeholder = new Image();
-  placeholder.src = TEMPLATE_IMG;
+  placeholder.src = templateBuffer;
 
   ctx.drawImage(placeholder, 0, 0, 1280, 1280);
 
@@ -124,7 +124,10 @@ export async function generateBlip(
   from: string
 ) {
   try {
-    const imgBuffer = generateImage(message);
+    const response = await fetch(template.uri);
+    const templateBuffer = await response.arrayBuffer();
+    const imgBuffer = generateImage(message, Buffer.from(templateBuffer));
+
     const compressedImgBuffer = await compressImage(imgBuffer);
     const imageTx = await uploadImage(
       arweave,
