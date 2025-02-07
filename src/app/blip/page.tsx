@@ -94,20 +94,20 @@ export default function MessagePage() {
       artistName: "Validators",
       artistSocials: "https://x.com/@Validators_",
     },
-    {
-      uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
-      mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
-      artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
-      artistName: "DanFarz",
-      artistSocials: "https://t.me/DanFarz",
-    },
-    {
-      uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
-      mint: "4kmandkHVYKaJxPvNC5aQHGLhyY5AjH3DipBzzv2eAfP",
-      artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
-      artistName: "Ash",
-      artistSocials: "https://x.com/Ashes_arc",
-    },
+    // {
+    //   uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
+    //   mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
+    //   artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
+    //   artistName: "DanFarz",
+    //   artistSocials: "https://t.me/DanFarz",
+    // },
+    // {
+    //   uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
+    //   mint: "4kmandkHVYKaJxPvNC5aQHGLhyY5AjH3DipBzzv2eAfP",
+    //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+    //   artistName: "Ash",
+    //   artistSocials: "https://x.com/Ashes_arc",
+    // },
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     templates[0]
