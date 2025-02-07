@@ -248,15 +248,49 @@ export async function generateGifWithText(
   try {
     //@ts-ignore
     const frames = await decodeFrames(templateBuffer);
-    console.time("Generating gif message");
-    console.timeLog("Generating gif message", { frames: frames.length });
 
-    const processedFrames = frames.map((frame) => {
+    if (!frames || frames.length === 0) {
+      throw new Error("No frames decoded from GIF");
+    }
+
+    console.time("Generating gif message");
+    console.log("Processing frames:", {
+      frameCount: frames.length,
+      firstFrameSize: frames[0]
+        ? `${frames[0].width}x${frames[0].height}`
+        : "unknown",
+    });
+
+    const processedFrames = frames.map((frame, index) => {
+      if (!frame || !frame.data) {
+        throw new Error(`Invalid frame data at index ${index}`);
+      }
+
       const canvas = createCanvas(frame.width, frame.height);
       const ctx = canvas.getContext("2d");
 
+      // Create and verify imageData
       const imageData = ctx.createImageData(frame.width, frame.height);
-      imageData.data.set(frame.data);
+      if (!imageData || !imageData.data) {
+        throw new Error(`Failed to create image data for frame ${index}`);
+      }
+
+      // Safely copy frame data
+      if (frame.data.length !== imageData.data.length) {
+        console.warn(
+          `Frame ${index} data length mismatch: ${frame.data.length} vs ${imageData.data.length}`
+        );
+      }
+
+      // Copy data using a loop to ensure safety
+      for (
+        let i = 0;
+        i < Math.min(frame.data.length, imageData.data.length);
+        i++
+      ) {
+        imageData.data[i] = frame.data[i];
+      }
+
       ctx.putImageData(imageData, 0, 0);
 
       ctx.font = "70px Manrope";
