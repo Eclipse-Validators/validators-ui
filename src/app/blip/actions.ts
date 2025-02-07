@@ -10,8 +10,6 @@ import sharp from "sharp";
 
 import { generateBlipTransactionV2, getTemplates, Template } from "@/lib/blip";
 
-export const maxDuration = 300;
-
 const arweave = Arweave.init({
   host: "arweave.net",
   port: 443,
