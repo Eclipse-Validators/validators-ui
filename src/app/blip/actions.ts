@@ -5,6 +5,7 @@ import path from "path";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { createCanvas, Image, registerFont } from "canvas";
+import { decode, decodeFrames, encode } from "modern-gif";
 import sharp from "sharp";
 
 import { generateBlipTransactionV2, getTemplates, Template } from "@/lib/blip";
@@ -39,11 +40,16 @@ export async function uploadJson(arweave: Arweave, tokenMetadata: any) {
 export async function uploadImage(
   arweave: Arweave,
   imageType: string,
-  image: ArrayBuffer
+  image: Buffer
 ) {
+  const arrayBuffer = image.buffer.slice(
+    image.byteOffset,
+    image.byteOffset + image.byteLength
+  ) as ArrayBuffer;
+
   const transaction = await arweave.createTransaction(
     {
-      data: image,
+      data: arrayBuffer,
     },
     arweaveKey
   );
@@ -100,8 +106,14 @@ function generateImage(text: string, templateBuffer: Buffer) {
   ctx.drawImage(placeholder, 0, 0, 1280, 1280);
 
   ctx.fillStyle = "#fff";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.7)"; // Semi-transparent black shadow
+  ctx.shadowBlur = 10; // Blur effect
+  ctx.shadowOffsetX = 5; // Horizontal offset
+  ctx.shadowOffsetY = 5; // Vertical offset
 
   ctx.font = "70px Manrope";
+  ctx.strokeText(text, 200, 455); // Draw the outline first
+
   ctx.fillText(text, 200, 455);
 
   const buffer = canvas.toBuffer("image/png", {
@@ -126,17 +138,35 @@ export async function generateBlip(
   try {
     const response = await fetch(template.uri);
     const templateBuffer = await response.arrayBuffer();
-    const imgBuffer = generateImage(message, Buffer.from(templateBuffer));
 
-    const compressedImgBuffer = await compressImage(imgBuffer);
-    const imageTx = await uploadImage(
-      arweave,
-      "image/png",
-      compressedImgBuffer
-    );
+    let finalImgBuffer: Buffer;
+    let contentType: string = "image/png";
+    let extension: string = "png";
 
+    if (template.artistName === "Ash") {
+      const gif = await generateGifWithText(
+        message,
+        Buffer.from(templateBuffer)
+      );
+      const imgBuffer = Buffer.from(gif.split(",")[1], "base64");
+      contentType = "image/gif";
+      extension = "gif";
+      finalImgBuffer = imgBuffer;
+    } else {
+      const imgBuffer = generateImage(message, Buffer.from(templateBuffer));
+      finalImgBuffer = await compressImage(imgBuffer);
+    }
+
+    // fs.writeFileSync(
+    //   path.join(process.cwd(), "./public/blip/finalImgBuffer.png"),
+    //   finalImgBuffer.toString("binary"),
+    //   "binary"
+    // );
+    // return;
+
+    const imageTx = await uploadImage(arweave, contentType, finalImgBuffer);
     const imgTxId = imageTx.id;
-    const imgUri = `https://www.arweave.net/${imageTx.id}?ext=png`;
+    const imgUri = `https://www.arweave.net/${imageTx.id}?ext=${extension}`;
 
     const attributes = [
       {
@@ -169,13 +199,13 @@ export async function generateBlip(
       symbol: "Blip",
       description:
         "Blip is a Validator's messaging service on Eclipse. https://validators.wtf/",
-      image: `https://www.arweave.net/${imgTxId}?ext=png`,
+      image: `https://www.arweave.net/${imgTxId}?ext=${extension}`,
       attributes,
       properties: {
         files: [
           {
-            type: "image/png",
-            uri: `https://www.arweave.net/${imgTxId}?ext=png`,
+            type: contentType,
+            uri: `https://www.arweave.net/${imgTxId}?ext=${extension}`,
           },
         ],
       },
@@ -189,6 +219,8 @@ export async function generateBlip(
       imgUri,
       jsonUri,
     };
+
+    console.log(responseData);
 
     const blipSerializedTxn = await generateBlipTransactionV2(
       template,
@@ -206,5 +238,48 @@ export async function generateBlip(
     return {
       error: (err as Error).message.toString(),
     };
+  }
+}
+
+export async function generateGifWithText(
+  text: string,
+  templateBuffer: Buffer
+) {
+  try {
+    //@ts-ignore
+    const frames = await decodeFrames(templateBuffer);
+    console.time("Generating gif message");
+    console.timeLog("Generating gif message", { frames: frames.length });
+
+    const processedFrames = frames.map((frame) => {
+      const canvas = createCanvas(frame.width, frame.height);
+      const ctx = canvas.getContext("2d");
+
+      const imageData = ctx.createImageData(frame.width, frame.height);
+      imageData.data.set(frame.data);
+      ctx.putImageData(imageData, 0, 0);
+
+      ctx.font = "70px Manrope";
+      ctx.fillText(text, 180, 300);
+
+      const newImageData = ctx.getImageData(0, 0, frame.width, frame.height);
+
+      return {
+        ...frame,
+        data: newImageData.data,
+      };
+    });
+
+    const output = await encode({
+      width: frames[0].width,
+      height: frames[0].height,
+      frames: processedFrames,
+      maxColors: 256,
+    });
+
+    return `data:image/gif;base64,${Buffer.from(output).toString("base64")}`;
+  } catch (err) {
+    console.error("GIF generation error:", err);
+    throw err;
   }
 }

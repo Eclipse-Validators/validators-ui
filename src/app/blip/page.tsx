@@ -94,13 +94,20 @@ export default function MessagePage() {
       artistName: "Validators",
       artistSocials: "https://x.com/@Validators_",
     },
-    // {
-    //   uri: "https://arweave.net/iAoefjlV-UF8Sv-eq4wWR_hZkZPK_DxO8h3i2tJN-Qg?ext=png",
-    //   mint: "2vexnke8LLx46iPguhUSMnu4P8xokr8W6eXpFeoWEMDN",
-    //   artistWallet: "74dYBNatgiuiHLai34kuWXZogy9sraimL2UQ2WVQMA4w",
-    //   artistName: "Fujii",
-    //   artistSocials: "https://x.com/FujiiSol",
-    // },
+    {
+      uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
+      mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
+      artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
+      artistName: "DanFarz",
+      artistSocials: "https://t.me/DanFarz",
+    },
+    {
+      uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
+      mint: "4kmandkHVYKaJxPvNC5aQHGLhyY5AjH3DipBzzv2eAfP",
+      artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+      artistName: "Ash",
+      artistSocials: "https://x.com/Ashes_arc",
+    },
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     templates[0]
@@ -421,9 +428,21 @@ export default function MessagePage() {
                       objectFit="contain"
                     />
                   )}
-                  <div className="absolute ml-[40px] mt-[100px] w-full p-4">
+                  <div
+                    className={`absolute w-full p-4 ${
+                      selectedTemplate?.artistName === "Ash"
+                        ? "ml-[40px] mt-[60px]"
+                        : "ml-[40px] mt-[100px]"
+                    }`}
+                  >
                     <div className="w-auto max-w-none">
-                      <p className="whitespace-nowrap text-[21px] text-foreground">
+                      <p
+                        className={`whitespace-nowrap text-[21px] ${
+                          selectedTemplate?.artistName === "Ash"
+                            ? "text-black"
+                            : "text-foreground"
+                        }`}
+                      >
                         {formatMessage(message)}
                       </p>
                     </div>
