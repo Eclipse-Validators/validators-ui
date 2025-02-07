@@ -28,6 +28,7 @@ type Template = {
   artistWallet: string;
   artistName: string;
   artistSocials: string;
+  feePremiumLamports: number;
 };
 
 export default function MessagePage() {
@@ -92,21 +93,40 @@ export default function MessagePage() {
       mint: "B6cawaKXzRDVA7c1YdaVrgrxBKWxRN9p5ADvr1gNsN6A",
       artistWallet: "6onrnEdTbQKprwgF5VhLSRN3HH9x2JtDetVBxMoqiwmH",
       artistName: "Validators",
-      artistSocials: "https://x.com/@Validators_",
-    },
-    {
-      uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
-      mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
-      artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
-      artistName: "DanFarz",
-      artistSocials: "https://t.me/DanFarz",
+      feePremiumLamports: 0,
+      artistSocials: "https://x.com/Validators_",
     },
     {
       uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
       mint: "4kmandkHVYKaJxPvNC5aQHGLhyY5AjH3DipBzzv2eAfP",
       artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
       artistName: "Ash",
+      feePremiumLamports: 300_000,
       artistSocials: "https://x.com/Ashes_arc",
+    },
+    {
+      uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
+      mint: "7joBw7ZoEqT4kAsmjPhwdqxmW6eAG312z9GL2GkZWQc8",
+      artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+      artistName: "Ash",
+      feePremiumLamports: 300_000,
+      artistSocials: "https://x.com/Ashes_arc",
+    },
+    {
+      uri: "https://arweave.net/sfEUHNREXt3fme5kJkhizJDFzeLcndfIt3bgs80uRp0?ext=png",
+      mint: "HiJuJ2qQRFVXBUr7booTU4RKqYxLcH5YXcMQmUJKTFfv",
+      artistWallet: "61YD2RUbhDcfUpP1Uy6vzXwRoV8nkVzYJcC6NVxsBC3h",
+      artistName: "Apotiq1",
+      feePremiumLamports: 0,
+      artistSocials: "https://x.com/Apotiq1",
+    },
+    {
+      uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
+      mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
+      artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
+      artistName: "DanFarz",
+      feePremiumLamports: 0,
+      artistSocials: "https://t.me/DanFarz",
     },
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
@@ -463,7 +483,12 @@ export default function MessagePage() {
                 <div>
                   <span className="text-muted-foreground">Total Cost:</span>{" "}
                   <code className="font-semibold text-primary">
-                    ~0.000738 ETH
+                    ~
+                    {(
+                      (738000 + (selectedTemplate?.feePremiumLamports || 0)) /
+                      1_000_000_000
+                    ).toFixed(6)}{" "}
+                    ETH
                   </code>
                   <span className="ml-2 text-muted-foreground">
                     (includes mint and Metaplex fees)
