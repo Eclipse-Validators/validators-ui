@@ -7723,6 +7723,18 @@ mlly@^1.6.1, mlly@^1.7.0:
     pkg-types "^1.1.1"
     ufo "^1.5.3"
 
+modern-gif@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/modern-gif/-/modern-gif-2.0.4.tgz#22d9da39ab4a64374d0520eaa9f6a89fc64ab7a3"
+  integrity sha512-q3Nf6X3kpnGwiKLzTzOjsbvM16/kPcfy0JrrC79TmuKLCWiOkwb0ztuVhZnqGCizSr4o84gFOaBeGDVaE/Bcgw==
+  dependencies:
+    modern-palette "^2.0.0"
+
+modern-palette@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/modern-palette/-/modern-palette-2.0.0.tgz#433a8d807ea7e10eae46eb829679adc3b996d547"
+  integrity sha512-wKZcom2QzK6sS6h5RLYHEkd3V3maQLzgkI+ekDCimlk7dfXa63aekZcy+7KS+8JEqIDeY/yV1CAvA7l+7u6QHA==
+
 motion@10.16.2:
   version "10.16.2"
   resolved "https://registry.yarnpkg.com/motion/-/motion-10.16.2.tgz#7dc173c6ad62210a7e9916caeeaf22c51e598d21"
