@@ -57,6 +57,12 @@
         {
           "name": "artist_socials",
           "type": "string"
+        },
+        {
+          "name": "fee_premium_lamports",
+          "type": {
+            "option": "u64"
+          }
         }
       ]
     },
@@ -397,6 +403,12 @@
                 "u8",
                 60
               ]
+            }
+          },
+          {
+            "name": "fee_premium_lamports",
+            "type": {
+              "option": "u64"
             }
           }
         ]

@@ -55,6 +55,12 @@ export type BlipRadar = {
           name: "artistSocials";
           type: "string";
         },
+        {
+          name: "feePremiumLamports";
+          type: {
+            option: "u64";
+          };
+        },
       ];
     },
     {
@@ -335,6 +341,12 @@ export type BlipRadar = {
               array: ["u8", 60];
             };
           },
+          {
+            name: "feePremiumLamports";
+            type: {
+              option: "u64";
+            };
+          },
         ];
       };
     },
@@ -391,6 +403,12 @@ export const IDL: BlipRadar = {
         {
           name: "artistSocials",
           type: "string",
+        },
+        {
+          name: "feePremiumLamports",
+          type: {
+            option: "u64",
+          },
         },
       ],
     },
@@ -670,6 +688,12 @@ export const IDL: BlipRadar = {
             name: "artistSocials",
             type: {
               array: ["u8", 60],
+            },
+          },
+          {
+            name: "feePremiumLamports",
+            type: {
+              option: "u64",
             },
           },
         ],
