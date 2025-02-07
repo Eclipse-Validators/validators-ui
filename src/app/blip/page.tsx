@@ -227,6 +227,7 @@ export default function MessagePage() {
     }
 
     setIsSending(true);
+    const toastId = toast.loading("Generating your Blip image...");
 
     umi.use(walletAdapterIdentity(wallet, true));
 
@@ -241,11 +242,14 @@ export default function MessagePage() {
       );
       if (!response.data || response.error) {
         toast.error("Error generating Blip!", {
+          id: toastId,
           description: response.error ?? "Unknown error",
         });
         setIsSending(false);
         return;
       }
+
+      toast.loading("Sending transaction...", { id: toastId });
 
       const deserializedTxnAsU8 = base64.serialize(response.serializedTxn);
       const deserializedTxn = umi.transactions.deserialize(deserializedTxnAsU8);
@@ -255,6 +259,7 @@ export default function MessagePage() {
       )[0];
 
       toast.success(`Successfully sent Blip!`, {
+        id: toastId,
         description: "You can view your transacton on the Eclipse Explorer",
         action: {
           label: "View Transactions",
@@ -268,6 +273,7 @@ export default function MessagePage() {
     } catch (error) {
       console.error(`Error SENDING blip (txn sig: ${txnSignature}):`, error);
       toast.error("Error sending Blip!", {
+        id: toastId,
         description: error instanceof Error ? error.message : "Unknown error",
       });
       if (error instanceof SendTransactionError) {
