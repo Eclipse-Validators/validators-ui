@@ -104,14 +104,14 @@ export default function MessagePage() {
       feePremiumLamports: 300_000,
       artistSocials: "https://x.com/Ashes_arc",
     },
-    {
-      uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
-      mint: "7joBw7ZoEqT4kAsmjPhwdqxmW6eAG312z9GL2GkZWQc8",
-      artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
-      artistName: "Ash",
-      feePremiumLamports: 300_000,
-      artistSocials: "https://x.com/Ashes_arc",
-    },
+    // {
+    //   uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
+    //   mint: "7joBw7ZoEqT4kAsmjPhwdqxmW6eAG312z9GL2GkZWQc8",
+    //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+    //   artistName: "Ash",
+    //   feePremiumLamports: 300_000,
+    //   artistSocials: "https://x.com/Ashes_arc",
+    // },
     {
       uri: "https://arweave.net/sfEUHNREXt3fme5kJkhizJDFzeLcndfIt3bgs80uRp0?ext=png",
       mint: "HiJuJ2qQRFVXBUr7booTU4RKqYxLcH5YXcMQmUJKTFfv",
@@ -127,6 +127,14 @@ export default function MessagePage() {
       artistName: "DanFarz",
       feePremiumLamports: 0,
       artistSocials: "https://t.me/DanFarz",
+    },
+    {
+      uri: "https://arweave.net/wTPoJZ5Ru0OmQRyKQHHeYTH6ww1i8GJn51aC4Q70x08?ext=png",
+      mint: "2EJinsv31EQxPUw2SHmezkMYDW5fp4X31mhSeNZScZWE",
+      artistWallet: "zELCQXYo3Q5ePGjLBvirRJn72B7d8bHFARvNpwekmxY",
+      artistName: "Notrev",
+      feePremiumLamports: 0,
+      artistSocials: "https://x.com/NotRevv__",
     },
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
