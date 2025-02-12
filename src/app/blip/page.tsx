@@ -587,7 +587,7 @@ export default function MessagePage() {
             </CardContent>
           </Card>
 
-          <div className="mt-8">
+          <div className="mt-8 rounded-lg bg-[#8b283c]/65 p-4 backdrop-blur-sm">
             <h1 className="text-2xl font-bold">Your Love Letters</h1>
             <div className="mt-4">
               {wallet?.publicKey ? (
