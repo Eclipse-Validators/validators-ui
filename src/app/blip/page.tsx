@@ -323,18 +323,22 @@ export default function MessagePage() {
 
   return (
     <>
-      <div className="relative min-h-screen bg-gradient-to-b from-pink-100 to-red-100 p-4 text-foreground">
-        {/* Background pattern remains the same */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0066' fill-opacity='0.4'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+      <div className="relative min-h-screen bg-[#C8003C] p-4 text-white">
+        {/* Background pattern */}
+        <div className="absolute inset-0">
+          <div
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='1' fill='%23ffffff' /%3E%3C/svg%3E")`,
+              backgroundSize: "24px 24px",
+            }}
+          />
+        </div>
 
         {/* Enhanced floating hearts */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          {[...Array(40)].map((_, i) => (
+          {/* Large hearts */}
+          {[...Array(25)].map((_, i) => (
             <div
               key={i}
               className="animate-float absolute"
@@ -342,21 +346,37 @@ export default function MessagePage() {
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 10}s`,
                 animationDuration: `${12 + Math.random() * 8}s`,
-                fontSize: `${1 + Math.random() * 1.5}rem`,
+                opacity: 0.15,
               }}
             >
               <div
-                className="text-red-500 opacity-60"
                 style={{
                   transform: `rotate(${Math.random() * 360}deg)`,
+                  width: `${1.5 + Math.random() * 2}rem`,
+                  height: `${1.5 + Math.random() * 2}rem`,
                 }}
               >
-                {Math.random() > 0.5 ? "❤️" : "💝"}
+                {Math.random() > 0.5 ? (
+                  // Filled heart
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                ) : (
+                  // Outlined heart
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                )}
               </div>
             </div>
           ))}
-          {/* Add a second layer of smaller hearts */}
-          {[...Array(30)].map((_, i) => (
+          {/* Small hearts */}
+          {[...Array(20)].map((_, i) => (
             <div
               key={`small-${i}`}
               className="animate-float-slow absolute"
@@ -364,24 +384,40 @@ export default function MessagePage() {
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 10}s`,
                 animationDuration: `${15 + Math.random() * 10}s`,
-                fontSize: `${0.5 + Math.random() * 0.5}rem`,
+                opacity: 0.15,
               }}
             >
               <div
-                className="text-pink-400 opacity-50"
                 style={{
                   transform: `rotate(${Math.random() * 360}deg)`,
+                  width: `${0.8 + Math.random() * 0.8}rem`,
+                  height: `${0.8 + Math.random() * 0.8}rem`,
                 }}
               >
-                {Math.random() > 0.7 ? "💖" : Math.random() > 0.5 ? "💘" : "💗"}
+                {Math.random() > 0.5 ? (
+                  // Filled heart
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                ) : (
+                  // Outlined heart
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Main content */}
+        {/* Update Card background colors */}
         <div className="relative z-10 mx-auto max-w-4xl">
-          <Card className="bg-[#8b283c]/65 backdrop-blur-sm">
+          <Card className="border-white/30 bg-[#B4003C]/90 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center justify-center text-center text-2xl font-bold">
                 <Image
@@ -408,7 +444,7 @@ export default function MessagePage() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <div className="mb-4 w-full space-y-2 rounded-lg border border-[#8b283c]/50 bg-[#8b283c]/25 p-4">
+                  <div className="mb-4 w-full space-y-2 rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20 p-4">
                     <p className="pb-2 text-center font-medium">
                       Choose Your Love Letter Design
                     </p>
@@ -419,7 +455,7 @@ export default function MessagePage() {
                             .map((_, i) => (
                               <div
                                 key={i}
-                                className="aspect-square w-full animate-pulse rounded-lg bg-muted"
+                                className="aspect-square w-full animate-pulse rounded-lg bg-[#ff4d94]/20"
                               />
                             ))
                         : templates.map((template) => (
@@ -428,12 +464,12 @@ export default function MessagePage() {
                               onClick={() => setSelectedTemplate(template)}
                               className={`group relative flex w-full flex-col items-center rounded-lg border transition-all hover:opacity-90 ${
                                 selectedTemplate?.mint === template.mint
-                                  ? "border-primary shadow-sm"
-                                  : "border-border"
+                                  ? "border-[#ff4d94] shadow-md shadow-[#ff4d94]/20"
+                                  : "border-[#ff4d94]/30"
                               }`}
                             >
                               {template.artistName !== "Validators" && (
-                                <div className="absolute -right-3 -top-2 z-[999] rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+                                <div className="absolute -right-3 -top-2 z-[999] rounded-full bg-[#ff4d94] px-2 py-0.5 text-[10px] font-medium text-white">
                                   New!
                                 </div>
                               )}
@@ -457,7 +493,7 @@ export default function MessagePage() {
                   <Input
                     type="text"
                     placeholder="Enter your Valentine's address or domain"
-                    className={`mb-2 border-[#8b283c]/50 bg-[#8b283c]/25 text-white placeholder:text-white/70 focus:border-[#8b283c] ${
+                    className={`mb-2 border-[#ff4d94]/30 bg-[#8b283c]/20 text-white placeholder:text-white/70 focus:border-[#ff4d94] focus:ring-[#ff4d94]/20 ${
                       to &&
                       (isLookingUpDomain
                         ? "border-yellow-500"
@@ -475,7 +511,7 @@ export default function MessagePage() {
                         <p className="text-yellow-500">Looking up domain...</p>
                       ) : /\./.test(to) ? (
                         domainLookup?.publicKey ? (
-                          <p className="text-green-500">
+                          <p className="text-[#ff4d94]">
                             Resolved address:{" "}
                             {domainLookup.publicKey.slice(0, 4)}
                             ...{domainLookup.publicKey.slice(-4)}
@@ -486,7 +522,7 @@ export default function MessagePage() {
                           </p>
                         )
                       ) : isValidInput() ? (
-                        <p className="text-green-500">Valid Solana address</p>
+                        <p className="text-[#ff4d94]">Valid Solana address</p>
                       ) : (
                         <p className="text-red-500">Invalid Solana address</p>
                       )}
@@ -494,14 +530,14 @@ export default function MessagePage() {
                   )}
                   <Textarea
                     placeholder="Write your heartfelt message..."
-                    className="mb-4 h-32 border-[#8b283c]/50 bg-[#8b283c]/25 text-white placeholder:text-white/70 focus:border-[#8b283c]"
+                    className="mb-4 h-32 border-[#ff4d94]/30 bg-[#8b283c]/20 text-white placeholder:text-white/70 focus:border-[#ff4d94] focus:ring-[#ff4d94]/20"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     disabled={isLoadingTemplates}
                   />
                   {wallet?.publicKey ? (
                     <Button
-                      className="w-full"
+                      className="w-full bg-[#ff4d94] hover:bg-[#ff4d94]/90"
                       variant="default"
                       onClick={() => {
                         if (!selectedTemplate) {
@@ -527,7 +563,7 @@ export default function MessagePage() {
                   )}
                 </div>
                 <div>
-                  <div className="relative aspect-square rounded-lg border border-border">
+                  <div className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20">
                     {selectedTemplate?.uri && (
                       <Image
                         src={selectedTemplate?.uri}
@@ -559,12 +595,12 @@ export default function MessagePage() {
                 </div>
               </div>
 
-              <div className="w-full space-y-2 rounded-lg border border-[#8b283c]/50 bg-[#8b283c]/25 p-4 text-center text-sm">
+              <div className="w-full space-y-2 rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20 p-4 text-center text-sm">
                 <p className="font-medium">Love Letter Delivery Fees</p>
                 <div className="flex flex-col items-center justify-center space-y-2">
                   <div>
-                    <span className="text-muted-foreground">Cost of Love:</span>{" "}
-                    <code className="font-semibold text-primary">
+                    <span className="text-white/70">Cost of Love:</span>{" "}
+                    <code className="font-semibold text-[#ff4d94]">
                       ~
                       {(
                         (738000 + (selectedTemplate?.feePremiumLamports || 0)) /
@@ -572,12 +608,12 @@ export default function MessagePage() {
                       ).toFixed(6)}{" "}
                       ETH
                     </code>
-                    <span className="ml-2 text-muted-foreground">
+                    <span className="ml-2 text-white/70">
                       (includes delivery and Cupid&apos;s fees)
                     </span>
                   </div>
                   {selectedTemplate?.artistName !== "Validators" && (
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-white/70">
                       A portion of the fee will go to{" "}
                       {selectedTemplate?.artistName}
                     </div>
@@ -587,7 +623,7 @@ export default function MessagePage() {
             </CardContent>
           </Card>
 
-          <div className="mt-8 rounded-lg bg-[#8b283c]/65 p-4 backdrop-blur-sm">
+          <div className="mt-8 rounded-lg bg-[#B4003C]/90 p-4 backdrop-blur-sm">
             <h1 className="text-2xl font-bold">Your Love Letters</h1>
             <div className="mt-4">
               {wallet?.publicKey ? (
