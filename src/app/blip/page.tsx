@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AssetV1, fetchAssetsByOwner } from "@metaplex-foundation/mpl-core";
 import { publicKey } from "@metaplex-foundation/umi";
@@ -117,9 +117,8 @@ export default function MessagePage() {
   const debouncedTo = useDebounce(to, 300);
 
   // Only lookup domain if input contains a period
-  const { data: domainLookup, isLoading: isLookingUpDomain } = useEclipseDomainLookup(
-    /\./.test(debouncedTo) ? debouncedTo : undefined
-  );
+  const { data: domainLookup, isLoading: isLookingUpDomain } =
+    useEclipseDomainLookup(/\./.test(debouncedTo) ? debouncedTo : undefined);
 
   // Validate input and update resolved address
   useEffect(() => {
@@ -285,11 +284,19 @@ export default function MessagePage() {
         if (!wallet?.publicKey) {
           return [];
         }
-        const ownedAssets = await fetchAssetsByOwner(umi, publicKey(wallet.publicKey.toBase58()), {
-          skipDerivePlugins: false,
-        })
-        console.log("ownedAssets", ownedAssets)
-        const ownedBlips = ownedAssets.filter((asset) => asset.updateAuthority.address === publicKey("7MWzy1jbS3KC561EnY6DBixqToVwMfDqd7eXcGXZkj2A"))
+        const ownedAssets = await fetchAssetsByOwner(
+          umi,
+          publicKey(wallet.publicKey.toBase58()),
+          {
+            skipDerivePlugins: false,
+          }
+        );
+        console.log("ownedAssets", ownedAssets);
+        const ownedBlips = ownedAssets.filter(
+          (asset) =>
+            asset.updateAuthority.address ===
+            publicKey("7MWzy1jbS3KC561EnY6DBixqToVwMfDqd7eXcGXZkj2A")
+        );
         return ownedBlips;
       };
 
@@ -309,7 +316,10 @@ export default function MessagePage() {
               },
             } as BlipNftData;
           } catch (error) {
-            console.error(`Error processing asset ${asset.publicKey.toString()}:`, error);
+            console.error(
+              `Error processing asset ${asset.publicKey.toString()}:`,
+              error
+            );
             return null; // Skip this asset if there's an error
           }
         });
@@ -432,6 +442,71 @@ export default function MessagePage() {
       setIsSending(false);
     }
   }
+
+  const [clickCount, setClickCount] = useState(0);
+  const clickTimeout = useRef<NodeJS.Timeout>();
+
+  const handleTemplateClick = async () => {
+    setClickCount((prev) => prev + 1);
+
+    // Reset click count after 1 second
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+    }
+    clickTimeout.current = setTimeout(() => setClickCount(0), 1000);
+
+    // If we've reached 3 clicks
+    if (clickCount === 2) {
+      // We check for 2 because this click will make it 3
+      setClickCount(0);
+      if (!selectedTemplate || !message) {
+        toast.error("Please select a template and enter a message first");
+        return;
+      }
+
+      const toastId = toast.loading("Generating preview image...");
+      try {
+        const response = await generateBlip(
+          selectedTemplate,
+          message,
+          "preview",
+          "preview"
+        );
+        if (response?.error) {
+          toast.error("Failed to generate preview", { id: toastId });
+          return;
+        }
+
+        // Handle the preview data on the client side
+        if (response.data?.preview) {
+          const { buffer, contentType, extension } = response.data;
+          // Convert base64 string to Uint8Array
+          const binaryString = atob(buffer);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+
+          const blob = new Blob([bytes], { type: contentType });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `blip-preview.${extension}`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
+          toast.success("Preview generated! Check your downloads folder.", {
+            id: toastId,
+          });
+        }
+      } catch (error) {
+        toast.error("Failed to generate preview", { id: toastId });
+        console.error(error);
+      }
+    }
+  };
 
   return (
     <>
@@ -598,34 +673,39 @@ export default function MessagePage() {
                   )}
                 </div>
                 <div>
-                  <div className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20">
+                  <div
+                    onClick={handleTemplateClick}
+                    className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20"
+                  >
                     {selectedTemplate?.uri && (
-                      <Image
-                        src={selectedTemplate?.uri}
-                        alt="Blip Template"
-                        layout="fill"
-                        objectFit="contain"
-                      />
-                    )}
-                    <div
-                      className={`absolute w-full p-4 ${
-                        selectedTemplate?.artistName === "Ash"
-                          ? "ml-[40px] mt-[60px]"
-                          : "ml-[40px] mt-[100px]"
-                      }`}
-                    >
-                      <div className="w-auto max-w-none">
-                        <p
-                          className={`whitespace-nowrap text-[21px] ${
+                      <div className="relative h-full w-full cursor-pointer">
+                        <Image
+                          src={selectedTemplate?.uri}
+                          alt="Blip Template"
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                        <div
+                          className={`absolute w-full p-4 ${
                             selectedTemplate?.artistName === "Ash"
-                              ? "text-black"
-                              : "text-foreground"
+                              ? "ml-[40px] mt-[60px]"
+                              : "ml-[40px] mt-[100px]"
                           }`}
                         >
-                          {formatMessage(message)}
-                        </p>
+                          <div className="w-auto max-w-none">
+                            <p
+                              className={`whitespace-nowrap text-[21px] ${
+                                selectedTemplate?.artistName === "Ash"
+                                  ? "text-black"
+                                  : "text-foreground"
+                              }`}
+                            >
+                              {formatMessage(message)}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>

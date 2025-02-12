@@ -134,7 +134,15 @@ export async function generateBlip(
   message: string,
   to: string,
   from: string
-) {
+): Promise<{
+  data: {
+    preview?: boolean;
+    buffer?: string;
+    contentType?: string;
+    extension?: string;
+  };
+  error?: string;
+}> {
   try {
     const response = await fetch(template.uri);
     const templateBuffer = await response.arrayBuffer();
@@ -157,13 +165,20 @@ export async function generateBlip(
       finalImgBuffer = await compressImage(imgBuffer);
     }
 
-    // fs.writeFileSync(
-    //   path.join(process.cwd(), "./public/blip/finalImgBuffer.png"),
-    //   finalImgBuffer.toString("binary"),
-    //   "binary"
-    // );
-    // return;
+    // If this is a preview request, return the buffer and content type
+    if (to === "preview") {
+      return {
+        data: {
+          preview: true,
+          // @ts-ignore
+          buffer: Buffer.from(finalImgBuffer).toString("base64"),
+          contentType,
+          extension,
+        },
+      };
+    }
 
+    // Continue with normal flow for non-preview requests
     const imageTx = await uploadImage(arweave, contentType, finalImgBuffer);
     const imgTxId = imageTx.id;
     const imgUri = `https://www.arweave.net/${imageTx.id}?ext=${extension}`;
