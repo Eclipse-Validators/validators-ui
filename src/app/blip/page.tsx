@@ -322,272 +322,283 @@ export default function MessagePage() {
   }
 
   return (
-    <div className="relative mt-4 min-h-screen bg-gradient-to-b from-pink-100 to-red-100 p-4 text-foreground">
-      {/* Background pattern remains the same */}
-      <div
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0066' fill-opacity='0.4'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+    <>
+      <div className="relative min-h-screen bg-gradient-to-b from-pink-100 to-red-100 p-4 text-foreground">
+        {/* Background pattern remains the same */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0066' fill-opacity='0.4'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
 
-      {/* Enhanced floating hearts */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {[...Array(40)].map((_, i) => (
-          <div
-            key={i}
-            className="animate-float absolute"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${12 + Math.random() * 8}s`,
-              fontSize: `${1 + Math.random() * 1.5}rem`,
-            }}
-          >
+        {/* Enhanced floating hearts */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          {[...Array(40)].map((_, i) => (
             <div
-              className="text-red-500 opacity-60"
+              key={i}
+              className="animate-float absolute"
               style={{
-                transform: `rotate(${Math.random() * 360}deg)`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: `${12 + Math.random() * 8}s`,
+                fontSize: `${1 + Math.random() * 1.5}rem`,
               }}
             >
-              {Math.random() > 0.5 ? "❤️" : "💝"}
-            </div>
-          </div>
-        ))}
-        {/* Add a second layer of smaller hearts */}
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={`small-${i}`}
-            className="animate-float-slow absolute"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${15 + Math.random() * 10}s`,
-              fontSize: `${0.5 + Math.random() * 0.5}rem`,
-            }}
-          >
-            <div
-              className="text-pink-400 opacity-50"
-              style={{
-                transform: `rotate(${Math.random() * 360}deg)`,
-              }}
-            >
-              {Math.random() > 0.7 ? "💖" : Math.random() > 0.5 ? "💘" : "💗"}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 mx-auto max-w-4xl">
-        <Card className="border-border bg-card/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-center text-center text-2xl font-bold">
-              <Image src="/blip/logo.png" alt="Blip" width={200} height={200} />
-            </CardTitle>
-            <p className="flex items-center justify-center pt-4">
-              Want to send a message to a wallet on Eclipse?
-            </p>
-            <p className="flex items-center justify-center">
-              Say you want to buy a NFT, or send a special message to an enemy,
-              or just say hi, with a Blip&nbsp;
-              <Image
-                src="/logo/small.webp"
-                alt="Validators"
-                width={20}
-                height={20}
-              />
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <div className="mb-4 w-full space-y-2 rounded-lg border border-border bg-background/50 p-4">
-                  <p className="pb-2 text-center font-medium">
-                    Select Template
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                    {isLoadingTemplates
-                      ? Array(3)
-                          .fill(0)
-                          .map((_, i) => (
-                            <div
-                              key={i}
-                              className="aspect-square w-full animate-pulse rounded-lg bg-muted"
-                            />
-                          ))
-                      : templates.map((template) => (
-                          <button
-                            key={template.mint}
-                            onClick={() => setSelectedTemplate(template)}
-                            className={`group relative flex w-full flex-col items-center rounded-lg border transition-all hover:opacity-90 ${
-                              selectedTemplate?.mint === template.mint
-                                ? "border-primary shadow-sm"
-                                : "border-border"
-                            }`}
-                          >
-                            {template.artistName !== "Validators" && (
-                              <div className="absolute -right-3 -top-2 z-[999] rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
-                                New!
-                              </div>
-                            )}
-                            <div className="relative z-0 aspect-square w-full">
-                              <Image
-                                src={template.uri}
-                                alt={`${template.artistName} Template`}
-                                layout="fill"
-                                objectFit="contain"
-                                className="p-1"
-                              />
-                            </div>
-                            <span className="py-1 text-xs">
-                              {template.artistName}
-                            </span>
-                          </button>
-                        ))}
-                  </div>
-                </div>
-
-                <Input
-                  type="text"
-                  placeholder="Enter Eclipse Wallet Address or Domain"
-                  className={`mb-2 ${
-                    to &&
-                    (isLookingUpDomain
-                      ? "border-yellow-500"
-                      : isValidInput()
-                        ? "border-green-500"
-                        : "border-red-500")
-                  }`}
-                  value={to}
-                  onChange={(e) => setTo(e.target.value)}
-                  disabled={isLoadingTemplates}
-                />
-                {to && (
-                  <div className="text-sm">
-                    {isLookingUpDomain ? (
-                      <p className="text-yellow-500">Looking up domain...</p>
-                    ) : /\./.test(to) ? (
-                      domainLookup?.publicKey ? (
-                        <p className="text-green-500">
-                          Resolved address: {domainLookup.publicKey.slice(0, 4)}...{domainLookup.publicKey.slice(-4)}
-                        </p>
-                      ) : (
-                        <p className="text-red-500">Invalid or unregistered domain</p>
-                      )
-                    ) : isValidInput() ? (
-                      <p className="text-green-500">Valid Solana address</p>
-                    ) : (
-                      <p className="text-red-500">Invalid Solana address</p>
-                    )}
-                  </div>
-                )}
-                <Textarea
-                  placeholder="Write your message..."
-                  className="mb-4 h-32"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  disabled={isLoadingTemplates}
-                />
-                {wallet?.publicKey ? (
-                  <Button
-                    className="w-full"
-                    variant="default"
-                    onClick={() => {
-                      if (!selectedTemplate) {
-                        toast.error("No template selected", {
-                          description: "Please select a template",
-                        });
-                        return;
-                      }
-                      handleSendBlip(selectedTemplate, message, to);
-                    }}
-                    disabled={
-                      isSending || !wallet?.publicKey || !isValidInput()
-                    }
-                    loading={isSending}
-                    loadingText={isSending ? "Sending Transaction" : ""}
-                  >
-                    Send Blip!
-                  </Button>
-                ) : (
-                  <div className="text-center">
-                    Connect wallet to send a Blip
-                  </div>
-                )}
+              <div
+                className="text-red-500 opacity-60"
+                style={{
+                  transform: `rotate(${Math.random() * 360}deg)`,
+                }}
+              >
+                {Math.random() > 0.5 ? "❤️" : "💝"}
               </div>
-              <div>
-                <div className="relative aspect-square rounded-lg border border-border">
-                  {selectedTemplate?.uri && (
-                    <Image
-                      src={selectedTemplate?.uri}
-                      alt="Blip Template"
-                      layout="fill"
-                      objectFit="contain"
-                    />
-                  )}
-                  <div
-                    className={`absolute w-full p-4 ${
-                      selectedTemplate?.artistName === "Ash"
-                        ? "ml-[40px] mt-[60px]"
-                        : "ml-[40px] mt-[100px]"
+            </div>
+          ))}
+          {/* Add a second layer of smaller hearts */}
+          {[...Array(30)].map((_, i) => (
+            <div
+              key={`small-${i}`}
+              className="animate-float-slow absolute"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: `${15 + Math.random() * 10}s`,
+                fontSize: `${0.5 + Math.random() * 0.5}rem`,
+              }}
+            >
+              <div
+                className="text-pink-400 opacity-50"
+                style={{
+                  transform: `rotate(${Math.random() * 360}deg)`,
+                }}
+              >
+                {Math.random() > 0.7 ? "💖" : Math.random() > 0.5 ? "💘" : "💗"}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Main content */}
+        <div className="relative z-10 mx-auto max-w-4xl">
+          <Card className="bg-[#8b283c]/65 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-center text-center text-2xl font-bold">
+                <Image
+                  src="/blip/logo.png"
+                  alt="Blip"
+                  width={200}
+                  height={200}
+                />
+              </CardTitle>
+              <p className="flex items-center justify-center pt-4">
+                Want to send a special Valentine&apos;s message on Eclipse? 💝
+              </p>
+              <p className="flex items-center justify-center">
+                Share your heart, express your affection, or send your secret
+                admirer a note via Blip&nbsp;
+                <Image
+                  src="/logo/small.webp"
+                  alt="Validators"
+                  width={20}
+                  height={20}
+                />
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                  <div className="mb-4 w-full space-y-2 rounded-lg border border-[#8b283c]/50 bg-[#8b283c]/25 p-4">
+                    <p className="pb-2 text-center font-medium">
+                      Choose Your Love Letter Design
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                      {isLoadingTemplates
+                        ? Array(3)
+                            .fill(0)
+                            .map((_, i) => (
+                              <div
+                                key={i}
+                                className="aspect-square w-full animate-pulse rounded-lg bg-muted"
+                              />
+                            ))
+                        : templates.map((template) => (
+                            <button
+                              key={template.mint}
+                              onClick={() => setSelectedTemplate(template)}
+                              className={`group relative flex w-full flex-col items-center rounded-lg border transition-all hover:opacity-90 ${
+                                selectedTemplate?.mint === template.mint
+                                  ? "border-primary shadow-sm"
+                                  : "border-border"
+                              }`}
+                            >
+                              {template.artistName !== "Validators" && (
+                                <div className="absolute -right-3 -top-2 z-[999] rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+                                  New!
+                                </div>
+                              )}
+                              <div className="relative z-0 aspect-square w-full">
+                                <Image
+                                  src={template.uri}
+                                  alt={`${template.artistName} Template`}
+                                  layout="fill"
+                                  objectFit="contain"
+                                  className="p-1"
+                                />
+                              </div>
+                              <span className="py-1 text-xs">
+                                {template.artistName}
+                              </span>
+                            </button>
+                          ))}
+                    </div>
+                  </div>
+
+                  <Input
+                    type="text"
+                    placeholder="Enter your Valentine's address or domain"
+                    className={`mb-2 border-[#8b283c]/50 bg-[#8b283c]/25 text-white placeholder:text-white/70 focus:border-[#8b283c] ${
+                      to &&
+                      (isLookingUpDomain
+                        ? "border-yellow-500"
+                        : isValidInput()
+                          ? "border-[#ff4d94]"
+                          : "border-red-500")
                     }`}
-                  >
-                    <div className="w-auto max-w-none">
-                      <p
-                        className={`whitespace-nowrap text-[21px] ${
-                          selectedTemplate?.artistName === "Ash"
-                            ? "text-black"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {formatMessage(message)}
-                      </p>
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                    disabled={isLoadingTemplates}
+                  />
+                  {to && (
+                    <div className="text-sm">
+                      {isLookingUpDomain ? (
+                        <p className="text-yellow-500">Looking up domain...</p>
+                      ) : /\./.test(to) ? (
+                        domainLookup?.publicKey ? (
+                          <p className="text-green-500">
+                            Resolved address:{" "}
+                            {domainLookup.publicKey.slice(0, 4)}
+                            ...{domainLookup.publicKey.slice(-4)}
+                          </p>
+                        ) : (
+                          <p className="text-red-500">
+                            Invalid or unregistered domain
+                          </p>
+                        )
+                      ) : isValidInput() ? (
+                        <p className="text-green-500">Valid Solana address</p>
+                      ) : (
+                        <p className="text-red-500">Invalid Solana address</p>
+                      )}
+                    </div>
+                  )}
+                  <Textarea
+                    placeholder="Write your heartfelt message..."
+                    className="mb-4 h-32 border-[#8b283c]/50 bg-[#8b283c]/25 text-white placeholder:text-white/70 focus:border-[#8b283c]"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    disabled={isLoadingTemplates}
+                  />
+                  {wallet?.publicKey ? (
+                    <Button
+                      className="w-full"
+                      variant="default"
+                      onClick={() => {
+                        if (!selectedTemplate) {
+                          toast.error("No template selected", {
+                            description: "Please select a template",
+                          });
+                          return;
+                        }
+                        handleSendBlip(selectedTemplate, message, to);
+                      }}
+                      disabled={
+                        isSending || !wallet?.publicKey || !isValidInput()
+                      }
+                      loading={isSending}
+                      loadingText={isSending ? "Sending Transaction" : ""}
+                    >
+                      Send Love! 💘
+                    </Button>
+                  ) : (
+                    <div className="text-center">
+                      Connect wallet to send Valentine&apos;s Blip
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <div className="relative aspect-square rounded-lg border border-border">
+                    {selectedTemplate?.uri && (
+                      <Image
+                        src={selectedTemplate?.uri}
+                        alt="Blip Template"
+                        layout="fill"
+                        objectFit="contain"
+                      />
+                    )}
+                    <div
+                      className={`absolute w-full p-4 ${
+                        selectedTemplate?.artistName === "Ash"
+                          ? "ml-[40px] mt-[60px]"
+                          : "ml-[40px] mt-[100px]"
+                      }`}
+                    >
+                      <div className="w-auto max-w-none">
+                        <p
+                          className={`whitespace-nowrap text-[21px] ${
+                            selectedTemplate?.artistName === "Ash"
+                              ? "text-black"
+                              : "text-foreground"
+                          }`}
+                        >
+                          {formatMessage(message)}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full space-y-2 rounded-lg border border-border bg-background/50 p-4 text-center text-sm">
-              <p className="font-medium">Blip Transaction Fees</p>
-              <div className="flex flex-col items-center justify-center space-y-2">
-                <div>
-                  <span className="text-muted-foreground">Total Cost:</span>{" "}
-                  <code className="font-semibold text-primary">
-                    ~
-                    {(
-                      (738000 + (selectedTemplate?.feePremiumLamports || 0)) /
-                      1_000_000_000
-                    ).toFixed(6)}{" "}
-                    ETH
-                  </code>
-                  <span className="ml-2 text-muted-foreground">
-                    (includes mint and Metaplex fees)
-                  </span>
-                </div>
-                {selectedTemplate?.artistName !== "Validators" && (
-                  <div className="text-xs text-muted-foreground">
-                    A portion of the fee will go to{" "}
-                    {selectedTemplate?.artistName}
+              <div className="w-full space-y-2 rounded-lg border border-[#8b283c]/50 bg-[#8b283c]/25 p-4 text-center text-sm">
+                <p className="font-medium">Love Letter Delivery Fees</p>
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <div>
+                    <span className="text-muted-foreground">Cost of Love:</span>{" "}
+                    <code className="font-semibold text-primary">
+                      ~
+                      {(
+                        (738000 + (selectedTemplate?.feePremiumLamports || 0)) /
+                        1_000_000_000
+                      ).toFixed(6)}{" "}
+                      ETH
+                    </code>
+                    <span className="ml-2 text-muted-foreground">
+                      (includes delivery and Cupid&apos;s fees)
+                    </span>
                   </div>
-                )}
+                  {selectedTemplate?.artistName !== "Validators" && (
+                    <div className="text-xs text-muted-foreground">
+                      A portion of the fee will go to{" "}
+                      {selectedTemplate?.artistName}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <div className="mt-8">
-          <h1 className="text-2xl font-bold">Your Blips</h1>
-          <div className="mt-4">
-            {wallet?.publicKey ? (
-              <BlipNftGrid nfts={walletBlipNfts} loading={isLoadingBlips} />
-            ) : (
-              "Connect your wallet to check for Blips!"
-            )}
+          <div className="mt-8">
+            <h1 className="text-2xl font-bold">Your Love Letters</h1>
+            <div className="mt-4">
+              {wallet?.publicKey ? (
+                <BlipNftGrid nfts={walletBlipNfts} loading={isLoadingBlips} />
+              ) : (
+                "Connect your wallet to see your collection of love letters!"
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
