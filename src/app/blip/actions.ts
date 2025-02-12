@@ -95,7 +95,24 @@ async function compressImage(buffer: Buffer): Promise<Buffer> {
   return sharp(buffer).png({ quality: 50, compressionLevel: 9 }).toBuffer();
 }
 
-function generateImage(text: string, templateBuffer: Buffer) {
+export type CanvasConfig = {
+  text: string;
+  x: number;
+  y: number;
+  fontSize: number;
+  fontFamily: string;
+  fillStyle: string;
+  shadowColor: string;
+  shadowBlur: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+};
+
+function generateImage(
+  text: string,
+  templateBuffer: Buffer,
+  config?: CanvasConfig
+) {
   const canvas = createCanvas(1280, 1280);
   const ctx = canvas.getContext("2d");
   ctx.quality = "best";
@@ -105,16 +122,24 @@ function generateImage(text: string, templateBuffer: Buffer) {
 
   ctx.drawImage(placeholder, 0, 0, 1280, 1280);
 
-  ctx.fillStyle = "#fff";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.7)"; // Semi-transparent black shadow
-  ctx.shadowBlur = 10; // Blur effect
-  ctx.shadowOffsetX = 5; // Horizontal offset
-  ctx.shadowOffsetY = 5; // Vertical offset
-
-  ctx.font = "70px Manrope";
-  ctx.strokeText(text, 200, 455); // Draw the outline first
-
-  ctx.fillText(text, 200, 455);
+  if (config) {
+    ctx.fillStyle = config.fillStyle;
+    ctx.shadowColor = config.shadowColor;
+    ctx.shadowBlur = config.shadowBlur;
+    ctx.shadowOffsetX = config.shadowOffsetX;
+    ctx.shadowOffsetY = config.shadowOffsetY;
+    ctx.font = `${config.fontSize}px ${config.fontFamily}`;
+    ctx.fillText(text, config.x, config.y);
+  } else {
+    ctx.fillStyle = "#fff";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 5;
+    ctx.shadowOffsetY = 5;
+    ctx.font = "70px Manrope";
+    ctx.strokeText(text, 200, 455);
+    ctx.fillText(text, 200, 455);
+  }
 
   const buffer = canvas.toBuffer("image/png", {
     compressionLevel: 9,
@@ -133,7 +158,8 @@ export async function generateBlip(
   template: Template,
   message: string,
   to: string,
-  from: string
+  from: string,
+  config?: CanvasConfig
 ): Promise<{
   data: {
     preview?: boolean;
@@ -142,6 +168,7 @@ export async function generateBlip(
     extension?: string;
   };
   error?: string;
+  serializedTxn?: string;
 }> {
   try {
     const response = await fetch(template.uri);
@@ -161,7 +188,11 @@ export async function generateBlip(
       extension = "gif";
       finalImgBuffer = imgBuffer;
     } else {
-      const imgBuffer = generateImage(message, Buffer.from(templateBuffer));
+      const imgBuffer = generateImage(
+        message,
+        Buffer.from(templateBuffer),
+        config
+      );
       finalImgBuffer = await compressImage(imgBuffer);
     }
 

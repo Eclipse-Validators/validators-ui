@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,18 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 
-type CanvasConfig = {
-  text: string;
-  x: number;
-  y: number;
-  fontSize: number;
-  fontFamily: string;
-  fillStyle: string;
-  shadowColor: string;
-  shadowBlur: number;
-  shadowOffsetX: number;
-  shadowOffsetY: number;
-};
+import { generateBlip, type CanvasConfig } from "../actions";
 
 const ConfigExport = ({ config }: { config: CanvasConfig }) => {
   const [copied, setCopied] = useState(false);
@@ -70,6 +60,8 @@ export default function PreviewPage() {
     shadowOffsetX: 5,
     shadowOffsetY: 5,
   });
+  const [clickCount, setClickCount] = useState(0);
+  const clickTimeout = useRef<NodeJS.Timeout>();
 
   // Template options from the main page
   const templates = [
@@ -142,6 +134,72 @@ export default function PreviewPage() {
     updateCanvas();
   }, [selectedTemplate, config]);
 
+  const handlePreviewClick = async () => {
+    setClickCount((prev) => prev + 1);
+
+    if (clickTimeout.current) {
+      clearTimeout(clickTimeout.current);
+    }
+    clickTimeout.current = setTimeout(() => setClickCount(0), 1000);
+
+    if (clickCount === 2) {
+      setClickCount(0);
+      const toastId = toast.loading("Generating preview image...");
+
+      try {
+        const template = {
+          uri: selectedTemplate,
+          mint: "",
+          artistWallet: "",
+          artistName: "Preview",
+          artistSocials: "",
+          feePremiumLamports: 0,
+        };
+
+        const response = await generateBlip(
+          template,
+          config.text,
+          "preview",
+          "preview",
+          config
+        );
+
+        if (response?.error) {
+          toast.error("Failed to generate preview", { id: toastId });
+          return;
+        }
+
+        // Handle the preview data
+        if (response.data?.preview) {
+          const { buffer, contentType, extension } = response.data;
+          // Convert base64 string to Uint8Array
+          const binaryString = atob(buffer as string);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+
+          const blob = new Blob([bytes], { type: contentType });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `blip-preview.${extension}`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
+          toast.success("Preview generated! Check your downloads folder.", {
+            id: toastId,
+          });
+        }
+      } catch (error) {
+        toast.error("Failed to generate preview", { id: toastId });
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#C8003C] p-4 text-white">
       <div className="mx-auto max-w-6xl">
@@ -156,13 +214,19 @@ export default function PreviewPage() {
               {/* Preview Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Preview</h3>
-                <div className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20">
+                <div
+                  className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20"
+                  onClick={handlePreviewClick}
+                >
                   <canvas
                     ref={canvasRef}
                     width={1280}
                     height={1280}
-                    className="h-full w-full rounded-lg"
+                    className="h-full w-full cursor-pointer rounded-lg"
                   />
+                  <div className="absolute bottom-2 right-2 text-xs text-white/50">
+                    Triple click to download
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {templates.map((template) => (
