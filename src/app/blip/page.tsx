@@ -322,8 +322,64 @@ export default function MessagePage() {
   }
 
   return (
-    <div className="main-bg mt-4 min-h-screen bg-cover bg-fixed bg-center bg-no-repeat p-4 text-foreground">
-      <div className="mx-auto max-w-4xl">
+    <div className="relative mt-4 min-h-screen bg-gradient-to-b from-pink-100 to-red-100 p-4 text-foreground">
+      {/* Background pattern remains the same */}
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0066' fill-opacity='0.4'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Enhanced floating hearts */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {[...Array(40)].map((_, i) => (
+          <div
+            key={i}
+            className="animate-float absolute"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${12 + Math.random() * 8}s`,
+              fontSize: `${1 + Math.random() * 1.5}rem`,
+            }}
+          >
+            <div
+              className="text-red-500 opacity-60"
+              style={{
+                transform: `rotate(${Math.random() * 360}deg)`,
+              }}
+            >
+              {Math.random() > 0.5 ? "❤️" : "💝"}
+            </div>
+          </div>
+        ))}
+        {/* Add a second layer of smaller hearts */}
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={`small-${i}`}
+            className="animate-float-slow absolute"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${15 + Math.random() * 10}s`,
+              fontSize: `${0.5 + Math.random() * 0.5}rem`,
+            }}
+          >
+            <div
+              className="text-pink-400 opacity-50"
+              style={{
+                transform: `rotate(${Math.random() * 360}deg)`,
+              }}
+            >
+              {Math.random() > 0.7 ? "💖" : Math.random() > 0.5 ? "💘" : "💗"}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 mx-auto max-w-4xl">
         <Card className="border-border bg-card/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center justify-center text-center text-2xl font-bold">
