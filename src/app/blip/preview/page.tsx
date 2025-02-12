@@ -62,6 +62,10 @@ export default function PreviewPage() {
   });
   const [clickCount, setClickCount] = useState(0);
   const clickTimeout = useRef<NodeJS.Timeout>();
+  const [textOverflow, setTextOverflow] = useState<{
+    right?: boolean;
+    bottom?: boolean;
+  }>({});
 
   // Template options from the main page
   const templates = [
@@ -95,7 +99,6 @@ export default function PreviewPage() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Create image with proper constructor
     const templateImg = new (window.Image as any)();
     templateImg.crossOrigin = "anonymous";
 
@@ -116,12 +119,33 @@ export default function PreviewPage() {
 
         ctx.font = `${config.fontSize}px ${config.fontFamily}`;
 
-        // Draw text
+        // Check for text overflow
         const lines = config.text.split("\n");
+        const overflow = { right: false, bottom: false };
+
         lines.forEach((line, index) => {
+          const metrics = ctx.measureText(line);
+          const lineWidth = metrics.width;
+          const lineHeight = config.fontSize;
+          const totalHeight = (index + 1) * lineHeight;
+
+          // Check right overflow
+          if (config.x + lineWidth > canvas.width - 40) {
+            // 40px margin
+            overflow.right = true;
+          }
+
+          // Check bottom overflow
+          if (config.y + totalHeight > canvas.height - 40) {
+            // 40px margin
+            overflow.bottom = true;
+          }
+
+          // Draw text
           ctx.fillText(line, config.x, config.y + index * config.fontSize);
         });
 
+        setTextOverflow(overflow);
         resolve(true);
       };
       templateImg.onerror = reject;
@@ -214,19 +238,52 @@ export default function PreviewPage() {
               {/* Preview Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Preview</h3>
-                <div
-                  className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20"
-                  onClick={handlePreviewClick}
-                >
-                  <canvas
-                    ref={canvasRef}
-                    width={1280}
-                    height={1280}
-                    className="h-full w-full cursor-pointer rounded-lg"
-                  />
-                  <div className="absolute bottom-2 right-2 text-xs text-white/50">
-                    Triple click to download
+                <div className="relative">
+                  <div
+                    className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20"
+                    onClick={handlePreviewClick}
+                  >
+                    <canvas
+                      ref={canvasRef}
+                      width={1280}
+                      height={1280}
+                      className="h-full w-full cursor-pointer rounded-lg"
+                    />
+                    <div className="absolute bottom-2 right-2 text-xs text-white/50">
+                      Triple click to download
+                    </div>
                   </div>
+
+                  {/* Overflow Indicators */}
+                  {(textOverflow.right || textOverflow.bottom) && (
+                    <div className="mt-2 rounded-md border border-yellow-500/50 bg-yellow-500/10 p-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 text-yellow-500"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="text-yellow-500">
+                          Text overflow detected:
+                        </span>
+                      </div>
+                      <ul className="mt-1 list-inside list-disc text-yellow-500/80">
+                        {textOverflow.right && (
+                          <li>Text extends beyond right margin</li>
+                        )}
+                        {textOverflow.bottom && (
+                          <li>Text extends beyond bottom margin</li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {templates.map((template) => (
