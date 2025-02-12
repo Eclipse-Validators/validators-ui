@@ -1,0 +1,305 @@
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ColorPicker } from "@/components/ui/color-picker";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+
+type CanvasConfig = {
+  text: string;
+  x: number;
+  y: number;
+  fontSize: number;
+  fontFamily: string;
+  fillStyle: string;
+  shadowColor: string;
+  shadowBlur: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+};
+
+const ConfigExport = ({ config }: { config: CanvasConfig }) => {
+  const [copied, setCopied] = useState(false);
+
+  const configString = JSON.stringify(config, null, 2);
+
+  const copyConfig = async () => {
+    await navigator.clipboard.writeText(configString);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20 p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <Label>Configuration Export</Label>
+        <Button
+          onClick={copyConfig}
+          className="bg-[#ff4d94] hover:bg-[#ff4d94]/90"
+          size="sm"
+        >
+          {copied ? "Copied!" : "Copy"}
+        </Button>
+      </div>
+      <pre className="max-h-40 overflow-auto rounded bg-black/20 p-2 text-sm">
+        <code>{configString}</code>
+      </pre>
+    </div>
+  );
+};
+
+export default function PreviewPage() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(
+    "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png"
+  );
+  const [config, setConfig] = useState<CanvasConfig>({
+    text: "Your Valentine's message here...",
+    x: 200,
+    y: 455,
+    fontSize: 70,
+    fontFamily: "Manrope",
+    fillStyle: "#ffffff",
+    shadowColor: "rgba(0, 0, 0, 0.7)",
+    shadowBlur: 10,
+    shadowOffsetX: 5,
+    shadowOffsetY: 5,
+  });
+
+  // Template options from the main page
+  const templates = [
+    {
+      uri: "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png",
+      name: "Validators",
+    },
+    {
+      uri: "https://arweave.net/Tv6NY-P8jSHWgX5-t_DswyOUpQ6SsOd6rsfZXnCtU_Y?ext=png",
+      name: "94L1",
+    },
+    {
+      uri: "https://arweave.net/5mqX54T47CX9OYReHK2cWleDquiSRhuP6xPD6K2Ukf0?ext=png",
+      name: "Makoto",
+    },
+    {
+      uri: "https://arweave.net/xNg-bP-UtKr8XHE_iWohHHUunWJsKH7kHby8Io-AF94?ext=png",
+      name: "MTG",
+    },
+    {
+      uri: "https://arweave.net/BVTWD1X4EACbUXinX2SoCzfYglF_TDDZivZO8HijB8c?ext=png",
+      name: "DanFarz",
+    },
+    // Add other templates as needed
+  ];
+
+  const updateCanvas = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Create image with proper constructor
+    const templateImg = new (window.Image as any)();
+    templateImg.crossOrigin = "anonymous";
+
+    await new Promise((resolve, reject) => {
+      templateImg.onload = () => {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw template
+        ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
+
+        // Apply text configurations
+        ctx.fillStyle = config.fillStyle;
+        ctx.shadowColor = config.shadowColor;
+        ctx.shadowBlur = config.shadowBlur;
+        ctx.shadowOffsetX = config.shadowOffsetX;
+        ctx.shadowOffsetY = config.shadowOffsetY;
+
+        ctx.font = `${config.fontSize}px ${config.fontFamily}`;
+
+        // Draw text
+        const lines = config.text.split("\n");
+        lines.forEach((line, index) => {
+          ctx.fillText(line, config.x, config.y + index * config.fontSize);
+        });
+
+        resolve(true);
+      };
+      templateImg.onerror = reject;
+      templateImg.src = selectedTemplate;
+    });
+  };
+
+  // Update canvas when template or config changes
+  useEffect(() => {
+    updateCanvas();
+  }, [selectedTemplate, config]);
+
+  return (
+    <div className="min-h-screen bg-[#C8003C] p-4 text-white">
+      <div className="mx-auto max-w-6xl">
+        <Card className="border-white/30 bg-[#B4003C]/90 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">
+              Blip Preview Configuration
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Preview Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Preview</h3>
+                <div className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20">
+                  <canvas
+                    ref={canvasRef}
+                    width={1280}
+                    height={1280}
+                    className="h-full w-full rounded-lg"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {templates.map((template) => (
+                    <button
+                      key={template.uri}
+                      onClick={() => setSelectedTemplate(template.uri)}
+                      className={`relative aspect-square rounded-lg border p-1 transition-all hover:opacity-90 ${
+                        selectedTemplate === template.uri
+                          ? "border-[#ff4d94] shadow-md shadow-[#ff4d94]/20"
+                          : "border-[#ff4d94]/30"
+                      }`}
+                    >
+                      <Image
+                        src={template.uri}
+                        alt={template.name}
+                        layout="fill"
+                        objectFit="contain"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Configuration Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Configuration</h3>
+
+                <div className="space-y-2">
+                  <Label>Message</Label>
+                  <Textarea
+                    value={config.text}
+                    onChange={(e) =>
+                      setConfig({ ...config, text: e.target.value })
+                    }
+                    className="border-[#ff4d94]/30 bg-[#8b283c]/20"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>X Position: {config.x}</Label>
+                    <Slider
+                      value={[config.x]}
+                      min={0}
+                      max={1280}
+                      step={1}
+                      onValueChange={([x]) => setConfig({ ...config, x })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Y Position: {config.y}</Label>
+                    <Slider
+                      value={[config.y]}
+                      min={0}
+                      max={1280}
+                      step={1}
+                      onValueChange={([y]) => setConfig({ ...config, y })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Font Size: {config.fontSize}px</Label>
+                    <Slider
+                      value={[config.fontSize]}
+                      min={10}
+                      max={200}
+                      step={1}
+                      onValueChange={([fontSize]) =>
+                        setConfig({ ...config, fontSize })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Shadow Blur: {config.shadowBlur}</Label>
+                    <Slider
+                      value={[config.shadowBlur]}
+                      min={0}
+                      max={50}
+                      step={1}
+                      onValueChange={([shadowBlur]) =>
+                        setConfig({ ...config, shadowBlur })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Shadow X Offset: {config.shadowOffsetX}</Label>
+                    <Slider
+                      value={[config.shadowOffsetX]}
+                      min={-20}
+                      max={20}
+                      step={1}
+                      onValueChange={([shadowOffsetX]) =>
+                        setConfig({ ...config, shadowOffsetX })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Shadow Y Offset: {config.shadowOffsetY}</Label>
+                    <Slider
+                      value={[config.shadowOffsetY]}
+                      min={-20}
+                      max={20}
+                      step={1}
+                      onValueChange={([shadowOffsetY]) =>
+                        setConfig({ ...config, shadowOffsetY })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <ColorPicker
+                    label="Text Color"
+                    value={config.fillStyle}
+                    onChange={(color: any) =>
+                      setConfig({ ...config, fillStyle: color })
+                    }
+                  />
+                  <ColorPicker
+                    label="Shadow Color"
+                    value={config.shadowColor}
+                    onChange={(color: any) =>
+                      setConfig({ ...config, shadowColor: color })
+                    }
+                  />
+                </div>
+
+                <ConfigExport config={config} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
