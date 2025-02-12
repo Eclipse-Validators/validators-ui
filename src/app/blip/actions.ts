@@ -245,11 +245,13 @@ export async function generateBlip(
     );
 
     return {
+      // @ts-ignore
       data: responseData,
       serializedTxn: blipSerializedTxn,
     };
   } catch (err) {
     console.error(err);
+    // @ts-ignore
     return {
       error: (err as Error).message.toString(),
     };

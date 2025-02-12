@@ -409,6 +409,7 @@ export default function MessagePage() {
 
       toast.loading("Sending transaction...", { id: toastId });
 
+      // @ts-ignore
       const deserializedTxnAsU8 = base64.serialize(response.serializedTxn);
       const deserializedTxn = umi.transactions.deserialize(deserializedTxnAsU8);
       const signedTxn = await umi.identity.signTransaction(deserializedTxn);
@@ -481,6 +482,7 @@ export default function MessagePage() {
         if (response.data?.preview) {
           const { buffer, contentType, extension } = response.data;
           // Convert base64 string to Uint8Array
+          // @ts-ignore
           const binaryString = atob(buffer);
           const bytes = new Uint8Array(binaryString.length);
           for (let i = 0; i < binaryString.length; i++) {
