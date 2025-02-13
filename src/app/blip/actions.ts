@@ -5,7 +5,8 @@ import path from "path";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { createCanvas, Image, registerFont } from "canvas";
-import { decode, decodeFrames, encode } from "modern-gif";
+import { applyPalette, GIFEncoder, quantize } from "gifenc";
+import { decode, decodeFrames } from "modern-gif";
 import sharp from "sharp";
 
 import { generateBlipTransactionV2, getTemplates, Template } from "@/lib/blip";
@@ -313,9 +314,12 @@ export async function generateGifWithText(
         : "unknown",
     });
 
-    const processedFrames = frames.map((frame, index) => {
+    const gif = GIFEncoder();
+
+    for (let i = 0; i < frames.length; i++) {
+      const frame = frames[i];
       if (!frame || !frame.data) {
-        throw new Error(`Invalid frame data at index ${index}`);
+        throw new Error(`Invalid frame data at index ${i}`);
       }
 
       const canvas = createCanvas(frame.width, frame.height);
@@ -324,17 +328,10 @@ export async function generateGifWithText(
       // Create and verify imageData
       const imageData = ctx.createImageData(frame.width, frame.height);
       if (!imageData || !imageData.data) {
-        throw new Error(`Failed to create image data for frame ${index}`);
+        throw new Error(`Failed to create image data for frame ${i}`);
       }
 
-      // Safely copy frame data
-      if (frame.data.length !== imageData.data.length) {
-        console.warn(
-          `Frame ${index} data length mismatch: ${frame.data.length} vs ${imageData.data.length}`
-        );
-      }
-
-      // Copy data using a loop to ensure safety
+      // Copy frame data
       for (
         let i = 0;
         i < Math.min(frame.data.length, imageData.data.length);
@@ -349,19 +346,22 @@ export async function generateGifWithText(
       ctx.fillText(text, 180, 300);
 
       const newImageData = ctx.getImageData(0, 0, frame.width, frame.height);
+      const rgba = new Uint8Array(frame.width * frame.height * 4);
+      rgba.set(newImageData.data);
 
-      return {
-        ...frame,
-        data: newImageData.data,
-      };
-    });
+      // Quantize and apply palette
+      const palette = quantize(rgba, 256);
+      const index = applyPalette(rgba, palette);
 
-    const output = await encode({
-      width: frames[0].width,
-      height: frames[0].height,
-      frames: processedFrames,
-      maxColors: 256,
-    });
+      // Add frame to GIF
+      gif.writeFrame(index, frame.width, frame.height, {
+        palette,
+        delay: frame.delay || 100,
+      });
+    }
+
+    gif.finish();
+    const output = gif.bytes();
 
     return `data:image/gif;base64,${Buffer.from(output).toString("base64")}`;
   } catch (err) {
