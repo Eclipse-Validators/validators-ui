@@ -186,7 +186,8 @@ export async function generateBlip(
     if (template.artistName === "Ash" || template.artistName === "Ashes") {
       const gif = await generateGifWithText(
         message,
-        Buffer.from(templateBuffer)
+        Buffer.from(templateBuffer),
+        template.config ?? config
       );
       const imgBuffer = Buffer.from(gif.split(",")[1], "base64");
       contentType = "image/gif";
@@ -296,7 +297,8 @@ export async function generateBlip(
 
 export async function generateGifWithText(
   text: string,
-  templateBuffer: Buffer
+  templateBuffer: Buffer,
+  config?: CanvasConfig
 ) {
   try {
     //@ts-ignore
@@ -342,12 +344,34 @@ export async function generateGifWithText(
 
       ctx.putImageData(imageData, 0, 0);
 
-      ctx.font = "70px Manrope";
-      ctx.fillText(text, 180, 300);
+      // Apply text styling based on config
+      if (config) {
+        ctx.fillStyle = config.fillStyle;
+        ctx.shadowColor = config.shadowColor;
+        ctx.shadowBlur = config.shadowBlur;
+        ctx.shadowOffsetX = config.shadowOffsetX;
+        ctx.shadowOffsetY = config.shadowOffsetY;
+        ctx.font = `${config.fontSize}px ${config.fontFamily}`;
+        ctx.fillText(text, config.x, config.y);
+      } else {
+        // Default styling
+        ctx.fillStyle = "#fff";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 5;
+        ctx.shadowOffsetY = 5;
+        ctx.font = "70px Manrope";
+        ctx.fillText(text, 180, 300);
+      }
 
       const newImageData = ctx.getImageData(0, 0, frame.width, frame.height);
       const rgba = new Uint8Array(frame.width * frame.height * 4);
       rgba.set(newImageData.data);
+
+      // Set all alpha values to 255 (fully opaque)
+      for (let j = 3; j < rgba.length; j += 4) {
+        rgba[j] = 255;
+      }
 
       // Quantize and apply palette
       const palette = quantize(rgba, 256);
