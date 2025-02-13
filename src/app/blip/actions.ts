@@ -5,6 +5,7 @@ import path from "path";
 import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { createCanvas, Image, registerFont } from "canvas";
+// @ts-ignore
 import { applyPalette, GIFEncoder, quantize } from "gifenc";
 import { decode, decodeFrames } from "modern-gif";
 import sharp from "sharp";
