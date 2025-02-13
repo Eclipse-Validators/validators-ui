@@ -89,6 +89,14 @@ export default function PreviewPage() {
       uri: "https://arweave.net/BVTWD1X4EACbUXinX2SoCzfYglF_TDDZivZO8HijB8c?ext=png",
       name: "DanFarz",
     },
+    {
+      uri: "https://arweave.net/2lALp4UClaSuMAdM9f7DqdxhfLu4tD6CzQzjDmERvEE?ext=gif",
+      name: "Ashes",
+    },
+    {
+      uri: "https://arweave.net/7570C2s21UYRjCmsoGZ2iq3QWBxj1IyPKA0dzNHdy1w?ext=gif",
+      name: "Ashes",
+    },
     // Add other templates as needed
   ];
 
