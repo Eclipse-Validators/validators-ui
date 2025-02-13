@@ -20,16 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { BlipNftData } from "@/components/mint/blipNftCard";
 import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 
-import { generateBlip, getConfigTemplates } from "./actions";
-
-type Template = {
-  uri: string;
-  mint: string;
-  artistWallet: string;
-  artistName: string;
-  artistSocials: string;
-  feePremiumLamports: number;
-};
+import { generateBlip, TemplateWithConfig } from "./actions";
 
 // Add this new component at the top of the file, before the MessagePage component
 const FloatingHearts = React.memo(() => (
@@ -166,15 +157,15 @@ export default function MessagePage() {
   const [isSending, setIsSending] = useState(false);
   const [isLoadingBlips, setIsLoadingBlips] = useState(false);
   const [walletBlipNfts, setWalletBlipNfts] = useState<BlipNftData[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([
-    {
-      uri: "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png",
-      mint: "B6cawaKXzRDVA7c1YdaVrgrxBKWxRN9p5ADvr1gNsN6A",
-      artistWallet: "6onrnEdTbQKprwgF5VhLSRN3HH9x2JtDetVBxMoqiwmH",
-      artistName: "Validators",
-      feePremiumLamports: 0,
-      artistSocials: "https://x.com/Validators_",
-    },
+  const [templates, setTemplates] = useState<TemplateWithConfig[]>([
+    // {
+    //   uri: "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png",
+    //   mint: "B6cawaKXzRDVA7c1YdaVrgrxBKWxRN9p5ADvr1gNsN6A",
+    //   artistWallet: "6onrnEdTbQKprwgF5VhLSRN3HH9x2JtDetVBxMoqiwmH",
+    //   artistName: "Validators",
+    //   feePremiumLamports: 0,
+    //   artistSocials: "https://x.com/Validators_",
+    // },
     {
       uri: "https://arweave.net/Tv6NY-P8jSHWgX5-t_DswyOUpQ6SsOd6rsfZXnCtU_Y?ext=png",
       mint: "TVogK47MS2TFYpdwj7J1qgUuKZvdo2NBz8sRUz3GN57",
@@ -182,6 +173,17 @@ export default function MessagePage() {
       artistName: "94L1",
       feePremiumLamports: 300_000,
       artistSocials: "https://x.com/94l1_",
+      config: {
+        x: 200,
+        y: 425,
+        fontSize: 65,
+        fontFamily: "Manrope",
+        fillStyle: "#ffffff",
+        shadowColor: "rgba(0, 0, 0, 0.7)",
+        shadowBlur: 1,
+        shadowOffsetX: 2,
+        shadowOffsetY: 1,
+      },
     },
     {
       uri: "https://arweave.net/5mqX54T47CX9OYReHK2cWleDquiSRhuP6xPD6K2Ukf0?ext=png",
@@ -190,6 +192,17 @@ export default function MessagePage() {
       artistName: "Makoto",
       feePremiumLamports: 300_000,
       artistSocials: "https://0xmakoto.carrd.co/",
+      config: {
+        x: 186,
+        y: 425,
+        fontSize: 66,
+        fontFamily: "Manrope",
+        fillStyle: "#000000",
+        shadowColor: "rgba(0, 0, 0, 0.7)",
+        shadowBlur: 1,
+        shadowOffsetX: 2,
+        shadowOffsetY: 1,
+      },
     },
     {
       uri: "https://arweave.net/xNg-bP-UtKr8XHE_iWohHHUunWJsKH7kHby8Io-AF94?ext=png",
@@ -198,6 +211,17 @@ export default function MessagePage() {
       artistName: "MTG",
       feePremiumLamports: 300_000,
       artistSocials: "https://x.com/shadowwchaserr",
+      config: {
+        x: 200,
+        y: 425,
+        fontSize: 65,
+        fontFamily: "Manrope",
+        fillStyle: "#ffffff",
+        shadowColor: "rgba(0, 0, 0, 0.7)",
+        shadowBlur: 1,
+        shadowOffsetX: 2,
+        shadowOffsetY: 1,
+      },
     },
     {
       uri: "https://arweave.net/BVTWD1X4EACbUXinX2SoCzfYglF_TDDZivZO8HijB8c?ext=png",
@@ -206,6 +230,17 @@ export default function MessagePage() {
       artistName: "DanFarz",
       feePremiumLamports: 300_000,
       artistSocials: "https://t.me/DanFarz",
+      config: {
+        x: 200,
+        y: 425,
+        fontSize: 65,
+        fontFamily: "Manrope",
+        fillStyle: "#ffffff",
+        shadowColor: "rgba(0, 0, 0, 0.7)",
+        shadowBlur: 1,
+        shadowOffsetX: 2,
+        shadowOffsetY: 1,
+      },
     },
     // {
     //   uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",

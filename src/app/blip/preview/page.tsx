@@ -120,7 +120,7 @@ export default function PreviewPage() {
         ctx.font = `${config.fontSize}px ${config.fontFamily}`;
 
         // Check for text overflow
-        const lines = config.text.split("\n");
+        const lines = config.text?.split("\n") ?? [];
         const overflow = { right: false, bottom: false };
 
         lines.forEach((line, index) => {

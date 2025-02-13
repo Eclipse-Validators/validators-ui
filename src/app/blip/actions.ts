@@ -96,7 +96,7 @@ async function compressImage(buffer: Buffer): Promise<Buffer> {
 }
 
 export type CanvasConfig = {
-  text: string;
+  text?: string;
   x: number;
   y: number;
   fontSize: number;
@@ -154,8 +154,12 @@ export async function getConfigTemplates() {
   return templates;
 }
 
+export type TemplateWithConfig = Template & {
+  config?: CanvasConfig;
+};
+
 export async function generateBlip(
-  template: Template,
+  template: TemplateWithConfig,
   message: string,
   to: string,
   from: string,
@@ -191,7 +195,7 @@ export async function generateBlip(
       const imgBuffer = generateImage(
         message,
         Buffer.from(templateBuffer),
-        config
+        template.config ?? config
       );
       finalImgBuffer = await compressImage(imgBuffer);
     }
