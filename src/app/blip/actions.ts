@@ -182,7 +182,7 @@ export async function generateBlip(
     let contentType: string = "image/png";
     let extension: string = "png";
 
-    if (template.artistName === "Ash") {
+    if (template.artistName === "Ash" || template.artistName === "Ashes") {
       const gif = await generateGifWithText(
         message,
         Buffer.from(templateBuffer)
