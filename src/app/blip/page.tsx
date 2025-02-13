@@ -291,9 +291,8 @@ export default function MessagePage() {
     //   artistSocials: "https://x.com/NotRevv__",
     // },
   ]);
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
-    templates[0]
-  );
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<TemplateWithConfig | null>(templates[0]);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
 
   const formatMessage = (text: string) => {
@@ -387,7 +386,7 @@ export default function MessagePage() {
   }, [wallet.publicKey]);
 
   async function handleSendBlip(
-    template: Template,
+    template: TemplateWithConfig,
     message: string,
     to: string
   ) {
@@ -544,6 +543,53 @@ export default function MessagePage() {
       }
     }
   };
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const updateCanvas = async () => {
+      const canvas = canvasRef.current;
+      if (!canvas || !selectedTemplate?.uri) return;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const templateImg = new (window.Image as any)();
+      templateImg.crossOrigin = "anonymous";
+
+      await new Promise((resolve, reject) => {
+        templateImg.onload = () => {
+          // Clear canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Draw template
+          ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
+
+          // Apply text configurations from template config
+          const config = selectedTemplate.config;
+          if (config) {
+            ctx.fillStyle = config.fillStyle;
+            ctx.shadowColor = config.shadowColor;
+            ctx.shadowBlur = config.shadowBlur;
+            ctx.shadowOffsetX = config.shadowOffsetX;
+            ctx.shadowOffsetY = config.shadowOffsetY;
+            ctx.font = `${config.fontSize}px ${config.fontFamily}`;
+
+            // Draw text lines
+            const lines = message.split("\n");
+            lines.forEach((line, index) => {
+              ctx.fillText(line, config.x, config.y + index * config.fontSize);
+            });
+          }
+          resolve(true);
+        };
+        templateImg.onerror = reject;
+        templateImg.src = selectedTemplate.uri;
+      });
+    };
+
+    updateCanvas();
+  }, [selectedTemplate, message]);
 
   return (
     <>
@@ -715,34 +761,16 @@ export default function MessagePage() {
                     className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20"
                   >
                     {selectedTemplate?.uri && (
-                      <div className="relative h-full w-full cursor-pointer">
-                        <Image
-                          src={selectedTemplate?.uri}
-                          alt="Blip Template"
-                          layout="fill"
-                          objectFit="contain"
-                        />
-                        <div
-                          className={`absolute w-full p-4 ${
-                            selectedTemplate?.artistName === "Ash"
-                              ? "ml-[40px] mt-[60px]"
-                              : "ml-[40px] mt-[100px]"
-                          }`}
-                        >
-                          <div className="w-auto max-w-none">
-                            <p
-                              className={`whitespace-nowrap text-[21px] ${
-                                selectedTemplate?.artistName === "Ash"
-                                  ? "text-black"
-                                  : "text-foreground"
-                              }`}
-                            >
-                              {formatMessage(message)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      <canvas
+                        ref={canvasRef}
+                        width={1280}
+                        height={1280}
+                        className="h-full w-full cursor-pointer"
+                      />
                     )}
+                    <div className="absolute bottom-2 right-2 text-xs text-white/50">
+                      Triple click to download
+                    </div>
                   </div>
                 </div>
               </div>

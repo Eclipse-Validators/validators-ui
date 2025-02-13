@@ -182,7 +182,7 @@ export default function PreviewPage() {
 
         const response = await generateBlip(
           template,
-          config.text,
+          config.text!,
           "preview",
           "preview",
           config

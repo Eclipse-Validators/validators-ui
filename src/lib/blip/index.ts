@@ -92,6 +92,7 @@ export type Template = {
   artistWallet: string;
   artistName: string;
   artistSocials: string;
+  feePremiumLamports?: number;
 };
 
 export async function getTemplates(): Promise<Template[]> {
