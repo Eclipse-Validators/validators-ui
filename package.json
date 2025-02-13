@@ -48,6 +48,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "connectkit": "^1.8.2",
+    "gifenc": "^1.0.3",
     "js-sha256": "^0.11.0",
     "lucide-react": "^0.330.0",
     "modern-gif": "^2.0.4",
