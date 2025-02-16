@@ -18,7 +18,7 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        "main-bg": "url('/bannerblack.png')",
+        'main-bg': "url('/bannerblack.png')",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -69,17 +69,12 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        heartbeat: {
-          "0%, 100%": { transform: "scale(1)" },
-          "50%": { transform: "scale(1.1)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        heartbeat: "heartbeat 1s ease-in-out infinite",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-};
+}
