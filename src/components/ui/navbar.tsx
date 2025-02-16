@@ -3,12 +3,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { ChevronDown, FireExtinguisherIcon, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X, FireExtinguisherIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,8 +22,6 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isDev = process.env.NEXT_PUBLIC_ENVIRONMENT === "dev";
   const router = useRouter();
-  const pathname = usePathname();
-  const isValentine = pathname === "/blip";
 
   const handleDropdownItemClick = (href: string) => {
     setIsDropdownOpen(false);
@@ -32,14 +29,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav
-      className={cn(
-        "border-b",
-        isValentine
-          ? "border-pink-300/20 bg-[#8b283c] shadow-[0_4px_20px_-4px_rgba(236,72,153,0.1)] backdrop-blur-sm"
-          : "border-border"
-      )}
-    >
+    <nav className="border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
@@ -48,12 +38,6 @@ const Navbar = () => {
               alt="Validators Logo"
               width={150}
               height={50}
-              className={cn(
-                "transition-opacity",
-                isValentine
-                  ? "opacity-90 brightness-0 invert hover:opacity-100"
-                  : ""
-              )}
             />
           </div>
           <div className="hidden md:block">
@@ -80,7 +64,9 @@ const Navbar = () => {
                 href="/blackhole"
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
               >
-                <span className="flex items-center">Blackhole</span>
+                <span className="flex items-center">
+                  Blackhole
+                </span>
               </Link>
               <Link
                 href="/gallery"
