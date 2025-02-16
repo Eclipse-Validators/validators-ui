@@ -22,86 +22,6 @@ import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 
 import { generateBlip, TemplateWithConfig } from "./actions";
 
-// Add this new component at the top of the file, before the MessagePage component
-const FloatingHearts = React.memo(() => (
-  <div className="pointer-events-none absolute inset-0 overflow-hidden">
-    {/* Large hearts */}
-    {[...Array(25)].map((_, i) => (
-      <div
-        key={i}
-        className="animate-float absolute"
-        style={{
-          left: `${Math.random() * 100}%`,
-          animationDelay: `${Math.random() * 10}s`,
-          animationDuration: `${12 + Math.random() * 8}s`,
-          opacity: 0.15,
-        }}
-      >
-        <div
-          style={{
-            transform: `rotate(${Math.random() * 360}deg)`,
-            width: `${1.5 + Math.random() * 2}rem`,
-            height: `${1.5 + Math.random() * 2}rem`,
-          }}
-        >
-          {Math.random() > 0.5 ? (
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-          ) : (
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-          )}
-        </div>
-      </div>
-    ))}
-    {/* Small hearts */}
-    {[...Array(20)].map((_, i) => (
-      <div
-        key={`small-${i}`}
-        className="animate-float-slow absolute"
-        style={{
-          left: `${Math.random() * 100}%`,
-          animationDelay: `${Math.random() * 10}s`,
-          animationDuration: `${15 + Math.random() * 10}s`,
-          opacity: 0.15,
-        }}
-      >
-        <div
-          style={{
-            transform: `rotate(${Math.random() * 360}deg)`,
-            width: `${0.8 + Math.random() * 0.8}rem`,
-            height: `${0.8 + Math.random() * 0.8}rem`,
-          }}
-        >
-          {Math.random() > 0.5 ? (
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-          ) : (
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-          )}
-        </div>
-      </div>
-    ))}
-  </div>
-));
-
-FloatingHearts.displayName = "FloatingHearts";
-
 export default function MessagePage() {
   const [to, setTo] = useState<string>("");
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
@@ -631,24 +551,9 @@ export default function MessagePage() {
 
   return (
     <>
-      <div className="relative min-h-screen bg-[#C8003C] p-4 text-white">
-        {/* Background pattern */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='1' fill='%23ffffff' /%3E%3C/svg%3E")`,
-              backgroundSize: "24px 24px",
-            }}
-          />
-        </div>
-
-        {/* Replace the existing hearts code with the new component */}
-        <FloatingHearts />
-
-        {/* Update Card background colors */}
-        <div className="relative z-10 mx-auto max-w-4xl">
-          <Card className="border-white/30 bg-[#B4003C]/90 backdrop-blur-sm">
+      <div className="main-bg mt-4 min-h-screen bg-cover bg-fixed bg-center bg-no-repeat p-4 text-foreground">
+        <div className="mx-auto max-w-4xl">
+          <Card className="border-border bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center justify-center text-center text-2xl font-bold">
                 <Image
@@ -659,11 +564,11 @@ export default function MessagePage() {
                 />
               </CardTitle>
               <p className="flex items-center justify-center pt-4">
-                Want to send a special Valentine&apos;s message on Eclipse? 💝
+                Want to send a message to a wallet on Eclipse?
               </p>
               <p className="flex items-center justify-center">
-                Share your heart, express your affection, or send your secret
-                admirer a note via Blip&nbsp;
+                Say you want to buy a NFT, or send a special message to an
+                enemy, or just say hi, with a Blip&nbsp;
                 <Image
                   src="/logo/small.webp"
                   alt="Validators"
@@ -675,18 +580,18 @@ export default function MessagePage() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <div className="mb-4 w-full space-y-2 rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20 p-4">
+                  <div className="mb-4 w-full space-y-2 rounded-lg border border-border bg-background/50 p-4">
                     <p className="pb-2 text-center font-medium">
-                      Choose Your Love Letter Design
+                      Select Template
                     </p>
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <div className="grid grid-cols-3 gap-4 sm:grid-cols-4">
                       {isLoadingTemplates
                         ? Array(3)
                             .fill(0)
                             .map((_, i) => (
                               <div
                                 key={i}
-                                className="aspect-square w-full animate-pulse rounded-lg bg-[#ff4d94]/20"
+                                className="aspect-square w-full animate-pulse rounded-lg bg-muted"
                               />
                             ))
                         : templates.map((template) => (
@@ -695,12 +600,12 @@ export default function MessagePage() {
                               onClick={() => setSelectedTemplate(template)}
                               className={`group relative flex w-full flex-col items-center rounded-lg border transition-all hover:opacity-90 ${
                                 selectedTemplate?.mint === template.mint
-                                  ? "border-[#ff4d94] shadow-md shadow-[#ff4d94]/20"
-                                  : "border-[#ff4d94]/30"
+                                  ? "border-primary shadow-sm"
+                                  : "border-border"
                               }`}
                             >
                               {template.artistName !== "Validators" && (
-                                <div className="absolute -right-3 -top-2 z-[999] rounded-full bg-[#ff4d94] px-2 py-0.5 text-[10px] font-medium text-white">
+                                <div className="absolute -right-3 -top-2 z-[999] rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
                                   New!
                                 </div>
                               )}
@@ -723,13 +628,13 @@ export default function MessagePage() {
 
                   <Input
                     type="text"
-                    placeholder="Enter your Valentine's address or domain"
-                    className={`mb-2 border-[#ff4d94]/30 bg-[#8b283c]/20 text-white placeholder:text-white/70 focus:border-[#ff4d94] focus:ring-[#ff4d94]/20 ${
+                    placeholder="Enter Eclipse Wallet Address or Domain"
+                    className={`mb-2 ${
                       to &&
                       (isLookingUpDomain
                         ? "border-yellow-500"
                         : isValidInput()
-                          ? "border-[#ff4d94]"
+                          ? "border-green-500"
                           : "border-red-500")
                     }`}
                     value={to}
@@ -742,10 +647,10 @@ export default function MessagePage() {
                         <p className="text-yellow-500">Looking up domain...</p>
                       ) : /\./.test(to) ? (
                         domainLookup?.publicKey ? (
-                          <p className="text-[#ff4d94]">
+                          <p className="text-green-500">
                             Resolved address:{" "}
-                            {domainLookup.publicKey.slice(0, 4)}
-                            ...{domainLookup.publicKey.slice(-4)}
+                            {domainLookup.publicKey.slice(0, 4)}...
+                            {domainLookup.publicKey.slice(-4)}
                           </p>
                         ) : (
                           <p className="text-red-500">
@@ -753,22 +658,22 @@ export default function MessagePage() {
                           </p>
                         )
                       ) : isValidInput() ? (
-                        <p className="text-[#ff4d94]">Valid Solana address</p>
+                        <p className="text-green-500">Valid Solana address</p>
                       ) : (
                         <p className="text-red-500">Invalid Solana address</p>
                       )}
                     </div>
                   )}
                   <Textarea
-                    placeholder="Write your heartfelt message..."
-                    className="mb-4 h-32 border-[#ff4d94]/30 bg-[#8b283c]/20 text-white placeholder:text-white/70 focus:border-[#ff4d94] focus:ring-[#ff4d94]/20"
+                    placeholder="Write your message..."
+                    className="mb-4 h-32"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     disabled={isLoadingTemplates}
                   />
                   {wallet?.publicKey ? (
                     <Button
-                      className="w-full bg-[#ff4d94] hover:bg-[#ff4d94]/90"
+                      className="w-full"
                       variant="default"
                       onClick={() => {
                         if (!selectedTemplate) {
@@ -785,11 +690,11 @@ export default function MessagePage() {
                       loading={isSending}
                       loadingText={isSending ? "Sending Transaction" : ""}
                     >
-                      Send Love! 💘
+                      Send Blip!
                     </Button>
                   ) : (
                     <div className="text-center">
-                      Connect wallet to send Valentine&apos;s Blip
+                      Connect wallet to send a Blip
                     </div>
                   )}
                 </div>
@@ -806,32 +711,24 @@ export default function MessagePage() {
                         className="h-full w-full cursor-pointer"
                       />
                     )}
-                    <div className="absolute bottom-2 right-2 text-xs text-white/50">
-                      Triple click to download
-                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="w-full space-y-2 rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20 p-4 text-center text-sm">
-                <p className="font-medium">Love Letter Delivery Fees</p>
+              <div className="w-full space-y-2 rounded-lg border border-border bg-background/50 p-4 text-center text-sm">
+                <p className="font-medium">Blip Transaction Fees</p>
                 <div className="flex flex-col items-center justify-center space-y-2">
                   <div>
-                    <span className="text-white/70">Cost of Love:</span>{" "}
-                    <code className="font-semibold text-[#ff4d94]">
-                      ~
-                      {(
-                        (738000 + (selectedTemplate?.feePremiumLamports || 0)) /
-                        1_000_000_000
-                      ).toFixed(6)}{" "}
-                      ETH
+                    <span className="text-muted-foreground">Total Cost:</span>{" "}
+                    <code className="font-semibold text-primary">
+                      ~0.000738 ETH
                     </code>
-                    <span className="ml-2 text-white/70">
-                      (includes delivery and Cupid&apos;s fees)
+                    <span className="ml-2 text-muted-foreground">
+                      (includes mint and Metaplex fees)
                     </span>
                   </div>
                   {selectedTemplate?.artistName !== "Validators" && (
-                    <div className="text-xs text-white/70">
+                    <div className="text-xs text-muted-foreground">
                       A portion of the fee will go to{" "}
                       {selectedTemplate?.artistName}
                     </div>
@@ -841,13 +738,13 @@ export default function MessagePage() {
             </CardContent>
           </Card>
 
-          <div className="mt-8 rounded-lg bg-[#B4003C]/90 p-4 backdrop-blur-sm">
-            <h1 className="text-2xl font-bold">Your Love Letters</h1>
+          <div className="mt-8">
+            <h1 className="text-2xl font-bold">Your Blips</h1>
             <div className="mt-4">
               {wallet?.publicKey ? (
                 <BlipNftGrid nfts={walletBlipNfts} loading={isLoadingBlips} />
               ) : (
-                "Connect your wallet to see your collection of love letters!"
+                "Connect your wallet to check for Blips!"
               )}
             </div>
           </div>
