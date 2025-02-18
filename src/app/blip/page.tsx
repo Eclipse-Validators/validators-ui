@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import { AssetV1, fetchAssetsByOwner } from "@metaplex-foundation/mpl-core";
 import { publicKey } from "@metaplex-foundation/umi";
@@ -21,6 +27,120 @@ import { BlipNftData } from "@/components/mint/blipNftCard";
 import { BlipNftGrid } from "@/components/mint/blipNftGrid";
 
 import { generateBlip, TemplateWithConfig } from "./actions";
+
+const artistTemplates = [
+  // {
+  //   uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
+  //   mint: "4kmandkHVYKaJxPvNC5aQHGLhyY5AjH3DipBzzv2eAfP",
+  //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+  //   artistName: "Ash",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/Ashes_arc",
+  // },
+  {
+    uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
+    mint: "7joBw7ZoEqT4kAsmjPhwdqxmW6eAG312z9GL2GkZWQc8",
+    artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+    artistName: "Ash",
+    feePremiumLamports: 300_000,
+    artistSocials: "https://x.com/Ashes_arc",
+    config: {
+      x: 163,
+      y: 301,
+      fontSize: 68,
+      fontFamily: "Manrope",
+      fillStyle: "#e1f6e0",
+      shadowColor: "#729278",
+      shadowBlur: 0,
+      shadowOffsetX: 4,
+      shadowOffsetY: 1,
+    },
+  },
+  // {
+  //   uri: "https://arweave.net/sfEUHNREXt3fme5kJkhizJDFzeLcndfIt3bgs80uRp0?ext=png",
+  //   mint: "HiJuJ2qQRFVXBUr7booTU4RKqYxLcH5YXcMQmUJKTFfv",
+  //   artistWallet: "61YD2RUbhDcfUpP1Uy6vzXwRoV8nkVzYJcC6NVxsBC3h",
+  //   artistName: "Apotiq1",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/Apotiq1",
+  // },
+  {
+    uri: "https://arweave.net/6s2Jv_O2sFuw12p38wMq4NTit_KwiR8ADu9YcKeNdk8?ext=png",
+    mint: "8rVdhKZGGgBdTCGsfos7KJxzGgJRgFNSeUeTRW1r469n",
+    artistWallet: "4iuPZBgmwqKeRF6bDdPCvdnyxB46dJrJshZsXMZHbwis",
+    artistName: "94L1",
+    feePremiumLamports: 300_000,
+    artistSocials: "https://x.com/94l1_",
+    config: {
+      x: 235,
+      y: 406,
+      fontSize: 56,
+      fontFamily: "Manrope",
+      fillStyle: "#ffffff",
+      shadowColor: "#000000",
+      shadowBlur: 6,
+      shadowOffsetX: 0,
+      shadowOffsetY: 2,
+    },
+  },
+  {
+    uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
+    mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
+    artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
+    artistName: "DanFarz",
+    feePremiumLamports: 300_000,
+    artistSocials: "https://t.me/DanFarz",
+    config: {
+      x: 241,
+      y: 370,
+      fontSize: 60,
+      fontFamily: "Manrope",
+      fillStyle: "#ffffff",
+      shadowColor: "#000000",
+      shadowBlur: 5,
+      shadowOffsetX: 4,
+      shadowOffsetY: -3,
+    },
+  },
+  {
+    uri: "https://arweave.net/2lALp4UClaSuMAdM9f7DqdxhfLu4tD6CzQzjDmERvEE?ext=gif",
+    mint: "9roUwKvunDd2XRjV1DMfPuut4kjU5KtqJRNPXeFDmoQL",
+    artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+    artistName: "Ashes",
+    feePremiumLamports: 300_000,
+    artistSocials: "https://x.com/Ashes_arc",
+    config: {
+      x: 225,
+      y: 455,
+      fontSize: 70,
+      fontFamily: "Manrope",
+      fillStyle: "#ffffff",
+      shadowColor: "rgba(0, 0, 0, 0.7)",
+      shadowBlur: 0,
+      shadowOffsetX: 5,
+      shadowOffsetY: 5,
+    },
+  },
+  {
+    uri: "https://arweave.net/wTPoJZ5Ru0OmQRyKQHHeYTH6ww1i8GJn51aC4Q70x08?ext=png",
+    mint: "2EJinsv31EQxPUw2SHmezkMYDW5fp4X31mhSeNZScZWE",
+    artistWallet: "zELCQXYo3Q5ePGjLBvirRJn72B7d8bHFARvNpwekmxY",
+    artistName: "Notrev",
+    feePremiumLamports: 300_000,
+    artistSocials: "https://x.com/NotRevv__",
+    config: {
+      x: 230,
+      y: 341,
+      fontSize: 56,
+      fontFamily: "Manrope",
+      fillStyle: "#000000",
+      shadowColor: "#fafafa",
+      shadowBlur: 6,
+      shadowOffsetX: 0,
+      shadowOffsetY: 2,
+    },
+  },
+];
 
 export default function MessagePage() {
   const [to, setTo] = useState<string>("");
@@ -71,186 +191,232 @@ export default function MessagePage() {
     }
   }, [to, domainLookup]);
 
+  const baseTemplates = [
+    {
+      uri: "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png",
+      mint: "B6cawaKXzRDVA7c1YdaVrgrxBKWxRN9p5ADvr1gNsN6A",
+      artistWallet: "6onrnEdTbQKprwgF5VhLSRN3HH9x2JtDetVBxMoqiwmH",
+      artistName: "Validators",
+      feePremiumLamports: 0,
+      artistSocials: "https://x.com/Validators_",
+      config: {
+        x: 182,
+        y: 473,
+        fontSize: 72,
+        fontFamily: "Manrope",
+        fillStyle: "#ffffff",
+        shadowColor: "#000000",
+        shadowBlur: 0,
+        shadowOffsetX: 0,
+        shadowOffsetY: 0,
+      },
+    },
+  ];
+
+  const loadedTemplates = [...baseTemplates, ...artistTemplates];
+  // const loadedTemplates = useMemo(() => {
+  //   const baseTemplates = [
+  //     {
+  //       uri: "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png",
+  //       mint: "B6cawaKXzRDVA7c1YdaVrgrxBKWxRN9p5ADvr1gNsN6A",
+  //       artistWallet: "6onrnEdTbQKprwgF5VhLSRN3HH9x2JtDetVBxMoqiwmH",
+  //       artistName: "Validators",
+  //       feePremiumLamports: 0,
+  //       artistSocials: "https://x.com/Validators_",
+  //       config: {
+  //         x: 182,
+  //         y: 473,
+  //         fontSize: 72,
+  //         fontFamily: "Manrope",
+  //         fillStyle: "#ffffff",
+  //         shadowColor: "#000000",
+  //         shadowBlur: 0,
+  //         shadowOffsetX: 0,
+  //         shadowOffsetY: 0,
+  //       },
+  //     },
+  //   ];
+
+  //   // const shuffledTemplates = [...artistTemplates].sort(
+  //   //   () => Math.random() - 0.5
+  //   // );
+
+  //   return [...baseTemplates, ...ar];
+  // }, []);
+
   const [message, setMessage] = useState<string>("");
   const wallet = useWallet();
   const { connection } = useConnection();
   const [isSending, setIsSending] = useState(false);
   const [isLoadingBlips, setIsLoadingBlips] = useState(false);
   const [walletBlipNfts, setWalletBlipNfts] = useState<BlipNftData[]>([]);
-  const [templates, setTemplates] = useState<TemplateWithConfig[]>([
-    // {
-    //   uri: "https://arweave.net/PGGyjImnEhdicy9RMDng-vowIqbY7CpTUKi2_5XZl08?ext=png",
-    //   mint: "B6cawaKXzRDVA7c1YdaVrgrxBKWxRN9p5ADvr1gNsN6A",
-    //   artistWallet: "6onrnEdTbQKprwgF5VhLSRN3HH9x2JtDetVBxMoqiwmH",
-    //   artistName: "Validators",
-    //   feePremiumLamports: 0,
-    //   artistSocials: "https://x.com/Validators_",
-    // },
-    {
-      uri: "https://arweave.net/Tv6NY-P8jSHWgX5-t_DswyOUpQ6SsOd6rsfZXnCtU_Y?ext=png",
-      mint: "TVogK47MS2TFYpdwj7J1qgUuKZvdo2NBz8sRUz3GN57",
-      artistWallet: "4iuPZBgmwqKeRF6bDdPCvdnyxB46dJrJshZsXMZHbwis",
-      artistName: "94L1",
-      feePremiumLamports: 300_000,
-      artistSocials: "https://x.com/94l1_",
-      config: {
-        x: 200,
-        y: 425,
-        fontSize: 65,
-        fontFamily: "Manrope",
-        fillStyle: "#ffffff",
-        shadowColor: "rgba(0, 0, 0, 0.7)",
-        shadowBlur: 1,
-        shadowOffsetX: 2,
-        shadowOffsetY: 1,
-      },
-    },
-    {
-      uri: "https://arweave.net/2lALp4UClaSuMAdM9f7DqdxhfLu4tD6CzQzjDmERvEE?ext=gif",
-      mint: "9roUwKvunDd2XRjV1DMfPuut4kjU5KtqJRNPXeFDmoQL",
-      artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
-      artistName: "Ashes",
-      feePremiumLamports: 300_000,
-      artistSocials: "https://x.com/Ashes_arc",
-      config: {
-        x: 225,
-        y: 455,
-        fontSize: 70,
-        fontFamily: "Manrope",
-        fillStyle: "#ffffff",
-        shadowColor: "rgba(0, 0, 0, 0.7)",
-        shadowBlur: 0,
-        shadowOffsetX: 5,
-        shadowOffsetY: 5,
-      },
-    },
-    {
-      uri: "https://arweave.net/7570C2s21UYRjCmsoGZ2iq3QWBxj1IyPKA0dzNHdy1w?ext=gif",
-      mint: "Dt9h8CKTYMsnt7VuBqg78phSPu2BusKc119kvYyrFT53",
-      artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
-      artistName: "Ashes",
-      feePremiumLamports: 300_000,
-      artistSocials: "https://x.com/Ashes_arc",
-      config: {
-        x: 295,
-        y: 341,
-        fontSize: 70,
-        fontFamily: "Manrope",
-        fillStyle: "#ffffff",
-        shadowColor: "rgba(0, 0, 0, 0.7)",
-        shadowBlur: 2,
-        shadowOffsetX: 3,
-        shadowOffsetY: 2,
-      },
-    },
-    {
-      uri: "https://arweave.net/5mqX54T47CX9OYReHK2cWleDquiSRhuP6xPD6K2Ukf0?ext=png",
-      mint: "CGvyjWE7g6Xs7JoK35T8UdiBnd4rSdbyxkz9CyZ3iXU9",
-      artistWallet: "B4gTwHU3emvkFBpuht7QFzjfK8djdrsxcqMdLydk6dzs",
-      artistName: "Makoto",
-      feePremiumLamports: 300_000,
-      artistSocials: "https://0xmakoto.carrd.co/",
-      config: {
-        x: 186,
-        y: 425,
-        fontSize: 66,
-        fontFamily: "Manrope",
-        fillStyle: "#000000",
-        shadowColor: "rgba(0, 0, 0, 0.7)",
-        shadowBlur: 1,
-        shadowOffsetX: 2,
-        shadowOffsetY: 1,
-      },
-    },
-    {
-      uri: "https://arweave.net/xNg-bP-UtKr8XHE_iWohHHUunWJsKH7kHby8Io-AF94?ext=png",
-      mint: "D4JEB5nPTcD6FbKC9AyWNRCm9pWWogNpT4QsS5Wyk4SN",
-      artistWallet: "8PwNQzLXKgaMSrvrsCfsJWEw7FoCmXXM8JLQhzvD9vsQ",
-      artistName: "MTG",
-      feePremiumLamports: 300_000,
-      artistSocials: "https://x.com/shadowwchaserr",
-      config: {
-        x: 200,
-        y: 425,
-        fontSize: 65,
-        fontFamily: "Manrope",
-        fillStyle: "#ffffff",
-        shadowColor: "rgba(0, 0, 0, 0.7)",
-        shadowBlur: 1,
-        shadowOffsetX: 2,
-        shadowOffsetY: 1,
-      },
-    },
-    {
-      uri: "https://arweave.net/BVTWD1X4EACbUXinX2SoCzfYglF_TDDZivZO8HijB8c?ext=png",
-      mint: "P7WjdPFgTr7GMe71jRprsHz7u6MY5qD6zhiAuX6kBPk",
-      artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
-      artistName: "DanFarz",
-      feePremiumLamports: 300_000,
-      artistSocials: "https://t.me/DanFarz",
-      config: {
-        x: 200,
-        y: 425,
-        fontSize: 65,
-        fontFamily: "Manrope",
-        fillStyle: "#ffffff",
-        shadowColor: "rgba(0, 0, 0, 0.7)",
-        shadowBlur: 1,
-        shadowOffsetX: 2,
-        shadowOffsetY: 1,
-      },
-    },
-    // {
-    //   uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
-    //   mint: "4kmandkHVYKaJxPvNC5aQHGLhyY5AjH3DipBzzv2eAfP",
-    //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
-    //   artistName: "Ash",
-    //   feePremiumLamports: 300_000,
-    //   artistSocials: "https://x.com/Ashes_arc",
-    // },
-    // {
-    //   uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
-    //   mint: "7joBw7ZoEqT4kAsmjPhwdqxmW6eAG312z9GL2GkZWQc8",
-    //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
-    //   artistName: "Ash",
-    //   feePremiumLamports: 300_000,
-    //   artistSocials: "https://x.com/Ashes_arc",
-    // },
-    // {
-    //   uri: "https://arweave.net/sfEUHNREXt3fme5kJkhizJDFzeLcndfIt3bgs80uRp0?ext=png",
-    //   mint: "HiJuJ2qQRFVXBUr7booTU4RKqYxLcH5YXcMQmUJKTFfv",
-    //   artistWallet: "61YD2RUbhDcfUpP1Uy6vzXwRoV8nkVzYJcC6NVxsBC3h",
-    //   artistName: "Apotiq1",
-    //   feePremiumLamports: 300_000,
-    //   artistSocials: "https://x.com/Apotiq1",
-    // },
-    // {
-    //   uri: "https://arweave.net/6s2Jv_O2sFuw12p38wMq4NTit_KwiR8ADu9YcKeNdk8?ext=png",
-    //   mint: "8rVdhKZGGgBdTCGsfos7KJxzGgJRgFNSeUeTRW1r469n",
-    //   artistWallet: "4iuPZBgmwqKeRF6bDdPCvdnyxB46dJrJshZsXMZHbwis",
-    //   artistName: "94L1",
-    //   feePremiumLamports: 300_000,
-    //   artistSocials: "https://x.com/94l1_",
-    // },
-    // {
-    //   uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
-    //   mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
-    //   artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
-    //   artistName: "DanFarz",
-    //   feePremiumLamports: 300_000,
-    //   artistSocials: "https://t.me/DanFarz",
-    // },
-    // {
-    //   uri: "https://arweave.net/wTPoJZ5Ru0OmQRyKQHHeYTH6ww1i8GJn51aC4Q70x08?ext=png",
-    //   mint: "2EJinsv31EQxPUw2SHmezkMYDW5fp4X31mhSeNZScZWE",
-    //   artistWallet: "zELCQXYo3Q5ePGjLBvirRJn72B7d8bHFARvNpwekmxY",
-    //   artistName: "Notrev",
-    //   feePremiumLamports: 300_000,
-    //   artistSocials: "https://x.com/NotRevv__",
-    // },
-  ]);
+  // const [templates, setTemplates] =
+  //   useState<TemplateWithConfig[]>(loadedTemplates);
+  // {
+  //   uri: "https://arweave.net/Tv6NY-P8jSHWgX5-t_DswyOUpQ6SsOd6rsfZXnCtU_Y?ext=png",
+  //   mint: "TVogK47MS2TFYpdwj7J1qgUuKZvdo2NBz8sRUz3GN57",
+  //   artistWallet: "4iuPZBgmwqKeRF6bDdPCvdnyxB46dJrJshZsXMZHbwis",
+  //   artistName: "94L1",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/94l1_",
+  //   config: {
+  //     x: 200,
+  //     y: 425,
+  //     fontSize: 65,
+  //     fontFamily: "Manrope",
+  //     fillStyle: "#ffffff",
+  //     shadowColor: "rgba(0, 0, 0, 0.7)",
+  //     shadowBlur: 1,
+  //     shadowOffsetX: 2,
+  //     shadowOffsetY: 1,
+  //   },
+  // },
+  // {
+  //   uri: "https://arweave.net/2lALp4UClaSuMAdM9f7DqdxhfLu4tD6CzQzjDmERvEE?ext=gif",
+  //   mint: "9roUwKvunDd2XRjV1DMfPuut4kjU5KtqJRNPXeFDmoQL",
+  //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+  //   artistName: "Ashes",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/Ashes_arc",
+  //   config: {
+  //     x: 225,
+  //     y: 455,
+  //     fontSize: 70,
+  //     fontFamily: "Manrope",
+  //     fillStyle: "#ffffff",
+  //     shadowColor: "rgba(0, 0, 0, 0.7)",
+  //     shadowBlur: 0,
+  //     shadowOffsetX: 5,
+  //     shadowOffsetY: 5,
+  //   },
+  // },
+  // {
+  //   uri: "https://arweave.net/7570C2s21UYRjCmsoGZ2iq3QWBxj1IyPKA0dzNHdy1w?ext=gif",
+  //   mint: "Dt9h8CKTYMsnt7VuBqg78phSPu2BusKc119kvYyrFT53",
+  //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+  //   artistName: "Ashes",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/Ashes_arc",
+  //   config: {
+  //     x: 295,
+  //     y: 341,
+  //     fontSize: 70,
+  //     fontFamily: "Manrope",
+  //     fillStyle: "#ffffff",
+  //     shadowColor: "rgba(0, 0, 0, 0.7)",
+  //     shadowBlur: 2,
+  //     shadowOffsetX: 3,
+  //     shadowOffsetY: 2,
+  //   },
+  // },
+  // {
+  //   uri: "https://arweave.net/5mqX54T47CX9OYReHK2cWleDquiSRhuP6xPD6K2Ukf0?ext=png",
+  //   mint: "CGvyjWE7g6Xs7JoK35T8UdiBnd4rSdbyxkz9CyZ3iXU9",
+  //   artistWallet: "B4gTwHU3emvkFBpuht7QFzjfK8djdrsxcqMdLydk6dzs",
+  //   artistName: "Makoto",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://0xmakoto.carrd.co/",
+  //   config: {
+  //     x: 186,
+  //     y: 425,
+  //     fontSize: 66,
+  //     fontFamily: "Manrope",
+  //     fillStyle: "#000000",
+  //     shadowColor: "rgba(0, 0, 0, 0.7)",
+  //     shadowBlur: 1,
+  //     shadowOffsetX: 2,
+  //     shadowOffsetY: 1,
+  //   },
+  // },
+  // {
+  //   uri: "https://arweave.net/xNg-bP-UtKr8XHE_iWohHHUunWJsKH7kHby8Io-AF94?ext=png",
+  //   mint: "D4JEB5nPTcD6FbKC9AyWNRCm9pWWogNpT4QsS5Wyk4SN",
+  //   artistWallet: "8PwNQzLXKgaMSrvrsCfsJWEw7FoCmXXM8JLQhzvD9vsQ",
+  //   artistName: "MTG",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/shadowwchaserr",
+  //   config: {
+  //     x: 200,
+  //     y: 425,
+  //     fontSize: 65,
+  //     fontFamily: "Manrope",
+  //     fillStyle: "#ffffff",
+  //     shadowColor: "rgba(0, 0, 0, 0.7)",
+  //     shadowBlur: 1,
+  //     shadowOffsetX: 2,
+  //     shadowOffsetY: 1,
+  //   },
+  // },
+  // {
+  //   uri: "https://arweave.net/BVTWD1X4EACbUXinX2SoCzfYglF_TDDZivZO8HijB8c?ext=png",
+  //   mint: "P7WjdPFgTr7GMe71jRprsHz7u6MY5qD6zhiAuX6kBPk",
+  //   artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
+  //   artistName: "DanFarz",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://t.me/DanFarz",
+  //   config: {
+  //     x: 200,
+  //     y: 425,
+  //     fontSize: 65,
+  //     fontFamily: "Manrope",
+  //     fillStyle: "#ffffff",
+  //     shadowColor: "rgba(0, 0, 0, 0.7)",
+  //     shadowBlur: 1,
+  //     shadowOffsetX: 2,
+  //     shadowOffsetY: 1,
+  //   },
+  // },
+  // {
+  //   uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
+  //   mint: "4kmandkHVYKaJxPvNC5aQHGLhyY5AjH3DipBzzv2eAfP",
+  //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+  //   artistName: "Ash",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/Ashes_arc",
+  // },
+  // {
+  //   uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
+  //   mint: "7joBw7ZoEqT4kAsmjPhwdqxmW6eAG312z9GL2GkZWQc8",
+  //   artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+  //   artistName: "Ash",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/Ashes_arc",
+  // },
+  // {
+  //   uri: "https://arweave.net/sfEUHNREXt3fme5kJkhizJDFzeLcndfIt3bgs80uRp0?ext=png",
+  //   mint: "HiJuJ2qQRFVXBUr7booTU4RKqYxLcH5YXcMQmUJKTFfv",
+  //   artistWallet: "61YD2RUbhDcfUpP1Uy6vzXwRoV8nkVzYJcC6NVxsBC3h",
+  //   artistName: "Apotiq1",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/Apotiq1",
+  // },
+  // {
+  //   uri: "https://arweave.net/6s2Jv_O2sFuw12p38wMq4NTit_KwiR8ADu9YcKeNdk8?ext=png",
+  //   mint: "8rVdhKZGGgBdTCGsfos7KJxzGgJRgFNSeUeTRW1r469n",
+  //   artistWallet: "4iuPZBgmwqKeRF6bDdPCvdnyxB46dJrJshZsXMZHbwis",
+  //   artistName: "94L1",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/94l1_",
+  // },
+  // {
+  //   uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
+  //   mint: "DiCVrorLafQHpkNTYvWxKYX4mYbs7Z6wjE492LZbDszp",
+  //   artistWallet: "6smBKDhMPxf9AD3Na7GkXnt5trhwKkfSEf1aWT4y5Aka",
+  //   artistName: "DanFarz",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://t.me/DanFarz",
+  // },
+  // {
+  //   uri: "https://arweave.net/wTPoJZ5Ru0OmQRyKQHHeYTH6ww1i8GJn51aC4Q70x08?ext=png",
+  //   mint: "2EJinsv31EQxPUw2SHmezkMYDW5fp4X31mhSeNZScZWE",
+  //   artistWallet: "zELCQXYo3Q5ePGjLBvirRJn72B7d8bHFARvNpwekmxY",
+  //   artistName: "Notrev",
+  //   feePremiumLamports: 300_000,
+  //   artistSocials: "https://x.com/NotRevv__",
+  // },
+
   const [selectedTemplate, setSelectedTemplate] =
-    useState<TemplateWithConfig | null>(templates[0]);
+    useState<TemplateWithConfig | null>(loadedTemplates[0]);
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
 
   const formatMessage = (text: string) => {
@@ -594,7 +760,7 @@ export default function MessagePage() {
                                 className="aspect-square w-full animate-pulse rounded-lg bg-muted"
                               />
                             ))
-                        : templates.map((template) => (
+                        : loadedTemplates.map((template) => (
                             <button
                               key={template.mint}
                               onClick={() => setSelectedTemplate(template)}
