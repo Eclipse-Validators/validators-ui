@@ -97,6 +97,30 @@ export default function PreviewPage() {
       uri: "https://arweave.net/7570C2s21UYRjCmsoGZ2iq3QWBxj1IyPKA0dzNHdy1w?ext=gif",
       name: "Ashes",
     },
+    {
+      uri: "https://arweave.net/Opo1BMaJOEL7frhtnlsstOpeTMj2uK71KHBGpRx3LJA?ext=gif",
+      name: "Ash",
+    },
+    {
+      uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
+      name: "Ash",
+    },
+    {
+      uri: "https://arweave.net/sfEUHNREXt3fme5kJkhizJDFzeLcndfIt3bgs80uRp0?ext=png",
+      name: "Apotiq1",
+    },
+    {
+      uri: "https://arweave.net/6s2Jv_O2sFuw12p38wMq4NTit_KwiR8ADu9YcKeNdk8?ext=png",
+      name: "94L1",
+    },
+    {
+      uri: "https://arweave.net/5wCoYqrfh0nr10sdpzHSm1uaUadmfDxdJI4TN-n4Ljk?ext=png",
+      name: "DanFarz",
+    },
+    {
+      uri: "https://arweave.net/wTPoJZ5Ru0OmQRyKQHHeYTH6ww1i8GJn51aC4Q70x08?ext=png",
+      name: "Notrev",
+    },
     // Add other templates as needed
   ];
 
