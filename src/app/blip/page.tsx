@@ -867,7 +867,7 @@ export default function MessagePage() {
                 <div>
                   <div
                     onClick={handleTemplateClick}
-                    className="relative aspect-square rounded-lg border border-[#ff4d94]/30 bg-[#8b283c]/20"
+                    className="relative aspect-square rounded-lg border border-border bg-[#8b283c]/20"
                   >
                     {selectedTemplate?.uri && (
                       <canvas
