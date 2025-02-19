@@ -887,14 +887,19 @@ export default function MessagePage() {
                   <div>
                     <span className="text-muted-foreground">Total Cost:</span>{" "}
                     <code className="font-semibold text-primary">
-                      ~0.000738 ETH
+                      ~
+                      {(
+                        (738000 + (selectedTemplate?.feePremiumLamports || 0)) /
+                        1_000_000_000
+                      ).toFixed(6)}{" "}
+                      ETH
                     </code>
-                    <span className="ml-2 text-muted-foreground">
-                      (includes mint and Metaplex fees)
+                    <span className="ml-2 text-white/70">
+                      (includes delivery and Metaplex fees)
                     </span>
                   </div>
                   {selectedTemplate?.artistName !== "Validators" && (
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-white/70">
                       A portion of the fee will go to{" "}
                       {selectedTemplate?.artistName}
                     </div>
