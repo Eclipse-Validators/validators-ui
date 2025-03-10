@@ -37,6 +37,29 @@ const artistTemplates = [
   //   feePremiumLamports: 300_000,
   //   artistSocials: "https://x.com/Ashes_arc",
   // },
+
+  {
+    uri: "https://arweave.net/7iv03vXoyCc10h-MCsiO4wJn9FyiULEzGixfVG67jXA?ext=png",
+    mint: "CLZ6u9oMA4XkKfBDDJSdz1fe3mg48xVd2rs7fUQ2J2Tr",
+    feePremiumLamports: 300_000,
+    artistWallet: "5h5mzTVQ8yjS3mgm9gTaop8ELbNwD8beY29nfSd6vh2w",
+    artistName: "Eclipse Crabs",
+    artistBasisPoints: 2000,
+    artistSocials: "https://x.com/eclipsecrabs",
+    arweaveUrl:
+      "https://arweave.net/_dWCqBVZJgNzH520fdzGQcLx7OwgXP2lpqmEeynXpwc?ext=json",
+    config: {
+      x: 258,
+      y: 431,
+      fontSize: 51,
+      fontFamily: "Manrope",
+      fillStyle: "#53974e",
+      shadowColor: "#ffffff",
+      shadowBlur: 1,
+      shadowOffsetX: 0,
+      shadowOffsetY: 4,
+    },
+  },
   {
     uri: "https://arweave.net/Ot1Ju61AtjpOl2Tt5lyioOJeEi8SChjqUIuB35pKVDs?ext=gif",
     mint: "7joBw7ZoEqT4kAsmjPhwdqxmW6eAG312z9GL2GkZWQc8",
@@ -119,28 +142,6 @@ const artistTemplates = [
       shadowBlur: 6,
       shadowOffsetX: 0,
       shadowOffsetY: 2,
-    },
-  },
-  {
-    uri: "https://arweave.net/7iv03vXoyCc10h-MCsiO4wJn9FyiULEzGixfVG67jXA?ext=png",
-    mint: "CLZ6u9oMA4XkKfBDDJSdz1fe3mg48xVd2rs7fUQ2J2Tr",
-    feePremiumLamports: 300_000,
-    artistWallet: "5h5mzTVQ8yjS3mgm9gTaop8ELbNwD8beY29nfSd6vh2w",
-    artistName: "Eclipse Crabs",
-    artistBasisPoints: 2000,
-    artistSocials: "https://x.com/eclipsecrabs",
-    arweaveUrl:
-      "https://arweave.net/_dWCqBVZJgNzH520fdzGQcLx7OwgXP2lpqmEeynXpwc?ext=json",
-    config: {
-      x: 258,
-      y: 431,
-      fontSize: 51,
-      fontFamily: "Manrope",
-      fillStyle: "#53974e",
-      shadowColor: "#ffffff",
-      shadowBlur: 1,
-      shadowOffsetX: 0,
-      shadowOffsetY: 4,
     },
   },
   {
