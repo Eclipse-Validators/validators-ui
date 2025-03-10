@@ -121,6 +121,19 @@ export default function PreviewPage() {
       uri: "https://arweave.net/wTPoJZ5Ru0OmQRyKQHHeYTH6ww1i8GJn51aC4Q70x08?ext=png",
       name: "Notrev",
     },
+    {
+      uri: "https://arweave.net/7iv03vXoyCc10h-MCsiO4wJn9FyiULEzGixfVG67jXA?ext=png",
+      name: "EclipseCrabs",
+    },
+    {
+      uri: "https://arweave.net/oUaHkHOXQ6wAFevRryGp0sNU4y-_ORKXyuCvLsZ1JUU?ext=png",
+      name: "Tuna",
+    },
+    {
+      uri: "https://arweave.net/YXuZOEU6c6QDb6N97nIpYwGST8VcO9ZvgDoHUCY3dks?ext=png",
+      name: "Makato",
+    },
+
     // Add other templates as needed
   ];
 
