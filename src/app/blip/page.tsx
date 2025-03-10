@@ -153,12 +153,13 @@ const artistTemplates = [
     artistSocials: "https://x.com/guy_paperbag",
     arweaveUrl:
       "https://arweave.net/xVrP9MXHexN0n566i9488RMSq_ul59j0LamV9QAdu68?ext=json",
+
     config: {
-      x: 211,
-      y: 452,
-      fontSize: 52,
+      x: 340,
+      y: 549,
+      fontSize: 38,
       fontFamily: "Manrope",
-      fillStyle: "#000000",
+      fillStyle: "#ffffff",
       shadowColor: "#ffffff",
       shadowBlur: 1,
       shadowOffsetX: 0,
@@ -174,11 +175,11 @@ const artistTemplates = [
     artistBasisPoints: 2000,
     artistSocials: "https://0xmakoto.carrd.co/",
     config: {
-      x: 340,
-      y: 549,
-      fontSize: 38,
+      x: 211,
+      y: 452,
+      fontSize: 52,
       fontFamily: "Manrope",
-      fillStyle: "#ffffff",
+      fillStyle: "#000000",
       shadowColor: "#ffffff",
       shadowBlur: 1,
       shadowOffsetX: 0,
