@@ -133,6 +133,10 @@ export default function PreviewPage() {
       uri: "https://arweave.net/YXuZOEU6c6QDb6N97nIpYwGST8VcO9ZvgDoHUCY3dks?ext=png",
       name: "Makato",
     },
+    {
+      uri: "https://arweave.net/g46QWtIYsnuNbEJJShV-5kCy_LnhiQPK6kZ9ymy9lQQ?ext=png",
+      name: "EBC",
+    },
 
     // Add other templates as needed
   ];
