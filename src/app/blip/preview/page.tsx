@@ -137,6 +137,10 @@ export default function PreviewPage() {
       uri: "https://arweave.net/g46QWtIYsnuNbEJJShV-5kCy_LnhiQPK6kZ9ymy9lQQ?ext=png",
       name: "EBC",
     },
+    {
+      uri: "https://arweave.net/Tlk08M7stIDIRh5W5PCvOxwSPhPVmoGMVGO0klCnit4?ext=gif",
+      name: "Reza",
+    },
 
     // Add other templates as needed
   ];
