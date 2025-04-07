@@ -99,7 +99,7 @@ const artistTemplates = [
   //   },
   // },
   {
-    uri: "https://arweave.net/Tlk08M7stIDIRh5W5PCvOxwSPhPVmoGMVGO0klCnit4?ext=gif",
+    uri: "https://arweave.net/6yZNKAlxfK2iZSsShcDGE2V9zAj86Loz20f1o1-IwAw?ext=gif",
     mint: "Aqt1M1S8cpZJLXR9T3AoM6o9TSg3Ru2zU3naKrrehT67",
     feePremiumLamports: 300000,
     imageFile: "reza.gif",
