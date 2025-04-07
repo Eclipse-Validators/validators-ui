@@ -181,18 +181,21 @@ export async function generateBlip(
     const templateBuffer = await response.arrayBuffer();
 
     let finalImgBuffer: Buffer;
-    let contentType: string = "image/png";
-    let extension: string = "png";
+    const buffer = Buffer.from(templateBuffer);
 
-    if (template.artistName === "Ash" || template.artistName === "Ashes") {
+    const isGif =
+      buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46;
+
+    const contentType = isGif ? "image/gif" : "image/png";
+    const extension = isGif ? "gif" : "png";
+
+    if (isGif) {
       const gif = await generateGifWithText(
         message,
         Buffer.from(templateBuffer),
         template.config ?? config
       );
       const imgBuffer = Buffer.from(gif.split(",")[1], "base64");
-      contentType = "image/gif";
-      extension = "gif";
       finalImgBuffer = imgBuffer;
     } else {
       const imgBuffer = generateImage(
