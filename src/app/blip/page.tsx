@@ -118,6 +118,28 @@ const artistTemplates = [
       shadowOffsetY: 3,
     },
   },
+
+  {
+    uri: "https://arweave.net/WdrVV0U2egMyk-BVdOXwZITUJ-X2Xdx2pLQQkkznku0?ext=png",
+    mint: "31gbn9k1L7DracyxZwM1KScLv6ta99U3K4t8mSuJUW9d",
+    feePremiumLamports: 300000,
+    artistWallet: "4maDbTgKDkVrVEZUG47WUU2DAnnGeaoVuGxJQMs1XHpw",
+    artistName: "Deserialize",
+    artistSocials: "https://deserialize.xyz",
+    arweaveUrl:
+      "https://arweave.net/WyjxjEJCoa8ET07o-9VYsvPDIsjwOLNm3vLBYq2xtmU?ext=json",
+    config: {
+      x: 261,
+      y: 455,
+      fontSize: 48,
+      fontFamily: "Manrope",
+      fillStyle: "#ffffff",
+      shadowColor: "rgba(0, 0, 0, 0.7)",
+      shadowBlur: 10,
+      shadowOffsetX: 0,
+      shadowOffsetY: 0,
+    },
+  },
   // {
   //   uri: "https://arweave.net/sfEUHNREXt3fme5kJkhizJDFzeLcndfIt3bgs80uRp0?ext=png",
   //   mint: "HiJuJ2qQRFVXBUr7booTU4RKqYxLcH5YXcMQmUJKTFfv",
