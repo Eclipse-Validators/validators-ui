@@ -141,7 +141,10 @@ export default function PreviewPage() {
       uri: "https://arweave.net/6yZNKAlxfK2iZSsShcDGE2V9zAj86Loz20f1o1-IwAw?ext=gif",
       name: "Reza",
     },
-
+    {
+      uri: "https://arweave.net/WdrVV0U2egMyk-BVdOXwZITUJ-X2Xdx2pLQQkkznku0?ext=png",
+      name: "Deserialize",
+    },
     // Add other templates as needed
   ];
 
