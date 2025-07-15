@@ -250,7 +250,7 @@ const artistTemplates = [
     uri: "https://arweave.net/7570C2s21UYRjCmsoGZ2iq3QWBxj1IyPKA0dzNHdy1w?ext=gif",
     mint: "Dt9h8CKTYMsnt7VuBqg78phSPu2BusKc119kvYyrFT53",
     artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
-    artistName: "Ashes",
+    artistName: "Ash",
     feePremiumLamports: 300_000,
     artistSocials: "https://x.com/Ashes_arc",
     config: {
