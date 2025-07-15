@@ -246,6 +246,25 @@ const artistTemplates = [
       shadowOffsetY: 0,
     },
   },
+  {
+    uri: "https://arweave.net/7570C2s21UYRjCmsoGZ2iq3QWBxj1IyPKA0dzNHdy1w?ext=gif",
+    mint: "Dt9h8CKTYMsnt7VuBqg78phSPu2BusKc119kvYyrFT53",
+    artistWallet: "9DbD6nmkeiYStSn8DNuMhkezpK5P3xGLBx5RFkYKNEBx",
+    artistName: "Ashes",
+    feePremiumLamports: 300_000,
+    artistSocials: "https://x.com/Ashes_arc",
+    config: {
+      x: 295,
+      y: 341,
+      fontSize: 70,
+      fontFamily: "Manrope",
+      fillStyle: "#ffffff",
+      shadowColor: "rgba(0, 0, 0, 0.7)",
+      shadowBlur: 2,
+      shadowOffsetX: 3,
+      shadowOffsetY: 2,
+    },
+  },
 ];
 
 export default function MessagePage() {
