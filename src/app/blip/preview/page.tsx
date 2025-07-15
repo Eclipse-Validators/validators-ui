@@ -145,6 +145,10 @@ export default function PreviewPage() {
       uri: "https://arweave.net/WdrVV0U2egMyk-BVdOXwZITUJ-X2Xdx2pLQQkkznku0?ext=png",
       name: "Deserialize",
     },
+    {
+      uri: "https://arweave.net/O8av2wW7z02Q_mCwb1pRYLu8BNNL47mWU0FPs6_uXAo?ext=gif",
+      name: "Lolmbrill",
+    },
     // Add other templates as needed
   ];
 
