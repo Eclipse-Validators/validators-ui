@@ -149,6 +149,10 @@ export default function PreviewPage() {
       uri: "https://arweave.net/O8av2wW7z02Q_mCwb1pRYLu8BNNL47mWU0FPs6_uXAo?ext=gif",
       name: "Lolmbrill",
     },
+    {
+      uri: "https://arweave.net/AiELKJywDO9SQIo8WsGLaYXnKVuW7jEveMyFbBL6yH4?ext=gif",
+      name: "Tuna",
+    },
     // Add other templates as needed
   ];
 
