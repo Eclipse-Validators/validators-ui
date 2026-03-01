@@ -21,12 +21,145 @@ import { useVortexProgram } from "../providers/VortexProgramContext";
 import { VortexNftCard } from "./VortexNftCard";
 import { getVaultPda } from "@/lib/anchor/vortex/constants";
 import { toast } from "sonner";
-import { AlertTriangleIcon, CheckCircle2Icon } from "lucide-react";
+import { AlertTriangleIcon, CheckCircle2Icon, ArrowRight, Lock } from "lucide-react";
 import { SkeletonCard } from "../loading/skeletonCard";
 
 const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
     "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 );
+
+/* ---------- Vortex Portal (pure CSS) ---------- */
+
+function VortexPortal() {
+    return (
+        <div className="relative mx-auto mb-8 flex h-[280px] w-[280px] items-center justify-center sm:h-[340px] sm:w-[340px]">
+            {/* Outermost ring */}
+            <div
+                className="vortex-spin-slow absolute inset-0 rounded-full opacity-30"
+                style={{
+                    background:
+                        "conic-gradient(from 0deg, transparent, rgba(139,92,246,0.4), transparent, rgba(139,92,246,0.2), transparent)",
+                }}
+            />
+            {/* Outer ring */}
+            <div
+                className="vortex-spin absolute inset-4 rounded-full opacity-50"
+                style={{
+                    background:
+                        "conic-gradient(from 0deg, transparent, rgba(139,92,246,0.6), transparent, rgba(168,85,247,0.4), transparent)",
+                }}
+            />
+            {/* Middle ring */}
+            <div
+                className="vortex-spin-reverse absolute inset-12 rounded-full opacity-70"
+                style={{
+                    background:
+                        "conic-gradient(from 90deg, transparent, rgba(168,85,247,0.7), transparent, rgba(192,132,252,0.5), transparent)",
+                }}
+            />
+            {/* Inner ring */}
+            <div
+                className="vortex-spin absolute inset-20 rounded-full opacity-80"
+                style={{
+                    background:
+                        "conic-gradient(from 180deg, transparent, rgba(192,132,252,0.8), transparent, rgba(139,92,246,0.6), transparent)",
+                }}
+            />
+            {/* Core glow */}
+            <div className="vortex-pulse absolute inset-[45%] rounded-full bg-violet-500/60 blur-xl" />
+            <div className="absolute inset-[47%] rounded-full bg-violet-300/40 blur-md" />
+
+            {/* Center text */}
+            <div className="relative z-10 text-center">
+                <div className="text-4xl font-black tracking-wider text-white sm:text-5xl"
+                    style={{ textShadow: "0 0 30px rgba(139,92,246,0.8), 0 0 60px rgba(139,92,246,0.4)" }}>
+                    VORTEX
+                </div>
+            </div>
+
+            {/* Orbiting particles */}
+            {Array.from({ length: 12 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="vortex-particle absolute rounded-full bg-violet-400"
+                    style={{
+                        width: `${2 + Math.random() * 4}px`,
+                        height: `${2 + Math.random() * 4}px`,
+                        left: `${20 + Math.random() * 60}%`,
+                        top: `${20 + Math.random() * 60}%`,
+                        "--tx": `${(Math.random() - 0.5) * 200}px`,
+                        "--ty": `${(Math.random() - 0.5) * 200}px`,
+                        "--duration": `${3 + Math.random() * 4}s`,
+                        "--delay": `${-Math.random() * 5}s`,
+                    } as React.CSSProperties}
+                />
+            ))}
+        </div>
+    );
+}
+
+/* ---------- Migration flow steps ---------- */
+
+function MigrationFlow({ lockedCount, totalCount }: { lockedCount: number; totalCount: number }) {
+    return (
+        <div className="mx-auto mb-8 flex max-w-lg items-center justify-center gap-3 sm:gap-4">
+            <div className="flex flex-col items-center gap-1">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-500/20 ring-2 ring-violet-500/50 sm:h-14 sm:w-14">
+                    <span className="text-lg font-bold text-violet-400">E</span>
+                </div>
+                <span className="text-xs text-muted-foreground">Eclipse</span>
+            </div>
+
+            <div className="flex flex-1 items-center">
+                <div className="h-0.5 flex-1 bg-gradient-to-r from-violet-500/50 to-violet-500" />
+                <ArrowRight className="mx-1 h-4 w-4 flex-shrink-0 text-violet-400" />
+            </div>
+
+            <div className="flex flex-col items-center gap-1">
+                <div className="vortex-pulse flex h-12 w-12 items-center justify-center rounded-full bg-violet-600/30 ring-2 ring-violet-400 sm:h-14 sm:w-14">
+                    <Lock className="h-5 w-5 text-violet-300" />
+                </div>
+                <span className="text-xs font-medium text-violet-400">Vortex</span>
+            </div>
+
+            <div className="flex flex-1 items-center">
+                <ArrowRight className="mx-1 h-4 w-4 flex-shrink-0 text-green-400" />
+                <div className="h-0.5 flex-1 bg-gradient-to-r from-green-500 to-green-500/50" />
+            </div>
+
+            <div className="flex flex-col items-center gap-1">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20 ring-2 ring-green-500/50 sm:h-14 sm:w-14">
+                    <span className="text-lg font-bold text-green-400">S</span>
+                </div>
+                <span className="text-xs text-muted-foreground">Solana</span>
+            </div>
+        </div>
+    );
+}
+
+/* ---------- Stats bar ---------- */
+
+function VortexStats({ lockedCount, totalCount }: { lockedCount: number; totalCount: number }) {
+    if (totalCount === 0) return null;
+    const percentage = totalCount > 0 ? Math.round((lockedCount / totalCount) * 100) : 0;
+
+    return (
+        <div className="mx-auto mb-6 max-w-lg">
+            <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                <span>{lockedCount} of {totalCount} NFTs locked</span>
+                <span className="text-violet-400 font-medium">{percentage}%</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-violet-500/10">
+                <div
+                    className="h-full rounded-full bg-gradient-to-r from-violet-600 to-violet-400 transition-all duration-700"
+                    style={{ width: `${percentage}%` }}
+                />
+            </div>
+        </div>
+    );
+}
+
+/* ---------- Main component ---------- */
 
 const VortexLock: React.FC = () => {
     const { connection } = useConnection();
@@ -53,6 +186,10 @@ const VortexLock: React.FC = () => {
             (token) => token.decimals === 0
         );
     }, [token2022Tokens]);
+
+    const lockedCount = useMemo(() => {
+        return Object.values(lockedMints).filter(Boolean).length;
+    }, [lockedMints]);
 
     // Check vault status for all NFTs
     const checkVaultStatuses = useCallback(async () => {
@@ -120,7 +257,7 @@ const VortexLock: React.FC = () => {
             toast.success(
                 <div className="flex items-center gap-2">
                     <CheckCircle2Icon className="h-4 w-4 text-green-500" />
-                    NFT locked successfully:{" "}
+                    NFT entered the vortex:{" "}
                     <a
                         href={`${process.env.NEXT_PUBLIC_EXPLORER}/tx/${sig}`}
                         target="_blank"
@@ -164,9 +301,9 @@ const VortexLock: React.FC = () => {
 
         if (filteredNfts.length === 0) {
             return (
-                <Card>
+                <Card className="col-span-full border-violet-500/20">
                     <CardContent className="flex h-32 items-center justify-center">
-                        <p className="text-center text-gray-500">No Token-2022 NFTs found</p>
+                        <p className="text-center text-muted-foreground">No Token-2022 NFTs found</p>
                     </CardContent>
                 </Card>
             );
@@ -187,61 +324,76 @@ const VortexLock: React.FC = () => {
 
     return (
         <div className="container mx-auto p-3 sm:p-4">
-            <h1 className="mb-4 text-xl sm:text-2xl font-bold">Vortex</h1>
+            {/* Hero portal */}
+            <VortexPortal />
 
-            <div className="mb-6 sm:mb-8 space-y-4 max-w-3xl">
-                <p className="text-base sm:text-lg text-muted-foreground">
-                    Lock your Token-2022 NFTs into a vault on Eclipse as the first step of migrating them to Solana.
+            {/* Migration flow */}
+            <MigrationFlow lockedCount={lockedCount} totalCount={nfts.length} />
+
+            {/* Description */}
+            <div className="mx-auto mb-6 max-w-2xl text-center">
+                <p className="text-base text-muted-foreground sm:text-lg">
+                    Lock your Token-2022 NFTs into a vault on Eclipse to migrate them to Solana.
+                    Once locked, your NFTs can be re-minted on the other side.
                 </p>
+            </div>
 
-                <div className="p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-950/30">
-                    <p className="font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
-                        <span className="flex items-center">
-                            <AlertTriangleIcon className="h-5 w-5 text-yellow-600 mr-2" />
-                            WARNING
-                        </span>
+            {/* Warning */}
+            <div className="mx-auto mb-8 max-w-2xl">
+                <div className="rounded-lg border border-yellow-500/30 bg-yellow-950/20 p-4">
+                    <p className="mb-1 flex items-center font-semibold text-yellow-400">
+                        <AlertTriangleIcon className="mr-2 h-4 w-4" />
+                        Irreversible Action
                     </p>
-                    <p className="text-yellow-700 dark:text-yellow-500">
-                        Locking is permanent and irreversible. Once locked, your NFT will be
-                        transferred to a program-controlled vault. Only proceed if you intend
-                        to migrate this NFT to Solana.
+                    <p className="text-sm text-yellow-500/80">
+                        Locking is permanent. Your NFT will be transferred to a program-controlled vault.
+                        Only proceed if you intend to complete the migration to Solana.
                     </p>
                 </div>
             </div>
 
+            {/* Stats bar */}
+            <VortexStats lockedCount={lockedCount} totalCount={nfts.length} />
+
+            {/* Search */}
             <div className="relative mb-4">
                 <Input
                     type="text"
                     placeholder="Search NFTs..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full max-w-full sm:max-w-sm"
+                    className="w-full max-w-full border-violet-500/20 focus:border-violet-500/50 sm:max-w-sm"
                 />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {/* NFT Grid */}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                 {renderNftCards()}
             </div>
 
+            {/* Confirmation dialog */}
             <Dialog open={!!confirmToken} onOpenChange={() => setConfirmToken(null)}>
-                <DialogContent>
+                <DialogContent className="border-violet-500/30">
                     <DialogHeader>
-                        <DialogTitle>Confirm NFT Lock</DialogTitle>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Lock className="h-5 w-5 text-violet-400" />
+                            Enter the Vortex
+                        </DialogTitle>
                         <DialogDescription>
                             This action is permanent and cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
                     {confirmToken && (
-                        <div className="flex items-center gap-4 py-4">
+                        <div className="flex items-center gap-4 rounded-lg border border-violet-500/20 bg-violet-500/5 p-4">
                             {confirmToken.metadata?.image && (
                                 <img
                                     src={confirmToken.metadata.image}
                                     alt={confirmToken.metadata?.name || "NFT"}
-                                    className="h-16 w-16 rounded object-cover"
+                                    className="h-20 w-20 rounded-lg object-cover ring-2 ring-violet-500/30"
                                 />
                             )}
                             <div>
-                                <p className="font-medium">
+                                <p className="font-medium text-lg">
                                     {confirmToken.metadata?.name ||
                                         confirmToken.mint.slice(0, 4) +
                                             "..." +
@@ -265,11 +417,12 @@ const VortexLock: React.FC = () => {
                             Cancel
                         </Button>
                         <Button
-                            variant="destructive"
+                            className="bg-violet-600 hover:bg-violet-700 text-white"
                             onClick={() => confirmToken && handleLock(confirmToken)}
                             disabled={lockingMint !== null}
                         >
-                            {lockingMint ? "Locking..." : "Lock Forever"}
+                            <Lock className="mr-2 h-4 w-4" />
+                            {lockingMint ? "Entering Vortex..." : "Lock Forever"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

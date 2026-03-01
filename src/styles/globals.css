@@ -270,3 +270,108 @@ body {
 .animate-send-letter {
   animation: sendLetter 2s ease-out forwards;
 }
+
+/* Vortex page animations */
+
+@keyframes vortexSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes vortexSpinReverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes vortexPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes vortexSuckIn {
+  0% {
+    transform: scale(1) rotate(0deg) translateY(0);
+    opacity: 1;
+  }
+  40% {
+    transform: scale(0.7) rotate(180deg) translateY(-40px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0) rotate(720deg) translateY(-200px);
+    opacity: 0;
+  }
+}
+
+@keyframes vortexParticle {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes cardGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3), inset 0 0 15px rgba(139, 92, 246, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), inset 0 0 20px rgba(139, 92, 246, 0.1);
+  }
+}
+
+.vortex-spin {
+  animation: vortexSpin 20s linear infinite;
+}
+
+.vortex-spin-reverse {
+  animation: vortexSpinReverse 15s linear infinite;
+}
+
+.vortex-spin-slow {
+  animation: vortexSpin 30s linear infinite;
+}
+
+.vortex-pulse {
+  animation: vortexPulse 3s ease-in-out infinite;
+}
+
+.vortex-suck-in {
+  animation: vortexSuckIn 1.2s ease-in forwards;
+}
+
+.vortex-particle {
+  animation: vortexParticle var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.vortex-card-glow {
+  animation: cardGlow 3s ease-in-out infinite;
+}
+
+.vortex-card-glow:hover {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.6), inset 0 0 25px rgba(139, 92, 246, 0.15);
+}
