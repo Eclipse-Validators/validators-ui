@@ -74,6 +74,12 @@ const Navbar = () => {
               >
                 Gallery
               </Link>
+              <Link
+                href="/vortex"
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              >
+                Vortex
+              </Link>
               <DropdownMenu
                 open={isDropdownOpen}
                 onOpenChange={setIsDropdownOpen}
@@ -179,6 +185,13 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Gallery
+            </Link>
+            <Link
+              href="/vortex"
+              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+              onClick={() => setIsOpen(false)}
+            >
+              Vortex
             </Link>
             <Link
               href="/transfer"

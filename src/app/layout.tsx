@@ -16,6 +16,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { EthereumProviders } from "@/components/EthProviders";
 import { ValidatorBurnProgramProvider } from "@/components/providers/ValidatorBurnProgramContext";
+import { VortexProgramProvider } from "@/components/providers/VortexProgramContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -99,7 +100,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
                     <EditionsProgramProvider>
                       <EditionsControlProgramProvider>
                         <ValidatorBurnProgramProvider>
-                          {children}
+                          <VortexProgramProvider>
+                            {children}
+                          </VortexProgramProvider>
                         </ValidatorBurnProgramProvider>
                       </EditionsControlProgramProvider>
                     </EditionsProgramProvider>
