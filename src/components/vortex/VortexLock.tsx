@@ -21,12 +21,62 @@ import { useVortexProgram } from "../providers/VortexProgramContext";
 import { VortexNftCard } from "./VortexNftCard";
 import { getVaultPda } from "@/lib/anchor/vortex/constants";
 import { toast } from "sonner";
-import { AlertTriangleIcon, CheckCircle2Icon, ArrowRight, Lock } from "lucide-react";
+import {
+    AlertTriangleIcon,
+    CheckCircle2Icon,
+    ArrowRight,
+    Lock,
+    Loader2,
+    XCircle,
+    ExternalLink,
+} from "lucide-react";
 import { SkeletonCard } from "../loading/skeletonCard";
+import { CopyableText } from "@/components/ui/copyableText";
 
 const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
     "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 );
+
+type LockStatus =
+    | "idle"
+    | "preparing"
+    | "awaiting_approval"
+    | "submitted"
+    | "confirmed"
+    | "failed";
+
+/* ---------- Star field background ---------- */
+
+const STARS = Array.from({ length: 60 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() < 0.85 ? 1 + Math.random() : 2 + Math.random() * 2,
+    duration: 2 + Math.random() * 5,
+    delay: -Math.random() * 6,
+    color: Math.random() > 0.7 ? "bg-violet-400" : "bg-white",
+}));
+
+function StarField() {
+    return (
+        <div className="pointer-events-none fixed inset-0 overflow-hidden" style={{ zIndex: -1 }}>
+            {STARS.map((star) => (
+                <div
+                    key={star.id}
+                    className={`vortex-star ${star.color}`}
+                    style={{
+                        left: `${star.x}%`,
+                        top: `${star.y}%`,
+                        width: `${star.size}px`,
+                        height: `${star.size}px`,
+                        "--twinkle-duration": `${star.duration}s`,
+                        "--twinkle-delay": `${star.delay}s`,
+                    } as React.CSSProperties}
+                />
+            ))}
+        </div>
+    );
+}
 
 /* ---------- Vortex Portal (pure CSS) ---------- */
 
@@ -159,11 +209,102 @@ function VortexStats({ lockedCount, totalCount }: { lockedCount: number; totalCo
     );
 }
 
+/* ---------- Lock status banner ---------- */
+
+function LockStatusBanner({
+    status,
+    signature,
+    error,
+    onDismiss,
+}: {
+    status: LockStatus;
+    signature: string | null;
+    error: string | null;
+    onDismiss: () => void;
+}) {
+    if (status === "idle") return null;
+
+    const explorerUrl = process.env.NEXT_PUBLIC_EXPLORER;
+
+    const config: Record<
+        Exclude<LockStatus, "idle">,
+        { icon: React.ReactNode; label: string; color: string; bg: string }
+    > = {
+        preparing: {
+            icon: <Loader2 className="h-4 w-4 animate-spin" />,
+            label: "Preparing transaction...",
+            color: "text-violet-400",
+            bg: "bg-violet-500/10 border-violet-500/30",
+        },
+        awaiting_approval: {
+            icon: <Loader2 className="h-4 w-4 animate-spin" />,
+            label: "Waiting for wallet approval...",
+            color: "text-yellow-400",
+            bg: "bg-yellow-500/10 border-yellow-500/30",
+        },
+        submitted: {
+            icon: <Loader2 className="h-4 w-4 animate-spin" />,
+            label: "Confirming on Eclipse...",
+            color: "text-blue-400",
+            bg: "bg-blue-500/10 border-blue-500/30",
+        },
+        confirmed: {
+            icon: <CheckCircle2Icon className="h-4 w-4" />,
+            label: "Transaction confirmed!",
+            color: "text-green-400",
+            bg: "bg-green-500/10 border-green-500/30",
+        },
+        failed: {
+            icon: <XCircle className="h-4 w-4" />,
+            label: error || "Transaction failed",
+            color: "text-red-400",
+            bg: "bg-red-500/10 border-red-500/30",
+        },
+    };
+
+    const c = config[status as Exclude<LockStatus, "idle">];
+
+    return (
+        <div className="mx-auto mb-6 max-w-2xl">
+            <div className={`rounded-lg border p-4 ${c.bg}`}>
+                <div className={`flex items-center gap-2 ${c.color}`}>
+                    {c.icon}
+                    <span className="text-sm font-medium">{c.label}</span>
+                    {(status === "confirmed" || status === "failed") && (
+                        <button
+                            onClick={onDismiss}
+                            className="ml-auto rounded px-2 py-0.5 text-xs text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                        >
+                            Dismiss
+                        </button>
+                    )}
+                </div>
+                {signature && (
+                    <div className="mt-2 flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">Signature:</span>
+                        <CopyableText text={signature} maxLength={16} />
+                        {explorerUrl && (
+                            <a
+                                href={`${explorerUrl}/tx/${signature}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-auto text-violet-400 hover:text-violet-300"
+                            >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
 /* ---------- Main component ---------- */
 
 const VortexLock: React.FC = () => {
     const { connection } = useConnection();
-    const { publicKey, signTransaction } = useWallet();
+    const { publicKey, signTransaction, sendTransaction } = useWallet();
     const { program } = useVortexProgram();
 
     const {
@@ -179,6 +320,9 @@ const VortexLock: React.FC = () => {
     const [confirmToken, setConfirmToken] = useState<FetchedTokenInfo | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const deferredSearch = useDeferredValue(searchQuery);
+    const [lockStatus, setLockStatus] = useState<LockStatus>("idle");
+    const [lockSignature, setLockSignature] = useState<string | null>(null);
+    const [lockError, setLockError] = useState<string | null>(null);
 
     // Filter to NFTs only: decimals === 0
     const nfts = useMemo(() => {
@@ -217,10 +361,25 @@ const VortexLock: React.FC = () => {
         checkVaultStatuses();
     }, [checkVaultStatuses]);
 
+    const dismissLockStatus = useCallback(() => {
+        setLockStatus("idle");
+        setLockSignature(null);
+        setLockError(null);
+    }, []);
+
+    const isLockPending =
+        lockStatus === "preparing" ||
+        lockStatus === "awaiting_approval" ||
+        lockStatus === "submitted";
+
     const handleLock = async (token: FetchedTokenInfo) => {
-        if (!publicKey || !program || !signTransaction) return;
+        if (!publicKey || !program || isLockPending) return;
+
         setLockingMint(token.mint);
         setConfirmToken(null);
+        setLockStatus("preparing");
+        setLockSignature(null);
+        setLockError(null);
 
         try {
             const nftMint = new PublicKey(token.mint);
@@ -246,34 +405,75 @@ const VortexLock: React.FC = () => {
                 .instruction();
 
             const tx = new Transaction().add(ix);
-            const { blockhash } = await connection.getLatestBlockhash();
+            const { blockhash, lastValidBlockHeight } =
+                await connection.getLatestBlockhash("confirmed");
             tx.recentBlockhash = blockhash;
             tx.feePayer = publicKey;
 
-            const signedTx = await signTransaction(tx);
-            const sig = await connection.sendRawTransaction(signedTx.serialize());
-            await connection.confirmTransaction(sig, "confirmed");
+            setLockStatus("awaiting_approval");
+
+            let sig: string;
+            try {
+                sig = await sendTransaction(tx, connection);
+            } catch (sendErr) {
+                const errMsg =
+                    sendErr instanceof Error
+                        ? sendErr.message
+                        : String(sendErr);
+                const rejected =
+                    errMsg.includes("User rejected") ||
+                    errMsg.includes("rejected the request") ||
+                    (sendErr as { code?: number })?.code === 4001;
+
+                if (!rejected && signTransaction) {
+                    const signedTx = await signTransaction(tx);
+                    sig = await connection.sendRawTransaction(
+                        signedTx.serialize()
+                    );
+                } else {
+                    throw sendErr;
+                }
+            }
+
+            setLockStatus("submitted");
+            setLockSignature(sig);
+
+            await connection.confirmTransaction(
+                { signature: sig, blockhash, lastValidBlockHeight },
+                "confirmed"
+            );
+
+            setLockStatus("confirmed");
 
             toast.success(
                 <div className="flex items-center gap-2">
                     <CheckCircle2Icon className="h-4 w-4 text-green-500" />
-                    NFT entered the vortex:{" "}
-                    <a
-                        href={`${process.env.NEXT_PUBLIC_EXPLORER}/tx/${sig}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline hover:no-underline"
-                    >
-                        {sig.slice(0, 8)}...
-                    </a>
+                    NFT entered the vortex
                 </div>
             );
 
             setLockedMints((prev) => ({ ...prev, [token.mint]: true }));
             refreshTokens();
-        } catch (error) {
-            console.error("Error locking NFT:", error);
-            toast.error("Failed to lock NFT");
+        } catch (err: unknown) {
+            console.error("Error locking NFT:", err);
+
+            const message =
+                err instanceof Error ? err.message : String(err);
+            const isRejection =
+                message.includes("User rejected") ||
+                message.includes("rejected the request") ||
+                (err as { code?: number })?.code === 4001;
+
+            setLockStatus("failed");
+            setLockError(
+                isRejection
+                    ? "Transaction rejected by wallet"
+                    : message || "Failed to lock NFT"
+            );
+
+            if (!isRejection) {
+                toast.error("Failed to lock NFT");
+            }
         } finally {
             setLockingMint(null);
         }
@@ -323,7 +523,11 @@ const VortexLock: React.FC = () => {
     if (errorTokens) return <div>Error: {errorTokens}</div>;
 
     return (
-        <div className="container mx-auto p-3 sm:p-4">
+        <div className="vortex-backdrop min-h-screen">
+            <StarField />
+            <div className="vortex-scanlines" />
+
+            <div className="container relative z-10 mx-auto p-3 pt-12 sm:p-4 sm:pt-16">
             {/* Hero portal */}
             <VortexPortal />
 
@@ -354,6 +558,14 @@ const VortexLock: React.FC = () => {
 
             {/* Stats bar */}
             <VortexStats lockedCount={lockedCount} totalCount={nfts.length} />
+
+            {/* Lock status */}
+            <LockStatusBanner
+                status={lockStatus}
+                signature={lockSignature}
+                error={lockError}
+                onDismiss={dismissLockStatus}
+            />
 
             {/* Search */}
             <div className="relative mb-4">
@@ -419,7 +631,7 @@ const VortexLock: React.FC = () => {
                         <Button
                             className="bg-violet-600 hover:bg-violet-700 text-white"
                             onClick={() => confirmToken && handleLock(confirmToken)}
-                            disabled={lockingMint !== null}
+                            disabled={lockingMint !== null || isLockPending}
                         >
                             <Lock className="mr-2 h-4 w-4" />
                             {lockingMint ? "Entering Vortex..." : "Lock Forever"}
@@ -427,6 +639,7 @@ const VortexLock: React.FC = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            </div>
         </div>
     );
 };

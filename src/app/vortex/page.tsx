@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function VortexPage() {
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <main className="min-h-screen">
             <VortexLock />
         </main>
     );
