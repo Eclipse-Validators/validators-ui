@@ -503,7 +503,7 @@ const VortexLock: React.FC = () => {
             return (
                 <Card className="col-span-full border-violet-500/20">
                     <CardContent className="flex h-32 items-center justify-center">
-                        <p className="text-center text-muted-foreground">No Token-2022 NFTs found</p>
+                        <p className="text-center text-muted-foreground">No Validators NFTs found</p>
                     </CardContent>
                 </Card>
             );
@@ -537,7 +537,7 @@ const VortexLock: React.FC = () => {
             {/* Description */}
             <div className="mx-auto mb-6 max-w-2xl text-center">
                 <p className="text-base text-muted-foreground sm:text-lg">
-                    Lock your Token-2022 NFTs into a vault on Eclipse to migrate them to Solana.
+                    Lock your Validators NFTs into a vault on Eclipse to migrate them to Solana.
                     Once locked, your NFTs can be re-minted on the other side.
                 </p>
             </div>
