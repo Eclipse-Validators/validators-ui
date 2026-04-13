@@ -29,7 +29,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="border-b border-border bg-background">
+    <nav className="relative z-50 border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
