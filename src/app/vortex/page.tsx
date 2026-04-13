@@ -1,4 +1,4 @@
-import VortexLock from "@/components/vortex/VortexLock";
+import VortexLockWrapper from "@/components/vortex/VortexLockWrapper";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from "next";
 
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default function VortexPage() {
     return (
         <main className="min-h-screen">
-            <VortexLock />
+            <VortexLockWrapper />
         </main>
     );
 }

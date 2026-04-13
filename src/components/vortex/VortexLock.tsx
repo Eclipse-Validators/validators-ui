@@ -5,6 +5,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { TOKEN_2022_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { useWalletTokens } from "@/lib/hooks/useWalletTokens";
+import { useGroupMembers } from "@/components/providers/GroupMembersContext";
 import { FetchedTokenInfo } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -313,6 +314,7 @@ const VortexLock: React.FC = () => {
         error: errorTokens,
         refreshTokens,
     } = useWalletTokens(true);
+    const { hashlist, isLoading: membersLoading } = useGroupMembers();
 
     const [lockedMints, setLockedMints] = useState<Record<string, boolean>>({});
     const [checkingVaults, setCheckingVaults] = useState(false);
@@ -324,12 +326,11 @@ const VortexLock: React.FC = () => {
     const [lockSignature, setLockSignature] = useState<string | null>(null);
     const [lockError, setLockError] = useState<string | null>(null);
 
-    // Filter to NFTs only: decimals === 0
     const nfts = useMemo(() => {
         return token2022Tokens.filter(
-            (token) => token.decimals === 0
+            (token) => token.decimals === 0 && hashlist.has(token.mint)
         );
-    }, [token2022Tokens]);
+    }, [token2022Tokens, hashlist]);
 
     const lockedCount = useMemo(() => {
         return Object.values(lockedMints).filter(Boolean).length;
@@ -493,7 +494,7 @@ const VortexLock: React.FC = () => {
     }, [nfts, deferredSearch]);
 
     const renderNftCards = useCallback(() => {
-        if (loadingTokens || checkingVaults) {
+        if (loadingTokens || membersLoading || checkingVaults) {
             return Array(6)
                 .fill(0)
                 .map((_, index) => <SkeletonCard key={index} />);
@@ -518,7 +519,7 @@ const VortexLock: React.FC = () => {
                 onLock={() => setConfirmToken(token)}
             />
         ));
-    }, [filteredNfts, loadingTokens, checkingVaults, lockedMints, lockingMint]);
+    }, [filteredNfts, loadingTokens, membersLoading, checkingVaults, lockedMints, lockingMint]);
 
     if (errorTokens) return <div>Error: {errorTokens}</div>;
 
