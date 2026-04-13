@@ -1,7 +1,5 @@
 # Validators UI 🚀
 
-`hello world`
-
 ## Running Locally 🧑‍🚀
 
 1. `yarn install`
