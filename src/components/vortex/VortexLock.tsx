@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useDeferredValue, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useDeferredValue, useMemo, useRef, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { TOKEN_2022_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -20,6 +20,10 @@ import {
 } from "@/components/ui/dialog";
 import { useVortexProgram } from "../providers/VortexProgramContext";
 import { VortexNftCard } from "./VortexNftCard";
+import { VortexLockedNfts } from "./VortexLockedNfts";
+import { SolanaMainnetWalletProvider } from "./SolanaMainnetWalletProvider";
+import { useVortexLocks } from "@/hooks/use-vortex-locks";
+import { VortexLockedNft } from "@/lib/types/vortex";
 import { getVaultPda } from "@/lib/anchor/vortex/constants";
 import { toast } from "sonner";
 import {
@@ -316,6 +320,24 @@ const VortexLock: React.FC = () => {
     } = useWalletTokens(true);
     const { hashlist, isLoading: membersLoading } = useGroupMembers();
 
+    const [walletSwitchMode, setWalletSwitchMode] = useState(false);
+    const stashedWalletAddress = useRef<string | null>(null);
+    const stashedNfts = useRef<FetchedTokenInfo[]>([]);
+    const stashedLockedMints = useRef<Record<string, boolean>>({});
+    const stashedVortexLocks = useRef<VortexLockedNft[] | undefined>(undefined);
+
+    const effectiveWalletAddress = walletSwitchMode
+        ? stashedWalletAddress.current
+        : publicKey?.toBase58();
+
+    const {
+        data: vortexLocksRaw,
+        isLoading: locksLoading,
+        error: locksError,
+    } = useVortexLocks(effectiveWalletAddress ?? undefined);
+
+    const vortexLocks = walletSwitchMode ? stashedVortexLocks.current : vortexLocksRaw;
+
     const [lockedMints, setLockedMints] = useState<Record<string, boolean>>({});
     const [checkingVaults, setCheckingVaults] = useState(false);
     const [lockingMint, setLockingMint] = useState<string | null>(null);
@@ -332,9 +354,28 @@ const VortexLock: React.FC = () => {
         );
     }, [token2022Tokens, hashlist]);
 
-    const lockedCount = useMemo(() => {
-        return Object.values(lockedMints).filter(Boolean).length;
-    }, [lockedMints]);
+    const displayNfts = walletSwitchMode ? stashedNfts.current : nfts;
+    const displayLockedMints = walletSwitchMode ? stashedLockedMints.current : lockedMints;
+
+    const onChainLockedCount = useMemo(() => {
+        return Object.values(displayLockedMints).filter(Boolean).length;
+    }, [displayLockedMints]);
+
+    const dbLockedCount = vortexLocks?.length ?? 0;
+    const lockedCount = onChainLockedCount + dbLockedCount;
+    const totalCount = displayNfts.length + dbLockedCount;
+
+    const enterSwitchMode = useCallback(() => {
+        stashedWalletAddress.current = publicKey?.toBase58() ?? null;
+        stashedNfts.current = nfts;
+        stashedLockedMints.current = lockedMints;
+        stashedVortexLocks.current = vortexLocksRaw;
+        setWalletSwitchMode(true);
+    }, [publicKey, nfts, lockedMints, vortexLocksRaw]);
+
+    const exitSwitchMode = useCallback(() => {
+        setWalletSwitchMode(false);
+    }, []);
 
     // Check vault status for all NFTs
     const checkVaultStatuses = useCallback(async () => {
@@ -481,7 +522,7 @@ const VortexLock: React.FC = () => {
     };
 
     const filteredNfts = useMemo(() => {
-        return nfts.filter(
+        return displayNfts.filter(
             (token) =>
                 token.metadata?.name
                     ?.toLowerCase()
@@ -491,10 +532,10 @@ const VortexLock: React.FC = () => {
                     ?.toLowerCase()
                     .includes(deferredSearch.toLowerCase())
         );
-    }, [nfts, deferredSearch]);
+    }, [displayNfts, deferredSearch]);
 
     const renderNftCards = useCallback(() => {
-        if (loadingTokens || membersLoading || checkingVaults) {
+        if (!walletSwitchMode && (loadingTokens || membersLoading || checkingVaults)) {
             return Array(6)
                 .fill(0)
                 .map((_, index) => <SkeletonCard key={index} />);
@@ -514,14 +555,14 @@ const VortexLock: React.FC = () => {
             <VortexNftCard
                 key={token.tokenAccount}
                 token={token}
-                isLocked={!!lockedMints[token.mint]}
+                isLocked={!!displayLockedMints[token.mint]}
                 isLocking={lockingMint === token.mint}
                 onLock={() => setConfirmToken(token)}
             />
         ));
-    }, [filteredNfts, loadingTokens, membersLoading, checkingVaults, lockedMints, lockingMint]);
+    }, [filteredNfts, loadingTokens, membersLoading, checkingVaults, displayLockedMints, lockingMint, walletSwitchMode]);
 
-    if (errorTokens) return <div>Error: {errorTokens}</div>;
+    if (!walletSwitchMode && errorTokens) return <div>Error: {errorTokens}</div>;
 
     return (
         <div className="vortex-backdrop min-h-screen">
@@ -533,7 +574,7 @@ const VortexLock: React.FC = () => {
             <VortexPortal />
 
             {/* Migration flow */}
-            <MigrationFlow lockedCount={lockedCount} totalCount={nfts.length} />
+            <MigrationFlow lockedCount={lockedCount} totalCount={totalCount} />
 
             {/* Description */}
             <div className="mx-auto mb-6 max-w-2xl text-center">
@@ -558,7 +599,7 @@ const VortexLock: React.FC = () => {
             </div>
 
             {/* Stats bar */}
-            <VortexStats lockedCount={lockedCount} totalCount={nfts.length} />
+            <VortexStats lockedCount={lockedCount} totalCount={totalCount} />
 
             {/* Lock status */}
             <LockStatusBanner
@@ -583,6 +624,17 @@ const VortexLock: React.FC = () => {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                 {renderNftCards()}
             </div>
+
+            {/* Locked NFTs from database */}
+            <SolanaMainnetWalletProvider>
+                <VortexLockedNfts
+                    locks={vortexLocks}
+                    isLoading={locksLoading}
+                    error={locksError}
+                    onEnterSwitchMode={enterSwitchMode}
+                    onExitSwitchMode={exitSwitchMode}
+                />
+            </SolanaMainnetWalletProvider>
 
             {/* Confirmation dialog */}
             <Dialog open={!!confirmToken} onOpenChange={() => setConfirmToken(null)}>
