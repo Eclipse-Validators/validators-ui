@@ -1,8 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import { Transaction } from "@solana/web3.js";
+import bs58 from "bs58";
+import { toast } from "sonner";
 import { useSolanaMainnetWallet } from "./SolanaMainnetWalletProvider";
 import { VortexLockedNft } from "@/lib/types/vortex";
+import { vortexMintApi } from "@/lib/vortex/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,17 +29,48 @@ import {
   Loader2,
   ArrowRight,
   CircleDot,
+  XCircle,
 } from "lucide-react";
+
+type MintStatus =
+  | "idle"
+  | "preparing"
+  | "signing"
+  | "submitting"
+  | "confirming"
+  | "completing"
+  | "done"
+  | "failed";
+
+const MINT_STATUS_LABELS: Record<Exclude<MintStatus, "idle">, string> = {
+  preparing: "Preparing transaction...",
+  signing: "Waiting for wallet signature...",
+  submitting: "Submitting to Solana...",
+  confirming: "Confirming on-chain...",
+  completing: "Finalizing mint...",
+  done: "Minted!",
+  failed: "Mint failed",
+};
 
 function LockedNftCard({
   nft,
   solanaConnected,
+  mintStatus,
+  mintError,
+  mintSignature,
+  onMint,
 }: {
   nft: VortexLockedNft;
   solanaConnected: boolean;
+  mintStatus: MintStatus;
+  mintError: string | null;
+  mintSignature: string | null;
+  onMint: () => void;
 }) {
   const explorerUrl = process.env.NEXT_PUBLIC_EXPLORER;
-  const isMinted = nft.status === "minted";
+  const isMinted = nft.status === "minted" || mintStatus === "done";
+  const isBusy =
+    mintStatus !== "idle" && mintStatus !== "done" && mintStatus !== "failed";
 
   return (
     <Card
@@ -114,17 +149,59 @@ function LockedNftCard({
           </div>
 
           {isMinted ? (
-            <div className="rounded-md bg-emerald-500/10 px-3 py-2 text-center text-sm text-emerald-400">
-              Minted on Solana
+            <div className="space-y-2">
+              <div className="rounded-md bg-emerald-500/10 px-3 py-2 text-center text-sm text-emerald-400">
+                Minted on Solana
+              </div>
+              {(mintSignature || nft.solanaAsset) && (
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  {(nft.solanaAsset || mintSignature) && (
+                    <a
+                      href={`https://explorer.solana.com/tx/${mintSignature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300"
+                    >
+                      View transaction
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
-            <Button
-              className="w-full bg-green-600 text-white hover:bg-green-700"
-              disabled={!solanaConnected}
-            >
-              <Rocket className="mr-2 h-4 w-4" />
-              Mint on Solana
-            </Button>
+            <div className="space-y-2">
+              {isBusy && (
+                <div className="flex items-center gap-2 rounded-md bg-violet-500/10 px-3 py-2 text-sm text-violet-400">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  {MINT_STATUS_LABELS[mintStatus]}
+                </div>
+              )}
+              {mintStatus === "failed" && mintError && (
+                <div className="flex items-center gap-2 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-400">
+                  <XCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="truncate">{mintError}</span>
+                </div>
+              )}
+              {nft.status === "processing" && (
+                <div className="flex items-center gap-2 rounded-md bg-yellow-500/10 px-3 py-2 text-sm text-yellow-400">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Indexing lock — mint will be available shortly
+                </div>
+              )}
+              <Button
+                onClick={onMint}
+                className="w-full bg-green-600 text-white hover:bg-green-700"
+                disabled={!solanaConnected || isBusy || nft.status !== "ready"}
+              >
+                {isBusy ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Rocket className="mr-2 h-4 w-4" />
+                )}
+                {isBusy ? "Minting..." : "Mint on Solana"}
+              </Button>
+            </div>
           )}
         </div>
       </CardContent>
@@ -237,11 +314,25 @@ export function VortexLockedNfts({
   onEnterSwitchMode,
   onExitSwitchMode,
 }: VortexLockedNftsProps) {
-  const { publicKey, connected, connecting, connect, disconnect } =
-    useSolanaMainnetWallet();
+  const {
+    publicKey,
+    connected,
+    connecting,
+    connect,
+    disconnect,
+    connection,
+    signTransaction,
+  } = useSolanaMainnetWallet();
   const hasUnminted = locks?.some((l) => l.status !== "minted");
 
   const [switchModalOpen, setSwitchModalOpen] = useState(false);
+  const [mintingLockId, setMintingLockId] = useState<string | null>(null);
+  const [mintStatus, setMintStatus] = useState<MintStatus>("idle");
+  const [mintError, setMintError] = useState<string | null>(null);
+  const [mintSignature, setMintSignature] = useState<string | null>(null);
+  const [mintedIds, setMintedIds] = useState<
+    Record<string, { signature: string }>
+  >({});
 
   const handleConnectClick = () => {
     onEnterSwitchMode?.();
@@ -264,6 +355,135 @@ export function VortexLockedNfts({
       console.error("Failed to connect Solana wallet:", err);
     }
   };
+
+  const handleMint = useCallback(
+    async (nft: VortexLockedNft) => {
+      if (!publicKey || !signTransaction || mintingLockId) return;
+
+      setMintingLockId(nft.id);
+      setMintStatus("preparing");
+      setMintError(null);
+      setMintSignature(null);
+
+      try {
+        const {
+          transaction: serializedTx,
+          assetAddress,
+          lockRecordId,
+        } = await vortexMintApi.prepareMint(
+          publicKey.toBase58(),
+          nft.eclipseMint,
+        );
+
+        setMintStatus("signing");
+
+        const txBuffer = bs58.decode(serializedTx);
+        const transaction = Transaction.from(txBuffer);
+
+        const signedTransaction = await signTransaction(transaction);
+
+        setMintStatus("submitting");
+
+        const rawTx = signedTransaction.serialize();
+        const signature = await connection.sendRawTransaction(rawTx, {
+          skipPreflight: true,
+          maxRetries: 0,
+        });
+        setMintSignature(signature);
+
+        setMintStatus("confirming");
+
+        const blockhashResp = await connection.getLatestBlockhash("confirmed");
+        const lastValid = blockhashResp.lastValidBlockHeight;
+
+        const RETRY_INTERVAL_MS = 500;
+        let blockHeight = await connection.getBlockHeight("confirmed");
+
+        while (blockHeight < lastValid) {
+          const status = await connection.getSignatureStatus(signature);
+          if (
+            status?.value?.confirmationStatus === "confirmed" ||
+            status?.value?.confirmationStatus === "finalized"
+          ) {
+            break;
+          }
+          if (status?.value?.err) {
+            throw new Error("Transaction failed on-chain");
+          }
+
+          connection.sendRawTransaction(rawTx, {
+            skipPreflight: true,
+            maxRetries: 0,
+          });
+
+          await new Promise((r) => setTimeout(r, RETRY_INTERVAL_MS));
+          blockHeight = await connection.getBlockHeight("confirmed");
+        }
+
+        const finalStatus = await connection.getSignatureStatus(signature);
+        if (!finalStatus?.value?.confirmationStatus) {
+          throw new Error("Transaction expired — please try again");
+        }
+        if (finalStatus.value.err) {
+          throw new Error("Transaction failed on-chain");
+        }
+
+        setMintStatus("completing");
+
+        await vortexMintApi.completeMint(lockRecordId, signature, assetAddress);
+
+        setMintStatus("done");
+        setMintedIds((prev) => ({ ...prev, [nft.id]: { signature } }));
+
+        toast.success(
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            NFT minted on Solana!
+          </div>,
+        );
+      } catch (err: unknown) {
+        console.error("Mint failed:", err);
+
+        const message =
+          err instanceof Error ? err.message : String(err);
+        const isRejection =
+          message.includes("User rejected") ||
+          message.includes("rejected the request") ||
+          (err as { code?: number })?.code === 4001;
+
+        setMintStatus("failed");
+        setMintError(
+          isRejection
+            ? "Transaction rejected by wallet"
+            : message || "Mint failed",
+        );
+
+        if (!isRejection) {
+          toast.error("Failed to mint NFT on Solana");
+        }
+      } finally {
+        setMintingLockId(null);
+      }
+    },
+    [publicKey, signTransaction, connection, mintingLockId],
+  );
+
+  const getMintStateForNft = useCallback(
+    (nft: VortexLockedNft) => {
+      if (mintedIds[nft.id]) {
+        return {
+          status: "done" as MintStatus,
+          error: null,
+          signature: mintedIds[nft.id].signature,
+        };
+      }
+      if (mintingLockId === nft.id) {
+        return { status: mintStatus, error: mintError, signature: mintSignature };
+      }
+      return { status: "idle" as MintStatus, error: null, signature: null };
+    },
+    [mintingLockId, mintStatus, mintError, mintSignature, mintedIds],
+  );
 
   if (!isLoading && (!locks || locks.length === 0) && !error) {
     return null;
@@ -335,13 +555,20 @@ export function VortexLockedNfts({
           ? Array(3)
               .fill(0)
               .map((_, i) => <SkeletonCard key={i} />)
-          : locks?.map((nft) => (
-              <LockedNftCard
-                key={nft.id}
-                nft={nft}
-                solanaConnected={connected}
-              />
-            ))}
+          : locks?.map((nft) => {
+              const state = getMintStateForNft(nft);
+              return (
+                <LockedNftCard
+                  key={nft.id}
+                  nft={nft}
+                  solanaConnected={connected}
+                  mintStatus={state.status}
+                  mintError={state.error}
+                  mintSignature={state.signature}
+                  onMint={() => handleMint(nft)}
+                />
+              );
+            })}
       </div>
 
       <SwitchWalletModal

@@ -53,7 +53,8 @@ interface WindowWithPhantom {
   phantom?: { solana?: PhantomSolana };
 }
 
-const SOLANA_MAINNET_ENDPOINT = clusterApiUrl("mainnet-beta");
+const SOLANA_MAINNET_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLANA_RPC_URL ?? clusterApiUrl("mainnet-beta");
 
 export function SolanaMainnetWalletProvider({
   children,
