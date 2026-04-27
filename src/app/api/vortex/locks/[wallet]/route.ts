@@ -20,7 +20,7 @@ export async function GET(
   try {
     const rows = await sql<LockRecord[]>`
       SELECT id, eclipse_wallet, eclipse_mint, eclipse_tx_signature,
-             nft_metadata, is_processed, solana_tx_signature, solana_asset,
+             nft_metadata, solana_tx_signature, solana_asset,
              locked_at, minted_at
       FROM lock_records
       WHERE eclipse_wallet = ${wallet}

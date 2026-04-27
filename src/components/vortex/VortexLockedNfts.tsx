@@ -183,16 +183,10 @@ function LockedNftCard({
                   <span className="truncate">{mintError}</span>
                 </div>
               )}
-              {nft.status === "processing" && (
-                <div className="flex items-center gap-2 rounded-md bg-yellow-500/10 px-3 py-2 text-sm text-yellow-400">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Indexing lock — mint will be available shortly
-                </div>
-              )}
               <Button
                 onClick={onMint}
                 className="w-full bg-green-600 text-white hover:bg-green-700"
-                disabled={!solanaConnected || isBusy || nft.status !== "ready"}
+                disabled={!solanaConnected || isBusy}
               >
                 {isBusy ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

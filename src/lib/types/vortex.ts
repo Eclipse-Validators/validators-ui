@@ -13,14 +13,13 @@ export interface LockRecord {
   eclipse_mint: string;
   eclipse_tx_signature: string;
   nft_metadata: NftMetadata | null;
-  is_processed: boolean;
   solana_tx_signature: string | null;
   solana_asset: string | null;
   locked_at: string;
   minted_at: string | null;
 }
 
-export type LockRecordStatus = "processing" | "ready" | "minted";
+export type LockRecordStatus = "ready" | "minted";
 
 export interface VortexLockedNft {
   id: string;
@@ -34,9 +33,7 @@ export interface VortexLockedNft {
 }
 
 export function deriveLockStatus(record: LockRecord): LockRecordStatus {
-  if (record.solana_asset) return "minted";
-  if (record.is_processed) return "ready";
-  return "processing";
+  return record.solana_asset ? "minted" : "ready";
 }
 
 export function toLockNft(record: LockRecord): VortexLockedNft {

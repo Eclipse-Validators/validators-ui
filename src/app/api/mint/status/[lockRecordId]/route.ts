@@ -9,7 +9,7 @@ export async function GET(
 
   try {
     const rows = await sql`
-      SELECT id, is_processed, solana_asset, solana_tx_signature
+      SELECT id, solana_asset, solana_tx_signature
       FROM lock_records
       WHERE id = ${lockRecordId}
     `;
@@ -22,10 +22,9 @@ export async function GET(
       );
     }
 
-    let status: "processing" | "ready" | "minted";
-    if (record.solana_asset) status = "minted";
-    else if (record.is_processed) status = "ready";
-    else status = "processing";
+    const status: "ready" | "minted" = record.solana_asset
+      ? "minted"
+      : "ready";
 
     return NextResponse.json({
       status,

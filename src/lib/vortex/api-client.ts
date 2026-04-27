@@ -14,7 +14,7 @@ interface CompleteResponse {
 }
 
 interface MintStatusResponse {
-  status: "processing" | "ready" | "minted";
+  status: "ready" | "minted";
   lockRecordId: string;
   solanaAsset?: string;
   solanaTxSignature?: string;
